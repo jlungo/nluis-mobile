@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <variable
+            name="content"
+            type="go.land.nluis.mvvm.network.response.UserConfigResponse.Content" />
+    </data>
+    <LinearLayout android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:padding="@dimen/_4sdp"
+        android:layout_height="wrap_content">
+
+        <TextView  android:hint="Content"
+            android:text="Wamiliki"
+            android:drawablePadding="@dimen/_6sdp"
+            android:background="@drawable/bg_title"
+            android:textSize="20sp" android:padding="@dimen/_8sdp"
+            android:textStyle="bold"
+            android:textColor="@color/purple_200"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:drawableStartCompat="@drawable/ic_baseline_person_24" />
+
+        <LinearLayout android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:weightSum="2" android:gravity="center"
+            android:id="@+id/ln_question" android:padding="@dimen/_8sdp"
+            android:background="@drawable/box_border"
+            android:layout_height="wrap_content">
+
+            <LinearLayout android:orientation="vertical"
+                android:id="@+id/vw_part_1"
+                android:layout_width="0dp" android:layout_weight="1"
+                android:layout_height="wrap_content">
+
+                <ImageView android:src="@drawable/ic_baseline_person_24"
+                    android:layout_width="match_parent"
+                    android:background="#efefef"
+                    android:id="@+id/img_part_1"
+                    android:layout_height="@dimen/_120sdp"/>
+
+                <TextView android:text="Jina Kamili" android:textSize="18sp"
+                    android:gravity="center" android:fontFamily="@font/gilroy_bold"
+                    android:layout_width="match_parent"
+                    android:id="@+id/txt_name_part_1"
+                    android:layout_height="wrap_content"/>
+
+                <TextView android:text="( Mmiliki )" android:textSize="18sp"
+                    android:gravity="center" android:fontFamily="@font/gilroy_regular"
+                    android:layout_width="match_parent"
+                    android:id="@+id/txt_hint_part_1"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <LinearLayout android:orientation="vertical" android:layout_marginStart="4dp"
+                android:id="@+id/vw_part_2" android:visibility="gone"
+                android:layout_width="0dp" android:layout_weight="1"
+                android:layout_height="wrap_content">
+
+                <ImageView android:src="@drawable/ic_baseline_person_24"
+                    android:layout_width="match_parent"
+                    android:background="#efefef"
+                    android:id="@+id/img_part_2"
+                    android:layout_height="@dimen/_120sdp"/>
+
+                <TextView android:text="Jina Kamili" android:textSize="18sp"
+                    android:gravity="center" android:fontFamily="@font/gilroy_bold"
+                    android:layout_width="match_parent"
+                    android:id="@+id/txt_name_part_2"
+                    android:layout_height="wrap_content"/>
+
+                <TextView android:text="( Msimamizi )" android:textSize="18sp"
+                    android:gravity="center" android:fontFamily="@font/gilroy_regular"
+                    android:layout_width="match_parent"
+                    android:id="@+id/txt_hint_part_2"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+
+
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+</layout>

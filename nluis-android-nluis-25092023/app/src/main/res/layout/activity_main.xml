@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:focusableInTouchMode="true"
+        android:focusable="true"
+        tools:context=".mvvm.views.activity.MainActivity"
+        android:background="#4449a5a6"
+        android:layout_height="match_parent">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/wave" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:alpha="0.2"
+            android:background="@drawable/ic_polygon"
+            android:scaleType="centerCrop" />
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nest"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:orientation="vertical"
+                android:padding="@dimen/_24sdp">
+
+                <ImageView android:scaleType="fitXY"
+                    android:layout_marginTop="@dimen/_60sdp"
+                    android:layout_width="@dimen/_120sdp"
+                    android:layout_height="@dimen/_135sdp"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/nlus" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/item_title2" android:layout_marginTop="@dimen/_8sdp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/gilroy_bold"
+                    android:gravity="center_horizontal"
+                    android:text="Tume ya Matumizi bora\nya Ardhi"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    android:textColor="@color/purple_200"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/app"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:layout_marginBottom="@dimen/_16sdp"
+                    android:fontFamily="@font/gilroy_regular"
+                    android:gravity="center_horizontal"
+                    android:text="Mfumo wa Kukusanya Taarifa"
+                    android:textColor="@color/purple_200" />
+
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/ic_baseline_person"
+                    android:background="@drawable/edit_text"
+                    android:drawablePadding="@dimen/_6sdp"
+                    android:fontFamily="@font/gilroy_medium"
+                    android:hint="Username" android:id="@+id/txt_username"
+                    android:inputType="textPersonName"
+                    android:paddingLeft="@dimen/_16sdp" android:text=""
+                    android:textColor="#282828" />
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_4sdp"
+                    android:background="@drawable/edit_text"
+                    android:drawableLeft="@drawable/ic_baseline_lock_24"
+                    android:drawablePadding="@dimen/_6sdp" android:text=""
+                    android:fontFamily="@font/gilroy_medium"
+                    android:hint="Password" android:id="@+id/txt_password"
+                    android:inputType="textPassword"
+                    android:paddingLeft="@dimen/_16sdp"
+                    android:textColor="#282828" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:fontFamily="@font/gilroy_bold"
+                    android:gravity="center"
+                    android:textColor="@color/purple_200" />
+
+                <Button
+                    android:id="@+id/btn_login"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:background="@drawable/btn"
+                    android:fontFamily="@font/gilroy_bold"
+                    android:text="Ingia"
+                    android:paddingStart="@dimen/_48sdp"
+                    android:paddingEnd="@dimen/_48sdp"
+                    android:textAllCaps="false"
+                    android:textColor="#fff"
+                    app:backgroundTint="@null" />
+
+
+
+
+
+
+                <RelativeLayout android:layout_marginTop="@dimen/_26sdp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView android:text="Backup" android:id="@+id/btn_backup"
+                        android:textColor="#fff"
+                        android:layout_width="wrap_content" android:fontFamily="@font/gilroy_bold"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView android:text="Clear Cache" android:id="@+id/btn_clear_cache"
+                        android:layout_alignParentEnd="true" android:fontFamily="@font/gilroy_bold"
+                        android:textColor="#fff"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </RelativeLayout>
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+
+        <ProgressBar android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:id="@+id/prog" android:visibility="gone"
+            android:layout_height="wrap_content"/>
+
+
+
+
+
+    </RelativeLayout>
+
+</layout>
+
+
+
+    <!--
+    <?xml version="1.0" encoding="utf-8"?>
+    <layout>
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:focusable="true"
+            android:background="@color/purple_500"
+            android:focusableInTouchMode="true"
+            android:layout_height="match_parent"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            tools:context=".mvvm.views.activity.MainActivity">
+
+            <LinearLayout android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:id="@+id/ln_wave"
+                android:layout_height="wrap_content">
+                <View android:background="@drawable/top_gradient"
+                    android:layout_width="match_parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_height="@dimen/_150sdp"
+                    android:id="@+id/top"/>
+
+                <ImageView android:src="@drawable/wave"
+                    android:scaleType="fitXY"
+                    app:layout_constraintTop_toBottomOf="@+id/top"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_90sdp"
+                    android:contentDescription="@string/app_name" />
+            </LinearLayout>
+
+            <ImageView android:src="@drawable/nlus" android:id="@+id/logo"
+                android:layout_centerHorizontal="true" android:layout_marginTop="@dimen/_130sdp"
+                android:contentDescription="@string/app_name"
+                android:layout_width="@dimen/_180sdp"
+                android:layout_height="@dimen/_130sdp"/>
+
+            <LinearLayout android:layout_below="@+id/logo"
+                android:layout_width="match_parent"
+                android:paddingStart="@dimen/_32sdp"
+                android:paddingEnd="@dimen/_32sdp"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+
+
+                <TextView android:text="CCRO" android:textColor="@color/teal_200"
+                    android:gravity="center" android:fontFamily="@font/gilroy_bold"
+                    android:padding="@dimen/_8sdp" android:textSize="32sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+                <TextView android:text="Ukusanyaji Taarifa Uwandani\nVer T.0.4" android:textColor="@color/teal_200"
+                    android:gravity="center" android:fontFamily="@font/gilroy_bold"
+                    android:paddingBottom="@dimen/_8sdp" android:textSize="14sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+                <EditText android:hint="Username" android:layout_marginBottom="@dimen/_4sdp"
+                    android:background="@drawable/edit_text"
+                    android:layout_width="match_parent"
+                    android:id="@+id/txt_username" android:text="ccro"
+                    android:fontFamily="@font/gilroy_semibold"
+                    android:inputType="textPersonName"
+                    android:drawableStart="@drawable/ic_baseline_person"
+                    android:drawablePadding="@dimen/_8sdp"
+                    android:layout_height="wrap_content"/>
+
+                <EditText android:hint="Password"
+                    android:fontFamily="@font/gilroy_semibold"
+                    android:id="@+id/txt_password" android:text="Nzega@123"
+                    android:inputType="textPassword"
+                    android:background="@drawable/edit_text"
+                    android:layout_width="match_parent"
+                    android:drawableStart="@drawable/ic_baseline_lock_24"
+                    android:drawablePadding="@dimen/_8sdp"
+                    android:layout_height="wrap_content"/>
+
+                <Button android:layout_marginTop="@dimen/_8sdp" android:id="@+id/btn_login"
+                    android:layout_width="match_parent" android:textAllCaps="false"
+                    android:text="Ingia" android:background="@drawable/btn"
+                    android:layout_height="wrap_content"/>
+
+
+                <RelativeLayout android:layout_marginTop="@dimen/_26sdp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView android:text="Backup" android:id="@+id/btn_backup"
+                        android:textColor="@color/teal_200"
+                        android:layout_width="wrap_content" android:fontFamily="@font/gilroy_bold"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView android:text="Clear Cache" android:id="@+id/btn_clear_cache"
+                        android:layout_alignParentEnd="true" android:fontFamily="@font/gilroy_bold"
+                        android:textColor="@color/teal_200"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </RelativeLayout>
+            </LinearLayout>
+
+
+
+
+            <ProgressBar android:layout_centerInParent="true"
+                android:layout_width="wrap_content"
+                android:id="@+id/prog" android:visibility="gone"
+                android:layout_height="wrap_content"/>
+        </RelativeLayout>
+    </layout>-->

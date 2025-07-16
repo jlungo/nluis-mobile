@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <variable
+            name="question"
+            type="go.land.nluis.mvvm.network.response.UserConfigResponse.Question" />
+    </data>
+    <LinearLayout android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:padding="@dimen/_4sdp"
+        android:layout_height="wrap_content">
+
+        <TextView android:hint="Question"
+            android:text="@{question.question}" android:id="@+id/txt_question"
+            android:textSize="16sp" android:textStyle="bold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <TextView android:hint="Hint" android:id="@+id/txt_hint"
+            android:text="@{question.hint}"
+            android:textSize="12sp" android:visibility="@{question.hint.empty?8:0}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <LinearLayout android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:id="@+id/ln_answer"
+            android:layout_height="wrap_content"/>
+
+
+    </LinearLayout>
+</layout>
