@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:background="@color/purple_200"
+    android:padding="@dimen/_4sdp"
+    android:layout_width="match_parent"
+    android:orientation="horizontal"
+    android:layout_height="wrap_content"
+    android:weightSum="5"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout android:orientation="vertical" android:clickable="true"
+                  android:onClick="undo"
+                  android:layout_width="0dp" android:layout_weight="1"
+                  android:gravity="center" android:id="@+id/icn_undo"
+                  android:layout_height="wrap_content" android:focusable="true">
+
+        <ImageView android:src="@drawable/ic_baseline_undo_24"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView android:text="Nyuma" android:textSize="11sp"
+            android:layout_width="wrap_content"
+            android:textColor="#fff"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout android:orientation="vertical" android:clickable="true"
+                  android:focusable="true" android:onClick="redo"
+        android:layout_width="0dp" android:layout_weight="1"
+        android:gravity="center" android:id="@+id/icn_redo"
+        android:layout_height="wrap_content">
+
+        <ImageView android:src="@drawable/ic_baseline_redo_24"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView android:text="Mbele" android:textSize="11sp"
+            android:layout_width="wrap_content"
+            android:textColor="#fff"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout android:orientation="vertical" android:clickable="true"
+                  android:focusable="true"
+        android:layout_width="0dp" android:layout_weight="1"
+        android:gravity="center" android:id="@+id/icn_done"
+        android:layout_height="wrap_content" android:onClick="done">
+
+        <ImageView android:src="@drawable/ic_baseline_done_24"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView android:text="Maliza" android:textSize="11sp"
+            android:layout_width="wrap_content"
+            android:textColor="#fff"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+    <LinearLayout android:orientation="vertical" android:onClick="futa"
+        android:layout_width="0dp" android:layout_weight="1"
+        android:gravity="center" android:id="@+id/icn_delete"
+        android:layout_height="wrap_content">
+
+        <ImageView android:src="@drawable/ic_baseline_delete_24"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView android:text="Futa" android:textSize="11sp"
+            android:layout_width="wrap_content"
+            android:textColor="#fff"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+    <LinearLayout android:orientation="vertical" android:onClick="info"
+        android:layout_width="0dp" android:layout_weight="1"
+        android:gravity="center" android:id="@+id/icn_cancel"
+        android:layout_height="wrap_content">
+
+        <ImageView android:src="@drawable/ic_baseline_info_24"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView android:text="Taarifa" android:textSize="11sp"
+            android:layout_width="wrap_content"
+            android:textColor="#fff"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

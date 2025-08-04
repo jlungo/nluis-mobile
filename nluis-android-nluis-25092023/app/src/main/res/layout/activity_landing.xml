@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+        <variable
+            name="user"
+            type="go.land.nluis.mvvm.network.response.UserConfigResponse" />
+
+    </data>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:focusable="true"
+        android:background="@color/purple_500"
+        android:focusableInTouchMode="true"
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        tools:context=".mvvm.views.activity.LandingActivity">
+
+        <LinearLayout android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:id="@+id/ln_wave"
+            android:layout_height="wrap_content">
+            <View android:background="@drawable/top_gradient"
+                android:layout_width="match_parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_height="@dimen/_100sdp"
+                android:id="@+id/top"/>
+
+            <ImageView android:src="@drawable/wave"
+                android:scaleType="fitXY"
+                app:layout_constraintTop_toBottomOf="@+id/top"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_80sdp"
+                android:contentDescription="@string/app_name" />
+        </LinearLayout>
+
+        <ImageView android:src="@drawable/nlus" android:id="@+id/logo"
+            android:layout_centerHorizontal="true" android:layout_marginTop="@dimen/_60sdp"
+            android:contentDescription="@string/app_name"
+            android:layout_width="@dimen/_130sdp"
+            android:layout_height="@dimen/_130sdp"/>
+
+
+        <TextView android:text="@{user.user.name}"
+            android:layout_width="match_parent" android:layout_marginTop="@dimen/_24sdp"
+            android:layout_below="@+id/logo" android:fontFamily="@font/gilroy_bold"
+            android:layout_marginStart="@dimen/_8sdp"
+            android:id="@+id/btn_hint" android:gravity="center"
+            android:layout_height="wrap_content"/>
+
+        <TextView android:text="@{user.project.name}"
+            android:layout_width="match_parent" android:layout_marginBottom="@dimen/_16sdp"
+            android:layout_below="@+id/btn_hint" android:fontFamily="@font/gilroy_regular"
+            android:layout_marginStart="@dimen/_8sdp"
+            android:id="@+id/txt_project" android:gravity="center"
+            android:layout_height="wrap_content"/>
+
+        <LinearLayout android:layout_below="@+id/txt_project"
+            android:layout_width="match_parent"
+            android:orientation="vertical" android:background="#efefef"
+            android:padding="@dimen/_4sdp"
+            android:layout_height="match_parent">
+
+
+            <include android:id="@+id/ly_title" layout="@layout/vw_title_one"/>
+
+            <LinearLayout android:orientation="vertical"
+                android:layout_width="match_parent" android:id="@+id/ln_project"
+                android:layout_height="wrap_content">
+
+                <include layout="@layout/row_title"/>
+                <include layout="@layout/row_title"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+        <LinearLayout android:orientation="horizontal"
+            android:layout_width="match_parent" android:id="@+id/footer"
+            android:layout_alignParentBottom="true"
+            android:weightSum="4" android:background="@color/purple_200"
+            android:layout_height="wrap_content">
+
+            <LinearLayout android:orientation="vertical"
+                android:id="@+id/btn_backup"
+                android:gravity="center" android:padding="@dimen/_4sdp"
+                android:layout_width="0dp" android:layout_weight="1"
+                android:layout_height="wrap_content">
+
+                <ImageView android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:src="@drawable/ic_baseline_settings_backup_restore_24"
+                    android:layout_height="wrap_content"/>
+                <TextView android:text="Backup" android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:textColor="#fff" android:id="@+id/btn_back"
+                    android:fontFamily="@font/gilroy_bold"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <LinearLayout android:orientation="vertical"
+                android:id="@+id/btn_upload"
+                android:gravity="center" android:padding="@dimen/_4sdp"
+                android:layout_width="0dp" android:layout_weight="1"
+                android:layout_height="wrap_content">
+
+                <ImageView android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:src="@drawable/ic_baseline_file_upload_24"
+                    android:layout_height="wrap_content"/>
+                <TextView android:text="Upload" android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:textColor="#fff"
+                    android:fontFamily="@font/gilroy_bold"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+            <LinearLayout android:orientation="vertical"
+                android:id="@+id/btn_setting"
+                android:gravity="center" android:padding="@dimen/_4sdp"
+                android:layout_width="0dp" android:layout_weight="1"
+                android:layout_height="wrap_content">
+
+                <ImageView android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:src="@drawable/ic_outline_settings_24"
+                    android:layout_height="wrap_content"/>
+                <TextView android:text="Setting" android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:textColor="#fff"
+                    android:fontFamily="@font/gilroy_bold"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <LinearLayout android:orientation="vertical"
+                android:id="@+id/btn_uhakiki"
+                android:gravity="center" android:padding="@dimen/_4sdp"
+                android:layout_width="0dp" android:layout_weight="1"
+                android:layout_height="wrap_content">
+
+                <ImageView android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:src="@drawable/ic_outline_verified_24"
+                    android:layout_height="wrap_content"/>
+                <TextView android:text="Uhakiki" android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:textColor="#fff"
+                    android:fontFamily="@font/gilroy_bold"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <ProgressBar android:id="@+id/prog"
+            android:visibility="gone"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+
+        <include layout="@layout/prg_dialog" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/ly_prog"
+            android:layout_alignParentBottom="true" android:visibility="gone"/>
+
+
+
+        <LinearLayout android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:padding="@dimen/_24sdp" android:visibility="gone"
+            android:background="#fff" android:id="@+id/ln_login"
+            android:layout_alignParentBottom="true"
+            android:layout_height="wrap_content">
+
+            <TextView android:text="Tafadhali Ingia tena"
+                android:layout_width="match_parent" android:layout_marginBottom="@dimen/_8sdp"
+                android:fontFamily="@font/gilroy_bold"
+                android:layout_height="wrap_content"/>
+            <EditText android:background="@drawable/edit_text"
+                android:layout_width="match_parent" android:id="@+id/edt_usn"
+                android:hint="Username" android:fontFamily="@font/gilroy_semibold"
+                android:layout_height="wrap_content"/>
+
+            <EditText android:background="@drawable/edit_text" android:layout_marginTop="4dp"
+                android:layout_width="match_parent" android:id="@+id/edt_psw"
+                android:inputType="textPassword"
+                android:hint="Password" android:fontFamily="@font/gilroy_semibold"
+                android:layout_height="wrap_content"/>
+
+            <Button android:text="Tuma Data"
+                android:fontFamily="@font/gilroy_bold"
+                android:textAllCaps="false"
+                android:id="@+id/btn_send"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+</layout>
