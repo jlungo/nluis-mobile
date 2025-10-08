@@ -8,6 +8,7 @@ import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/constants/app_constants.dart';
 import '../../../../shared/widgets/custom_app_bar.dart';
 import '../../../../shared/widgets/app_drawer.dart';
+import '../../../../data/local/draft_provider.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -208,10 +209,10 @@ class SettingsPage extends ConsumerWidget {
                 ),
                 _SettingTile(
                   theme: theme,
-                  icon: Icons.bar_chart_outlined,
-                  iconColor: isDark ? AppColors.infoDark : AppColors.info,
-                  title: 'Ramani za Nie ya Mtandao',
-                  subtitle: 'Simamia ramani za offline',
+                  icon: Icons.delete_outline,
+                  iconColor: isDark ? AppColors.errorDark : AppColors.error,
+                  title: 'Clear Storage Data',
+                  subtitle: 'Futa data zote zilizohifadhiwa',
                   trailing: Icon(
                     Icons.arrow_forward_ios,
                     size: 16,
@@ -220,11 +221,7 @@ class SettingsPage extends ConsumerWidget {
                             ? AppColors.darkTextSecondary
                             : AppColors.textSecondary,
                   ),
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('This is feature coming soon.')),
-                    );
-                  },
+                  onTap: () => _showClearStorageDialog(context, ref),
                 ),
               ],
             ),
@@ -446,6 +443,95 @@ class SettingsPage extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  void _showClearStorageDialog(BuildContext context, WidgetRef ref) async {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppConstants.radiusMd),
+        ),
+        title: Row(
+          children: [
+            Icon(
+              Icons.warning_amber_rounded,
+              color: isDark ? AppColors.errorDark : AppColors.error,
+              size: 28,
+            ),
+            const SizedBox(width: AppConstants.spacingSm),
+            Expanded(
+              child: Text(
+                'Futa Data?',
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          'Je, una uhakika unataka kufuta data zote zilizohifadhiwa? Hatua hii haiwezi kubatilishwa. Data zote za miradi, dodoso, na rasimu zitafutwa.',
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(
+              'Ghairi',
+              style: TextStyle(
+                color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: isDark ? AppColors.errorDark : AppColors.error,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppConstants.radiusSm),
+              ),
+            ),
+            child: const Text('Futa'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      try {
+        final draftService = ref.read(draftServiceProvider);
+        await draftService.clearAllData();
+
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Data zote zimefutwa kamili'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Hitilafu: $e'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+      }
+    }
   }
 
   void _showLogoutDialog(BuildContext context, WidgetRef ref) async {
