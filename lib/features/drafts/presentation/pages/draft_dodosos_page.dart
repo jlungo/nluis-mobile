@@ -1,55 +1,183 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:drift/drift.dart' as drift;
 import '../../../../shared/constants/app_constants.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/custom_app_bar.dart';
 import '../../../../shared/widgets/app_drawer.dart';
+import '../../../../shared/widgets/overlay_loader.dart';
+import '../../../../data/local/draft_provider.dart';
+import '../../../land_use/survey/presentation/pages/questionnaire_form_page.dart';
 
-class DraftDodososPage extends StatefulWidget {
+class DraftDodososPage extends ConsumerStatefulWidget {
   const DraftDodososPage({super.key});
 
   @override
-  State<DraftDodososPage> createState() => _DraftDodososPageState();
+  ConsumerState<DraftDodososPage> createState() => _DraftDodososPageState();
 }
 
-class _DraftDodososPageState extends State<DraftDodososPage> {
-  // Mock draft dodosos
-  List<_DraftDodosoItem> _drafts = [
-    _DraftDodosoItem(
-      id: '1',
-      type: 'Dodoso la Matumizi ya Ardhi ya Makazi',
-      projectName: 'Mradi wa Kinondoni',
-      savedDate: 'Oktoba 5, 2025',
-      completionPercentage: 65,
-      lastEditedBy: 'John Doe',
-    ),
-    _DraftDodosoItem(
-      id: '2',
-      type: 'Dodoso la Matumizi ya Ardhi ya Kilimo',
-      projectName: 'Mradi wa Temeke',
-      savedDate: 'Oktoba 3, 2025',
-      completionPercentage: 40,
-      lastEditedBy: 'Jane Smith',
-    ),
-    _DraftDodosoItem(
-      id: '3',
-      type: 'Dodoso la Maeneo ya Kibiashara',
-      projectName: 'Mradi wa Ilala',
-      savedDate: 'Oktoba 1, 2025',
-      completionPercentage: 80,
-      lastEditedBy: 'Mike Johnson',
-    ),
-  ];
+class _DraftDodososPageState extends ConsumerState<DraftDodososPage> {
+  bool _isLoading = true;
+  bool _isDeleting = false;
+  List<_DraftDodosoItem> _drafts = [];
 
-  void _deleteDraft(String id) {
-    setState(() {
-      _drafts.removeWhere((draft) => draft.id == id);
+  @override
+  void initState() {
+    super.initState();
+    _loadDrafts();
+  }
+
+  Future<void> _loadDrafts() async {
+    setState(() => _isLoading = true);
+
+    try {
+      final database = ref.read(databaseProvider);
+
+      // Get all drafts grouped by questionnaire
+      final draftsResponse = await (database.select(database.surveyResponses)
+            ..where((tbl) => tbl.isDraft.equals(true))
+            ..orderBy([(tbl) => drift.OrderingTerm.desc(tbl.updatedAt)]))
+          .get();
+
+      // Group by project and questionnaire
+      final Map<String, _DraftDodosoItem> draftMap = {};
+
+      for (final draft in draftsResponse) {
+        final key = '${draft.projectId}_${draft.formSlug}';
+
+        if (!draftMap.containsKey(key)) {
+          // Get project details
+          final project = await (database.select(database.projects)
+                ..where((tbl) => tbl.id.equals(draft.projectId)))
+              .getSingleOrNull();
+
+          // Parse form data to calculate completion
+          final Map<String, dynamic> formData = {};
+          try {
+            final decoded = jsonDecode(draft.answersJson);
+            if (decoded is Map) {
+              formData.addAll(Map<String, dynamic>.from(decoded));
+            }
+          } catch (e) {
+            // Ignore parsing errors
+          }
+
+          // Get form and questionnaire details
+          final form = await (database.select(database.forms)
+                ..where((tbl) => tbl.slug.equals(draft.formSlug ?? '')))
+              .getSingleOrNull();
+
+          String questionnaireSlug = '';
+          if (form?.questionnaireId != null) {
+            final questionnaire = await (database.select(database.questionnaires)
+                  ..where((tbl) => tbl.id.equals(form!.questionnaireId!)))
+                .getSingleOrNull();
+            questionnaireSlug = questionnaire?.slug ?? '';
+          }
+
+          draftMap[key] = _DraftDodosoItem(
+            id: draft.id,
+            projectId: draft.projectId,
+            questionnaireSlug: questionnaireSlug,
+            type: form?.name ?? draft.formSlug ?? 'Dodoso',
+            projectName: project?.name ?? 'Mradi',
+            savedDate: _formatDate(
+              DateTime.fromMillisecondsSinceEpoch(draft.updatedAt * 1000),
+            ),
+            completionPercentage: _calculateCompletion(formData),
+            lastEditedBy: 'Wewe',
+          );
+        }
+      }
+
+      if (mounted) {
+        setState(() {
+          _drafts = draftMap.values.toList();
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Hitilafu: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  int _calculateCompletion(Map<String, dynamic> formData) {
+    if (formData.isEmpty) return 0;
+
+    // Count filled fields
+    int filledFields = 0;
+    int totalFields = formData.length;
+
+    formData.forEach((key, value) {
+      if (value != null && value.toString().isNotEmpty) {
+        filledFields++;
+      }
     });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Rasimu imefutwa'),
-        duration: Duration(seconds: 2),
-      ),
-    );
+
+    if (totalFields == 0) return 0;
+    return ((filledFields / totalFields) * 100).round();
+  }
+
+  String _formatDate(DateTime date) {
+    final now = DateTime.now();
+    final difference = now.difference(date);
+
+    if (difference.inDays == 0) {
+      if (difference.inHours == 0) {
+        return '${difference.inMinutes}m zilizopita';
+      }
+      return '${difference.inHours}h zilizopita';
+    } else if (difference.inDays == 1) {
+      return 'Jana';
+    } else if (difference.inDays < 7) {
+      return '${difference.inDays} siku zilizopita';
+    } else {
+      return '${date.day}/${date.month}/${date.year}';
+    }
+  }
+
+  Future<void> _deleteDraft(String draftId) async {
+    setState(() => _isDeleting = true);
+
+    try {
+      final draftService = ref.read(draftServiceProvider);
+      await draftService.deleteDraft(draftId);
+
+      if (mounted) {
+        setState(() {
+          _drafts.removeWhere((draft) => draft.id == draftId);
+          _isDeleting = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Rasimu imefutwa'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isDeleting = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Hitilafu: $e'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    }
   }
 
   void _confirmDelete(BuildContext context, _DraftDodosoItem draft) {
@@ -169,7 +297,9 @@ class _DraftDodososPageState extends State<DraftDodososPage> {
       appBar: const CustomAppBar(hasNotification: true),
       drawer: const AppDrawer(),
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
-      body: SafeArea(
+      body: OverlayLoader(
+        isLoading: _isLoading || _isDeleting,
+        child: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -253,17 +383,35 @@ class _DraftDodososPageState extends State<DraftDodososPage> {
                       isDark: isDark,
                       onDelete: () => _confirmDelete(context, _drafts[index]),
                       onEdit: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Endelea kuhariri: ${_drafts[index].type}'),
+                        final draft = _drafts[index];
+                        if (draft.questionnaireSlug.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Dodoso haipo'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+
+                        // Navigate to questionnaire form page
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => QuestionnaireFormPage(
+                              questionnaireSlug: draft.questionnaireSlug,
+                              projectId: draft.projectId,
+                              projectName: draft.projectName,
+                            ),
                           ),
-                        );
+                        ).then((_) => _loadDrafts()); // Refresh drafts when returning
                       },
                     );
                   },
                 ),
               ),
           ],
+        ),
         ),
       ),
     );
@@ -272,6 +420,8 @@ class _DraftDodososPageState extends State<DraftDodososPage> {
 
 class _DraftDodosoItem {
   final String id;
+  final String projectId;
+  final String questionnaireSlug;
   final String type;
   final String projectName;
   final String savedDate;
@@ -280,6 +430,8 @@ class _DraftDodosoItem {
 
   _DraftDodosoItem({
     required this.id,
+    required this.projectId,
+    required this.questionnaireSlug,
     required this.type,
     required this.projectName,
     required this.savedDate,
