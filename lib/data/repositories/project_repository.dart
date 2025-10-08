@@ -25,7 +25,7 @@ class ProjectRepositoryImpl implements ProjectRepository {
   Future<Either<Failure, List<Project>>> getAssignedProjects() async {
     try {
       final response = await dio.get(
-        '${Env.baseUrl}/projects/?is_app_user=true',
+        '${Env.baseUrl}/projects/',
       );
 
       if (response.statusCode == 200) {
