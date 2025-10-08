@@ -159,8 +159,10 @@ class SyncLogs extends Table {
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
+  @override
   int get schemaVersion => 1;
 
+  @override
   MigrationStrategy get migration {
     return MigrationStrategy(
       onCreate: (Migrator m) async {
