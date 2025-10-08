@@ -214,7 +214,10 @@ class _ProjectsListPageState extends ConsumerState<ProjectsListPage> {
                           context,
                           MaterialPageRoute(
                             builder:
-                                (_) => SurveyListPage(projectId: project.id),
+                                (_) => SurveyListPage(
+                                  projectId: project.id,
+                                  projectName: project.name,
+                                ),
                           ),
                         );
                       },

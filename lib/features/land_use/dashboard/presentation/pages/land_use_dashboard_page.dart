@@ -98,7 +98,10 @@ class LandUseDashboardPage extends ConsumerWidget {
                           context,
                           MaterialPageRoute(
                             builder:
-                                (_) => SurveyListPage(projectId: project.id),
+                                (_) => SurveyListPage(
+                                  projectId: project.id,
+                                  projectName: project.name,
+                                ),
                           ),
                         );
                       },
