@@ -20,6 +20,7 @@ class _AppShellState extends State<AppShell> {
         location.contains('/zoning')) {
       return 1;
     }
+    if (location.contains('/drafts')) return 2;
     if (location.contains('/settings')) return 4;
     return 0;
   }
@@ -70,9 +71,7 @@ class _AppShellState extends State<AppShell> {
                   label: 'Dodoso',
                   badge: '2',
                   isSelected: currentIndex == 2,
-                  onTap: () {
-                    // Will navigate to survey when project selected
-                  },
+                  onTap: () => context.goNamed('drafts'),
                   theme: theme,
                 ),
                 _NavItem(

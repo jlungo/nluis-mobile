@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../features/auth/presentation/providers/auth_providers.dart';
+import '../../features/notifications/presentation/pages/notifications_page.dart';
 import '../constants/app_constants.dart';
 import '../theme/app_colors.dart';
 
@@ -26,6 +27,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
     return AppBar(
       backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+      surfaceTintColor: isDark ? AppColors.darkSurface : Colors.white,
       elevation: 0,
       leading: Builder(
         builder:
@@ -47,7 +49,14 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
                 color:
                     isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
               ),
-              onPressed: onNotificationTap ?? () {},
+              onPressed: onNotificationTap ?? () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const NotificationsPage(),
+                  ),
+                );
+              },
             ),
             if (hasNotification)
               Positioned(
