@@ -3,126 +3,34 @@ import '../../../../../shared/constants/app_constants.dart';
 import '../../../../../shared/theme/app_colors.dart';
 import '../../../../../shared/widgets/custom_app_bar.dart';
 import '../../../../../shared/widgets/app_drawer.dart';
+import '../../../../../shared/widgets/questionnaire_list_bottom_sheet.dart';
+import 'questionnaire_form_page.dart';
 
 class SurveyListPage extends StatelessWidget {
   final String projectId;
+  final String? projectName;
 
-  const SurveyListPage({super.key, required this.projectId});
+  const SurveyListPage({super.key, required this.projectId, this.projectName});
 
-  void _showSurveyTypesSheet(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder:
-          (context) => DraggableScrollableSheet(
-            initialChildSize: 0.6,
-            minChildSize: 0.4,
-            maxChildSize: 0.9,
+  void _showQuestionnaireListSheet(BuildContext context) {
+    QuestionnaireListBottomSheet.show(
+      context,
+      projectId: projectId,
+      projectName: projectName ?? 'Project',
+      module: 'land-uses',
+      onQuestionnaireSelected: (questionnaireSlug) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
             builder:
-                (context, scrollController) => Container(
-                  decoration: BoxDecoration(
-                    color: isDark ? AppColors.darkSurface : Colors.white,
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(AppConstants.radiusXl),
-                      topRight: Radius.circular(AppConstants.radiusXl),
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: AppConstants.spacingMd),
-                      Center(
-                        child: Container(
-                          width: 40,
-                          height: 4,
-                          decoration: BoxDecoration(
-                            color:
-                                isDark
-                                    ? AppColors.darkDivider
-                                    : AppColors.divider,
-                            borderRadius: BorderRadius.circular(
-                              AppConstants.radiusSm,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: AppConstants.spacingLg),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppConstants.spacingLg,
-                        ),
-                        child: Text(
-                          'Chagua Aina ya Dodoso',
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color:
-                                isDark
-                                    ? AppColors.darkTextPrimary
-                                    : AppColors.textPrimary,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: AppConstants.spacingLg),
-                      Expanded(
-                        child: ListView(
-                          controller: scrollController,
-                          padding: EdgeInsets.zero,
-                          children: [
-                            _SurveyTypeItem(
-                              icon: Icons.map_outlined,
-                              label: 'Dodoso la Matumizi ya Ardhi ya Makazi',
-                              description:
-                                  'Taarifa za matumizi ya ardhi ya makazi ya kaya',
-                              onTap: () {
-                                Navigator.pop(context);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Inakuja - Dodoso la Makazi'),
-                                  ),
-                                );
-                              },
-                            ),
-                            _SurveyTypeItem(
-                              icon: Icons.agriculture_outlined,
-                              label: 'Dodoso la Matumizi ya Ardhi ya Kilimo',
-                              description:
-                                  'Taarifa za mashamba na shughuli za kilimo',
-                              onTap: () {
-                                Navigator.pop(context);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Inakuja - Dodoso la Kilimo'),
-                                  ),
-                                );
-                              },
-                            ),
-                            _SurveyTypeItem(
-                              icon: Icons.store_mall_directory_outlined,
-                              label: 'Dodoso la Maeneo ya Kibiashara',
-                              description:
-                                  'Taarifa za vibanda, maduka, minada na biashara ndogondogo',
-                              onTap: () {
-                                Navigator.pop(context);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'Inakuja - Dodoso la Biashara',
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                            const SizedBox(height: AppConstants.spacingLg),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                (_) => QuestionnaireFormPage(
+                  questionnaireSlug: questionnaireSlug,
+                  projectId: projectId,
+                  projectName: projectName ?? 'Project',
                 ),
           ),
+        );
+      },
     );
   }
 
@@ -211,7 +119,7 @@ class SurveyListPage extends StatelessWidget {
           ],
         ),
         child: FloatingActionButton.extended(
-          onPressed: () => _showSurveyTypesSheet(context),
+          onPressed: () => _showQuestionnaireListSheet(context),
           backgroundColor: Colors.transparent,
           elevation: 0,
           icon: Icon(
@@ -226,75 +134,6 @@ class SurveyListPage extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _SurveyTypeItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String description;
-  final VoidCallback onTap;
-
-  const _SurveyTypeItem({
-    required this.icon,
-    required this.label,
-    required this.description,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
-    return Container(
-      margin: const EdgeInsets.symmetric(
-        horizontal: AppConstants.spacingLg,
-        vertical: 4,
-      ),
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
-        borderRadius: BorderRadius.circular(AppConstants.radiusMd),
-      ),
-      child: ListTile(
-        leading: Container(
-          padding: const EdgeInsets.all(AppConstants.spacingSm),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors:
-                  isDark
-                      ? [AppColors.darkPrimary, AppColors.darkPrimaryDark]
-                      : [AppColors.primary, AppColors.primaryDark],
-            ),
-            borderRadius: BorderRadius.circular(AppConstants.radiusSm),
-          ),
-          child: Icon(
-            icon,
-            color: isDark ? AppColors.darkTextInverse : Colors.white,
-          ),
-        ),
-        title: Text(
-          label,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-          ),
-        ),
-        subtitle: Text(
-          description,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color:
-                isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
-          ),
-        ),
-        trailing: Icon(
-          Icons.arrow_forward_ios,
-          size: 16,
-          color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
-        ),
-        onTap: onTap,
       ),
     );
   }
