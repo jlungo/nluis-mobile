@@ -40,11 +40,14 @@ class _DraftDodososPageState extends ConsumerState<DraftDodososPage> {
             ..orderBy([(tbl) => drift.OrderingTerm.desc(tbl.updatedAt)]))
           .get();
 
-      // Group by project and questionnaire
+      // Group by project and questionnaire (not by form)
       final Map<String, _DraftDodosoItem> draftMap = {};
 
       for (final draft in draftsResponse) {
-        final key = '${draft.projectId}_${draft.formSlug}';
+        final questionnaireSlug = draft.questionnaireSlug ?? '';
+        if (questionnaireSlug.isEmpty) continue;
+
+        final key = '${draft.projectId}_$questionnaireSlug';
 
         if (!draftMap.containsKey(key)) {
           // Get project details
@@ -52,41 +55,52 @@ class _DraftDodososPageState extends ConsumerState<DraftDodososPage> {
                 ..where((tbl) => tbl.id.equals(draft.projectId)))
               .getSingleOrNull();
 
-          // Parse form data to calculate completion
-          final Map<String, dynamic> formData = {};
-          try {
-            final decoded = jsonDecode(draft.answersJson);
-            if (decoded is Map) {
-              formData.addAll(Map<String, dynamic>.from(decoded));
-            }
-          } catch (e) {
-            // Ignore parsing errors
-          }
-
-          // Get form and questionnaire details
-          final form = await (database.select(database.forms)
-                ..where((tbl) => tbl.slug.equals(draft.formSlug ?? '')))
+          // Get questionnaire details
+          final questionnaire = await (database.select(database.questionnaires)
+                ..where((tbl) => tbl.slug.equals(questionnaireSlug)))
               .getSingleOrNull();
 
-          String questionnaireSlug = '';
-          if (form?.questionnaireId != null) {
-            final questionnaire = await (database.select(database.questionnaires)
-                  ..where((tbl) => tbl.id.equals(form!.questionnaireId!)))
-                .getSingleOrNull();
-            questionnaireSlug = questionnaire?.slug ?? '';
+          // Get all forms for this questionnaire to calculate completion
+          final allForms = await (database.select(database.forms)
+                ..where((tbl) => tbl.questionnaireId.equals(questionnaire?.id ?? 0)))
+              .get();
+
+          // Get all draft forms for this questionnaire
+          final questionnaireDrafts = draftsResponse.where(
+            (d) => d.projectId == draft.projectId && d.questionnaireSlug == questionnaireSlug,
+          ).toList();
+
+          // Calculate completion based on number of forms filled
+          int filledForms = 0;
+          for (final d in questionnaireDrafts) {
+            try {
+              final data = jsonDecode(d.answersJson);
+              if (data is Map && data.isNotEmpty) {
+                filledForms++;
+              }
+            } catch (e) {
+              // Ignore parsing errors
+            }
           }
 
+          final totalForms = allForms.length;
+          final completionPercentage = totalForms > 0
+              ? ((filledForms / totalForms) * 100).round()
+              : 0;
+
           draftMap[key] = _DraftDodosoItem(
-            id: draft.id,
+            id: key, // Use composite key as ID
             projectId: draft.projectId,
             questionnaireSlug: questionnaireSlug,
-            type: form?.name ?? draft.formSlug ?? 'Dodoso',
+            type: questionnaire?.name ?? 'Dodoso',
             projectName: project?.name ?? 'Mradi',
             savedDate: _formatDate(
               DateTime.fromMillisecondsSinceEpoch(draft.updatedAt * 1000),
             ),
-            completionPercentage: _calculateCompletion(formData),
+            completionPercentage: completionPercentage,
             lastEditedBy: 'Wewe',
+            formsCount: totalForms,
+            filledFormsCount: filledForms,
           );
         }
       }
@@ -110,22 +124,6 @@ class _DraftDodososPageState extends ConsumerState<DraftDodososPage> {
     }
   }
 
-  int _calculateCompletion(Map<String, dynamic> formData) {
-    if (formData.isEmpty) return 0;
-
-    // Count filled fields
-    int filledFields = 0;
-    int totalFields = formData.length;
-
-    formData.forEach((key, value) {
-      if (value != null && value.toString().isNotEmpty) {
-        filledFields++;
-      }
-    });
-
-    if (totalFields == 0) return 0;
-    return ((filledFields / totalFields) * 100).round();
-  }
 
   String _formatDate(DateTime date) {
     final now = DateTime.now();
@@ -145,16 +143,23 @@ class _DraftDodososPageState extends ConsumerState<DraftDodososPage> {
     }
   }
 
-  Future<void> _deleteDraft(String draftId) async {
+  Future<void> _deleteDraft(_DraftDodosoItem draft) async {
     setState(() => _isDeleting = true);
 
     try {
-      final draftService = ref.read(draftServiceProvider);
-      await draftService.deleteDraft(draftId);
+      final database = ref.read(databaseProvider);
+
+      // Delete all draft forms for this questionnaire
+      await (database.delete(database.surveyResponses)
+            ..where((tbl) =>
+                tbl.projectId.equals(draft.projectId) &
+                tbl.questionnaireSlug.equals(draft.questionnaireSlug) &
+                tbl.isDraft.equals(true)))
+          .go();
 
       if (mounted) {
         setState(() {
-          _drafts.removeWhere((draft) => draft.id == draftId);
+          _drafts.removeWhere((d) => d.id == draft.id);
           _isDeleting = false;
         });
 
@@ -272,7 +277,7 @@ class _DraftDodososPageState extends ConsumerState<DraftDodososPage> {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              _deleteDraft(draft.id);
+              _deleteDraft(draft);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.error,
@@ -427,6 +432,8 @@ class _DraftDodosoItem {
   final String savedDate;
   final int completionPercentage;
   final String lastEditedBy;
+  final int formsCount;
+  final int filledFormsCount;
 
   _DraftDodosoItem({
     required this.id,
@@ -437,6 +444,8 @@ class _DraftDodosoItem {
     required this.savedDate,
     required this.completionPercentage,
     required this.lastEditedBy,
+    required this.formsCount,
+    required this.filledFormsCount,
   });
 }
 
@@ -524,8 +533,27 @@ class _DraftCard extends StatelessWidget {
                       color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                     ),
                     const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        draft.projectName,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.assignment_outlined,
+                      size: 14,
+                      color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                    ),
+                    const SizedBox(width: 4),
                     Text(
-                      draft.projectName,
+                      '${draft.filledFormsCount}/${draft.formsCount} fomu zimejazwa',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                       ),

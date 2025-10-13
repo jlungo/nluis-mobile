@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nluis_app/shared/widgets/form/form_section_card.dart';
@@ -11,12 +12,14 @@ class QuestionnaireFormPage extends ConsumerStatefulWidget {
   final String questionnaireSlug;
   final String projectId;
   final String projectName;
+  final String? surveyId; // if provided, load existing survey data
 
   const QuestionnaireFormPage({
     super.key,
     required this.questionnaireSlug,
     required this.projectId,
     required this.projectName,
+    this.surveyId,
   });
 
   @override
@@ -33,38 +36,16 @@ class _QuestionnaireFormPageState extends ConsumerState<QuestionnaireFormPage> {
   final Map<String, bool> _expandedForms = {};
   final Map<String, DateTime?> _formLastSavedAt = {};
 
+  // Current survey ID (empty means new survey)
+  String? _currentSurveyId;
+
   @override
   void initState() {
     super.initState();
-    _loadDrafts();
+    _currentSurveyId = widget.surveyId; // Set if opening existing survey
     _cleanupExpiredDrafts();
-  }
-
-  // Load existing drafts from local storage
-  Future<void> _loadDrafts() async {
-    try {
-      final draftService = ref.read(draftServiceProvider);
-      final questionnaire = await ref.read(
-        questionnaireDetailProvider(widget.questionnaireSlug).future,
-      );
-
-      for (final section in questionnaire.sections) {
-        for (final form in section.forms) {
-          final draftData = await draftService.getDraft(
-            projectId: widget.projectId,
-            formSlug: form.slug,
-          );
-
-          if (draftData != null && mounted) {
-            setState(() {
-              _formDataByFormSlug[form.slug] = Map<String, dynamic>.from(draftData);
-            });
-          }
-        }
-      }
-    } catch (e) {
-      // Log error but don't block form loading
-      debugPrint('Error loading drafts: $e');
+    if (widget.surveyId != null) {
+      _loadExistingSurvey();
     }
   }
 
@@ -72,6 +53,38 @@ class _QuestionnaireFormPageState extends ConsumerState<QuestionnaireFormPage> {
   Future<void> _cleanupExpiredDrafts() async {
     final draftService = ref.read(draftServiceProvider);
     await draftService.deleteExpiredDrafts();
+  }
+
+  // Load existing survey data
+  Future<void> _loadExistingSurvey() async {
+    if (widget.surveyId == null) return;
+
+    try {
+      final database = ref.read(databaseProvider);
+
+      // Get all forms for this survey
+      final responses = await (database.select(database.surveyResponses)
+            ..where((tbl) => tbl.surveyId.equals(widget.surveyId!)))
+          .get();
+
+      if (responses.isEmpty || !mounted) return;
+
+      // Load form data into state
+      for (final response in responses) {
+        try {
+          final formData = jsonDecode(response.answersJson);
+          if (formData is Map<String, dynamic>) {
+            setState(() {
+              _formDataByFormSlug[response.formSlug ?? ''] = Map<String, dynamic>.from(formData);
+            });
+          }
+        } catch (e) {
+          debugPrint('Error parsing form data: $e');
+        }
+      }
+    } catch (e) {
+      debugPrint('Error loading survey: $e');
+    }
   }
 
   void _onFieldChanged(String formSlug, String fieldId, dynamic value) {
@@ -98,25 +111,88 @@ class _QuestionnaireFormPageState extends ConsumerState<QuestionnaireFormPage> {
     try {
       final draftService = ref.read(draftServiceProvider);
 
-      await draftService.saveDraft(
+      // Save the form and get the surveyId back
+      final surveyId = await draftService.saveDraft(
         projectId: widget.projectId,
         questionnaireSlug: widget.questionnaireSlug,
         formSlug: formSlug,
         formData: formData,
+        surveyId: _currentSurveyId,
       );
 
+      // Store the survey ID for subsequent saves
       setState(() {
+        _currentSurveyId = surveyId;
         _formLastSavedAt[formSlug] = DateTime.now();
       });
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Rasimu imehifadhiwa'),
+            content: Text('Fomu imehifadhiwa'),
             duration: Duration(seconds: 2),
             backgroundColor: Colors.green,
           ),
         );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Hitilafu: $e'),
+            duration: const Duration(seconds: 3),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _saveSurvey() async {
+    if (_currentSurveyId == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Tafadhali hifadhi angalau fomu moja kwanza'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+      return;
+    }
+
+    try {
+      final draftService = ref.read(draftServiceProvider);
+
+      final saved = await draftService.saveSurvey(
+        surveyId: _currentSurveyId!,
+      );
+
+      if (!saved) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Hakuna fomu za kuhifadhi'),
+              duration: Duration(seconds: 2),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+        return;
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Dodoso limehifadhiwa!'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Go back to survey list
+        Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
@@ -160,6 +236,26 @@ class _QuestionnaireFormPageState extends ConsumerState<QuestionnaireFormPage> {
           ),
           onPressed: () => Navigator.pop(context),
         ),
+        actions: [
+          // Save Survey Button
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: ElevatedButton.icon(
+              onPressed: _saveSurvey,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.success,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppConstants.spacingMd,
+                  vertical: 8,
+                ),
+              ),
+              icon: const Icon(Icons.save_outlined, size: 20),
+              label: const Text('Hifadhi'),
+            ),
+          ),
+        ],
       ),
       body: questionnaireAsync.when(
           data: (questionnaire) {
@@ -290,17 +386,17 @@ class _QuestionnaireFormPageState extends ConsumerState<QuestionnaireFormPage> {
                           color: isDark ? AppColors.errorDark : AppColors.error,
                         ),
                       ),
-                      const SizedBox(height: AppConstants.spacingSm),
-                      Text(
-                        error.toString(),
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color:
-                              isDark
-                                  ? AppColors.darkTextSecondary
-                                  : AppColors.textSecondary,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
+                      // const SizedBox(height: AppConstants.spacingSm),
+                      // Text(
+                      //   error.toString(),
+                      //   style: theme.textTheme.bodyMedium?.copyWith(
+                      //     color:
+                      //         isDark
+                      //             ? AppColors.darkTextSecondary
+                      //             : AppColors.textSecondary,
+                      //   ),
+                      //   textAlign: TextAlign.center,
+                      // ),
                     ],
                   ),
                 ),
