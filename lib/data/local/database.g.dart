@@ -497,6 +497,32 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _isDownloadedMeta = const VerificationMeta(
+    'isDownloaded',
+  );
+  @override
+  late final GeneratedColumn<bool> isDownloaded = GeneratedColumn<bool>(
+    'is_downloaded',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_downloaded" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _downloadedAtMeta = const VerificationMeta(
+    'downloadedAt',
+  );
+  @override
+  late final GeneratedColumn<int> downloadedAt = GeneratedColumn<int>(
+    'downloaded_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
   );
@@ -517,6 +543,8 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
     assignedOn,
     hasSurvey,
     hasZoning,
+    isDownloaded,
+    downloadedAt,
     updatedAt,
   ];
   @override
@@ -580,6 +608,24 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
         hasZoning.isAcceptableOrUnknown(data['has_zoning']!, _hasZoningMeta),
       );
     }
+    if (data.containsKey('is_downloaded')) {
+      context.handle(
+        _isDownloadedMeta,
+        isDownloaded.isAcceptableOrUnknown(
+          data['is_downloaded']!,
+          _isDownloadedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('downloaded_at')) {
+      context.handle(
+        _downloadedAtMeta,
+        downloadedAt.isAcceptableOrUnknown(
+          data['downloaded_at']!,
+          _downloadedAtMeta,
+        ),
+      );
+    }
     if (data.containsKey('updated_at')) {
       context.handle(
         _updatedAtMeta,
@@ -632,6 +678,15 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
             DriftSqlType.bool,
             data['${effectivePrefix}has_zoning'],
           )!,
+      isDownloaded:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}is_downloaded'],
+          )!,
+      downloadedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}downloaded_at'],
+      ),
       updatedAt:
           attachedDatabase.typeMapping.read(
             DriftSqlType.int,
@@ -654,6 +709,8 @@ class Project extends DataClass implements Insertable<Project> {
   final int assignedOn;
   final bool hasSurvey;
   final bool hasZoning;
+  final bool isDownloaded;
+  final int? downloadedAt;
   final int updatedAt;
   const Project({
     required this.id,
@@ -663,6 +720,8 @@ class Project extends DataClass implements Insertable<Project> {
     required this.assignedOn,
     required this.hasSurvey,
     required this.hasZoning,
+    required this.isDownloaded,
+    this.downloadedAt,
     required this.updatedAt,
   });
   @override
@@ -675,6 +734,10 @@ class Project extends DataClass implements Insertable<Project> {
     map['assigned_on'] = Variable<int>(assignedOn);
     map['has_survey'] = Variable<bool>(hasSurvey);
     map['has_zoning'] = Variable<bool>(hasZoning);
+    map['is_downloaded'] = Variable<bool>(isDownloaded);
+    if (!nullToAbsent || downloadedAt != null) {
+      map['downloaded_at'] = Variable<int>(downloadedAt);
+    }
     map['updated_at'] = Variable<int>(updatedAt);
     return map;
   }
@@ -688,6 +751,11 @@ class Project extends DataClass implements Insertable<Project> {
       assignedOn: Value(assignedOn),
       hasSurvey: Value(hasSurvey),
       hasZoning: Value(hasZoning),
+      isDownloaded: Value(isDownloaded),
+      downloadedAt:
+          downloadedAt == null && nullToAbsent
+              ? const Value.absent()
+              : Value(downloadedAt),
       updatedAt: Value(updatedAt),
     );
   }
@@ -705,6 +773,8 @@ class Project extends DataClass implements Insertable<Project> {
       assignedOn: serializer.fromJson<int>(json['assignedOn']),
       hasSurvey: serializer.fromJson<bool>(json['hasSurvey']),
       hasZoning: serializer.fromJson<bool>(json['hasZoning']),
+      isDownloaded: serializer.fromJson<bool>(json['isDownloaded']),
+      downloadedAt: serializer.fromJson<int?>(json['downloadedAt']),
       updatedAt: serializer.fromJson<int>(json['updatedAt']),
     );
   }
@@ -719,6 +789,8 @@ class Project extends DataClass implements Insertable<Project> {
       'assignedOn': serializer.toJson<int>(assignedOn),
       'hasSurvey': serializer.toJson<bool>(hasSurvey),
       'hasZoning': serializer.toJson<bool>(hasZoning),
+      'isDownloaded': serializer.toJson<bool>(isDownloaded),
+      'downloadedAt': serializer.toJson<int?>(downloadedAt),
       'updatedAt': serializer.toJson<int>(updatedAt),
     };
   }
@@ -731,6 +803,8 @@ class Project extends DataClass implements Insertable<Project> {
     int? assignedOn,
     bool? hasSurvey,
     bool? hasZoning,
+    bool? isDownloaded,
+    Value<int?> downloadedAt = const Value.absent(),
     int? updatedAt,
   }) => Project(
     id: id ?? this.id,
@@ -740,6 +814,8 @@ class Project extends DataClass implements Insertable<Project> {
     assignedOn: assignedOn ?? this.assignedOn,
     hasSurvey: hasSurvey ?? this.hasSurvey,
     hasZoning: hasZoning ?? this.hasZoning,
+    isDownloaded: isDownloaded ?? this.isDownloaded,
+    downloadedAt: downloadedAt.present ? downloadedAt.value : this.downloadedAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
   Project copyWithCompanion(ProjectsCompanion data) {
@@ -753,6 +829,14 @@ class Project extends DataClass implements Insertable<Project> {
           data.assignedOn.present ? data.assignedOn.value : this.assignedOn,
       hasSurvey: data.hasSurvey.present ? data.hasSurvey.value : this.hasSurvey,
       hasZoning: data.hasZoning.present ? data.hasZoning.value : this.hasZoning,
+      isDownloaded:
+          data.isDownloaded.present
+              ? data.isDownloaded.value
+              : this.isDownloaded,
+      downloadedAt:
+          data.downloadedAt.present
+              ? data.downloadedAt.value
+              : this.downloadedAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
@@ -767,6 +851,8 @@ class Project extends DataClass implements Insertable<Project> {
           ..write('assignedOn: $assignedOn, ')
           ..write('hasSurvey: $hasSurvey, ')
           ..write('hasZoning: $hasZoning, ')
+          ..write('isDownloaded: $isDownloaded, ')
+          ..write('downloadedAt: $downloadedAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
@@ -781,6 +867,8 @@ class Project extends DataClass implements Insertable<Project> {
     assignedOn,
     hasSurvey,
     hasZoning,
+    isDownloaded,
+    downloadedAt,
     updatedAt,
   );
   @override
@@ -794,6 +882,8 @@ class Project extends DataClass implements Insertable<Project> {
           other.assignedOn == this.assignedOn &&
           other.hasSurvey == this.hasSurvey &&
           other.hasZoning == this.hasZoning &&
+          other.isDownloaded == this.isDownloaded &&
+          other.downloadedAt == this.downloadedAt &&
           other.updatedAt == this.updatedAt);
 }
 
@@ -805,6 +895,8 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
   final Value<int> assignedOn;
   final Value<bool> hasSurvey;
   final Value<bool> hasZoning;
+  final Value<bool> isDownloaded;
+  final Value<int?> downloadedAt;
   final Value<int> updatedAt;
   final Value<int> rowid;
   const ProjectsCompanion({
@@ -815,6 +907,8 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     this.assignedOn = const Value.absent(),
     this.hasSurvey = const Value.absent(),
     this.hasZoning = const Value.absent(),
+    this.isDownloaded = const Value.absent(),
+    this.downloadedAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -826,6 +920,8 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     required int assignedOn,
     this.hasSurvey = const Value.absent(),
     this.hasZoning = const Value.absent(),
+    this.isDownloaded = const Value.absent(),
+    this.downloadedAt = const Value.absent(),
     required int updatedAt,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -842,6 +938,8 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     Expression<int>? assignedOn,
     Expression<bool>? hasSurvey,
     Expression<bool>? hasZoning,
+    Expression<bool>? isDownloaded,
+    Expression<int>? downloadedAt,
     Expression<int>? updatedAt,
     Expression<int>? rowid,
   }) {
@@ -853,6 +951,8 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
       if (assignedOn != null) 'assigned_on': assignedOn,
       if (hasSurvey != null) 'has_survey': hasSurvey,
       if (hasZoning != null) 'has_zoning': hasZoning,
+      if (isDownloaded != null) 'is_downloaded': isDownloaded,
+      if (downloadedAt != null) 'downloaded_at': downloadedAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -866,6 +966,8 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     Value<int>? assignedOn,
     Value<bool>? hasSurvey,
     Value<bool>? hasZoning,
+    Value<bool>? isDownloaded,
+    Value<int?>? downloadedAt,
     Value<int>? updatedAt,
     Value<int>? rowid,
   }) {
@@ -877,6 +979,8 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
       assignedOn: assignedOn ?? this.assignedOn,
       hasSurvey: hasSurvey ?? this.hasSurvey,
       hasZoning: hasZoning ?? this.hasZoning,
+      isDownloaded: isDownloaded ?? this.isDownloaded,
+      downloadedAt: downloadedAt ?? this.downloadedAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
     );
@@ -906,6 +1010,12 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     if (hasZoning.present) {
       map['has_zoning'] = Variable<bool>(hasZoning.value);
     }
+    if (isDownloaded.present) {
+      map['is_downloaded'] = Variable<bool>(isDownloaded.value);
+    }
+    if (downloadedAt.present) {
+      map['downloaded_at'] = Variable<int>(downloadedAt.value);
+    }
     if (updatedAt.present) {
       map['updated_at'] = Variable<int>(updatedAt.value);
     }
@@ -925,6 +1035,8 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
           ..write('assignedOn: $assignedOn, ')
           ..write('hasSurvey: $hasSurvey, ')
           ..write('hasZoning: $hasZoning, ')
+          ..write('isDownloaded: $isDownloaded, ')
+          ..write('downloadedAt: $downloadedAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -3114,6 +3226,17 @@ class $SurveyResponsesTable extends SurveyResponses
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _surveyIdMeta = const VerificationMeta(
+    'surveyId',
+  );
+  @override
+  late final GeneratedColumn<String> surveyId = GeneratedColumn<String>(
+    'survey_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _projectIdMeta = const VerificationMeta(
     'projectId',
   );
@@ -3136,6 +3259,18 @@ class $SurveyResponsesTable extends SurveyResponses
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _questionnaireSlugMeta = const VerificationMeta(
+    'questionnaireSlug',
+  );
+  @override
+  late final GeneratedColumn<String> questionnaireSlug =
+      GeneratedColumn<String>(
+        'questionnaire_slug',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _formSlugMeta = const VerificationMeta(
     'formSlug',
   );
@@ -3211,8 +3346,10 @@ class $SurveyResponsesTable extends SurveyResponses
   @override
   List<GeneratedColumn> get $columns => [
     id,
+    surveyId,
     projectId,
     questionnaireId,
+    questionnaireSlug,
     formSlug,
     answersJson,
     isDraft,
@@ -3237,6 +3374,14 @@ class $SurveyResponsesTable extends SurveyResponses
     } else if (isInserting) {
       context.missing(_idMeta);
     }
+    if (data.containsKey('survey_id')) {
+      context.handle(
+        _surveyIdMeta,
+        surveyId.isAcceptableOrUnknown(data['survey_id']!, _surveyIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_surveyIdMeta);
+    }
     if (data.containsKey('project_id')) {
       context.handle(
         _projectIdMeta,
@@ -3255,6 +3400,15 @@ class $SurveyResponsesTable extends SurveyResponses
       );
     } else if (isInserting) {
       context.missing(_questionnaireIdMeta);
+    }
+    if (data.containsKey('questionnaire_slug')) {
+      context.handle(
+        _questionnaireSlugMeta,
+        questionnaireSlug.isAcceptableOrUnknown(
+          data['questionnaire_slug']!,
+          _questionnaireSlugMeta,
+        ),
+      );
     }
     if (data.containsKey('form_slug')) {
       context.handle(
@@ -3316,6 +3470,11 @@ class $SurveyResponsesTable extends SurveyResponses
             DriftSqlType.string,
             data['${effectivePrefix}id'],
           )!,
+      surveyId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}survey_id'],
+          )!,
       projectId:
           attachedDatabase.typeMapping.read(
             DriftSqlType.string,
@@ -3326,6 +3485,10 @@ class $SurveyResponsesTable extends SurveyResponses
             DriftSqlType.int,
             data['${effectivePrefix}questionnaire_id'],
           )!,
+      questionnaireSlug: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}questionnaire_slug'],
+      ),
       formSlug: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}form_slug'],
@@ -3365,8 +3528,10 @@ class $SurveyResponsesTable extends SurveyResponses
 
 class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
   final String id;
+  final String surveyId;
   final String projectId;
   final int questionnaireId;
+  final String? questionnaireSlug;
   final String? formSlug;
   final String answersJson;
   final bool isDraft;
@@ -3375,8 +3540,10 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
   final String? schemaSnapshotJson;
   const SurveyResponse({
     required this.id,
+    required this.surveyId,
     required this.projectId,
     required this.questionnaireId,
+    this.questionnaireSlug,
     this.formSlug,
     required this.answersJson,
     required this.isDraft,
@@ -3388,8 +3555,12 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
+    map['survey_id'] = Variable<String>(surveyId);
     map['project_id'] = Variable<String>(projectId);
     map['questionnaire_id'] = Variable<int>(questionnaireId);
+    if (!nullToAbsent || questionnaireSlug != null) {
+      map['questionnaire_slug'] = Variable<String>(questionnaireSlug);
+    }
     if (!nullToAbsent || formSlug != null) {
       map['form_slug'] = Variable<String>(formSlug);
     }
@@ -3406,8 +3577,13 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
   SurveyResponsesCompanion toCompanion(bool nullToAbsent) {
     return SurveyResponsesCompanion(
       id: Value(id),
+      surveyId: Value(surveyId),
       projectId: Value(projectId),
       questionnaireId: Value(questionnaireId),
+      questionnaireSlug:
+          questionnaireSlug == null && nullToAbsent
+              ? const Value.absent()
+              : Value(questionnaireSlug),
       formSlug:
           formSlug == null && nullToAbsent
               ? const Value.absent()
@@ -3430,8 +3606,12 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return SurveyResponse(
       id: serializer.fromJson<String>(json['id']),
+      surveyId: serializer.fromJson<String>(json['surveyId']),
       projectId: serializer.fromJson<String>(json['projectId']),
       questionnaireId: serializer.fromJson<int>(json['questionnaireId']),
+      questionnaireSlug: serializer.fromJson<String?>(
+        json['questionnaireSlug'],
+      ),
       formSlug: serializer.fromJson<String?>(json['formSlug']),
       answersJson: serializer.fromJson<String>(json['answersJson']),
       isDraft: serializer.fromJson<bool>(json['isDraft']),
@@ -3447,8 +3627,10 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
+      'surveyId': serializer.toJson<String>(surveyId),
       'projectId': serializer.toJson<String>(projectId),
       'questionnaireId': serializer.toJson<int>(questionnaireId),
+      'questionnaireSlug': serializer.toJson<String?>(questionnaireSlug),
       'formSlug': serializer.toJson<String?>(formSlug),
       'answersJson': serializer.toJson<String>(answersJson),
       'isDraft': serializer.toJson<bool>(isDraft),
@@ -3460,8 +3642,10 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
 
   SurveyResponse copyWith({
     String? id,
+    String? surveyId,
     String? projectId,
     int? questionnaireId,
+    Value<String?> questionnaireSlug = const Value.absent(),
     Value<String?> formSlug = const Value.absent(),
     String? answersJson,
     bool? isDraft,
@@ -3470,8 +3654,13 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
     Value<String?> schemaSnapshotJson = const Value.absent(),
   }) => SurveyResponse(
     id: id ?? this.id,
+    surveyId: surveyId ?? this.surveyId,
     projectId: projectId ?? this.projectId,
     questionnaireId: questionnaireId ?? this.questionnaireId,
+    questionnaireSlug:
+        questionnaireSlug.present
+            ? questionnaireSlug.value
+            : this.questionnaireSlug,
     formSlug: formSlug.present ? formSlug.value : this.formSlug,
     answersJson: answersJson ?? this.answersJson,
     isDraft: isDraft ?? this.isDraft,
@@ -3485,11 +3674,16 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
   SurveyResponse copyWithCompanion(SurveyResponsesCompanion data) {
     return SurveyResponse(
       id: data.id.present ? data.id.value : this.id,
+      surveyId: data.surveyId.present ? data.surveyId.value : this.surveyId,
       projectId: data.projectId.present ? data.projectId.value : this.projectId,
       questionnaireId:
           data.questionnaireId.present
               ? data.questionnaireId.value
               : this.questionnaireId,
+      questionnaireSlug:
+          data.questionnaireSlug.present
+              ? data.questionnaireSlug.value
+              : this.questionnaireSlug,
       formSlug: data.formSlug.present ? data.formSlug.value : this.formSlug,
       answersJson:
           data.answersJson.present ? data.answersJson.value : this.answersJson,
@@ -3507,8 +3701,10 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
   String toString() {
     return (StringBuffer('SurveyResponse(')
           ..write('id: $id, ')
+          ..write('surveyId: $surveyId, ')
           ..write('projectId: $projectId, ')
           ..write('questionnaireId: $questionnaireId, ')
+          ..write('questionnaireSlug: $questionnaireSlug, ')
           ..write('formSlug: $formSlug, ')
           ..write('answersJson: $answersJson, ')
           ..write('isDraft: $isDraft, ')
@@ -3522,8 +3718,10 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
   @override
   int get hashCode => Object.hash(
     id,
+    surveyId,
     projectId,
     questionnaireId,
+    questionnaireSlug,
     formSlug,
     answersJson,
     isDraft,
@@ -3536,8 +3734,10 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
       identical(this, other) ||
       (other is SurveyResponse &&
           other.id == this.id &&
+          other.surveyId == this.surveyId &&
           other.projectId == this.projectId &&
           other.questionnaireId == this.questionnaireId &&
+          other.questionnaireSlug == this.questionnaireSlug &&
           other.formSlug == this.formSlug &&
           other.answersJson == this.answersJson &&
           other.isDraft == this.isDraft &&
@@ -3548,8 +3748,10 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
 
 class SurveyResponsesCompanion extends UpdateCompanion<SurveyResponse> {
   final Value<String> id;
+  final Value<String> surveyId;
   final Value<String> projectId;
   final Value<int> questionnaireId;
+  final Value<String?> questionnaireSlug;
   final Value<String?> formSlug;
   final Value<String> answersJson;
   final Value<bool> isDraft;
@@ -3559,8 +3761,10 @@ class SurveyResponsesCompanion extends UpdateCompanion<SurveyResponse> {
   final Value<int> rowid;
   const SurveyResponsesCompanion({
     this.id = const Value.absent(),
+    this.surveyId = const Value.absent(),
     this.projectId = const Value.absent(),
     this.questionnaireId = const Value.absent(),
+    this.questionnaireSlug = const Value.absent(),
     this.formSlug = const Value.absent(),
     this.answersJson = const Value.absent(),
     this.isDraft = const Value.absent(),
@@ -3571,8 +3775,10 @@ class SurveyResponsesCompanion extends UpdateCompanion<SurveyResponse> {
   });
   SurveyResponsesCompanion.insert({
     required String id,
+    required String surveyId,
     required String projectId,
     required int questionnaireId,
+    this.questionnaireSlug = const Value.absent(),
     this.formSlug = const Value.absent(),
     required String answersJson,
     this.isDraft = const Value.absent(),
@@ -3581,14 +3787,17 @@ class SurveyResponsesCompanion extends UpdateCompanion<SurveyResponse> {
     this.schemaSnapshotJson = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
+       surveyId = Value(surveyId),
        projectId = Value(projectId),
        questionnaireId = Value(questionnaireId),
        answersJson = Value(answersJson),
        updatedAt = Value(updatedAt);
   static Insertable<SurveyResponse> custom({
     Expression<String>? id,
+    Expression<String>? surveyId,
     Expression<String>? projectId,
     Expression<int>? questionnaireId,
+    Expression<String>? questionnaireSlug,
     Expression<String>? formSlug,
     Expression<String>? answersJson,
     Expression<bool>? isDraft,
@@ -3599,8 +3808,10 @@ class SurveyResponsesCompanion extends UpdateCompanion<SurveyResponse> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (surveyId != null) 'survey_id': surveyId,
       if (projectId != null) 'project_id': projectId,
       if (questionnaireId != null) 'questionnaire_id': questionnaireId,
+      if (questionnaireSlug != null) 'questionnaire_slug': questionnaireSlug,
       if (formSlug != null) 'form_slug': formSlug,
       if (answersJson != null) 'answers_json': answersJson,
       if (isDraft != null) 'is_draft': isDraft,
@@ -3614,8 +3825,10 @@ class SurveyResponsesCompanion extends UpdateCompanion<SurveyResponse> {
 
   SurveyResponsesCompanion copyWith({
     Value<String>? id,
+    Value<String>? surveyId,
     Value<String>? projectId,
     Value<int>? questionnaireId,
+    Value<String?>? questionnaireSlug,
     Value<String?>? formSlug,
     Value<String>? answersJson,
     Value<bool>? isDraft,
@@ -3626,8 +3839,10 @@ class SurveyResponsesCompanion extends UpdateCompanion<SurveyResponse> {
   }) {
     return SurveyResponsesCompanion(
       id: id ?? this.id,
+      surveyId: surveyId ?? this.surveyId,
       projectId: projectId ?? this.projectId,
       questionnaireId: questionnaireId ?? this.questionnaireId,
+      questionnaireSlug: questionnaireSlug ?? this.questionnaireSlug,
       formSlug: formSlug ?? this.formSlug,
       answersJson: answersJson ?? this.answersJson,
       isDraft: isDraft ?? this.isDraft,
@@ -3644,11 +3859,17 @@ class SurveyResponsesCompanion extends UpdateCompanion<SurveyResponse> {
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
+    if (surveyId.present) {
+      map['survey_id'] = Variable<String>(surveyId.value);
+    }
     if (projectId.present) {
       map['project_id'] = Variable<String>(projectId.value);
     }
     if (questionnaireId.present) {
       map['questionnaire_id'] = Variable<int>(questionnaireId.value);
+    }
+    if (questionnaireSlug.present) {
+      map['questionnaire_slug'] = Variable<String>(questionnaireSlug.value);
     }
     if (formSlug.present) {
       map['form_slug'] = Variable<String>(formSlug.value);
@@ -3678,8 +3899,10 @@ class SurveyResponsesCompanion extends UpdateCompanion<SurveyResponse> {
   String toString() {
     return (StringBuffer('SurveyResponsesCompanion(')
           ..write('id: $id, ')
+          ..write('surveyId: $surveyId, ')
           ..write('projectId: $projectId, ')
           ..write('questionnaireId: $questionnaireId, ')
+          ..write('questionnaireSlug: $questionnaireSlug, ')
           ..write('formSlug: $formSlug, ')
           ..write('answersJson: $answersJson, ')
           ..write('isDraft: $isDraft, ')
@@ -5204,6 +5427,8 @@ typedef $$ProjectsTableCreateCompanionBuilder =
       required int assignedOn,
       Value<bool> hasSurvey,
       Value<bool> hasZoning,
+      Value<bool> isDownloaded,
+      Value<int?> downloadedAt,
       required int updatedAt,
       Value<int> rowid,
     });
@@ -5216,6 +5441,8 @@ typedef $$ProjectsTableUpdateCompanionBuilder =
       Value<int> assignedOn,
       Value<bool> hasSurvey,
       Value<bool> hasZoning,
+      Value<bool> isDownloaded,
+      Value<int?> downloadedAt,
       Value<int> updatedAt,
       Value<int> rowid,
     });
@@ -5261,6 +5488,16 @@ class $$ProjectsTableFilterComposer
 
   ColumnFilters<bool> get hasZoning => $composableBuilder(
     column: $table.hasZoning,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isDownloaded => $composableBuilder(
+    column: $table.isDownloaded,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get downloadedAt => $composableBuilder(
+    column: $table.downloadedAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5314,6 +5551,16 @@ class $$ProjectsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get isDownloaded => $composableBuilder(
+    column: $table.isDownloaded,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get downloadedAt => $composableBuilder(
+    column: $table.downloadedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
@@ -5354,6 +5601,16 @@ class $$ProjectsTableAnnotationComposer
   GeneratedColumn<bool> get hasZoning =>
       $composableBuilder(column: $table.hasZoning, builder: (column) => column);
 
+  GeneratedColumn<bool> get isDownloaded => $composableBuilder(
+    column: $table.isDownloaded,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get downloadedAt => $composableBuilder(
+    column: $table.downloadedAt,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<int> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 }
@@ -5393,6 +5650,8 @@ class $$ProjectsTableTableManager
                 Value<int> assignedOn = const Value.absent(),
                 Value<bool> hasSurvey = const Value.absent(),
                 Value<bool> hasZoning = const Value.absent(),
+                Value<bool> isDownloaded = const Value.absent(),
+                Value<int?> downloadedAt = const Value.absent(),
                 Value<int> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ProjectsCompanion(
@@ -5403,6 +5662,8 @@ class $$ProjectsTableTableManager
                 assignedOn: assignedOn,
                 hasSurvey: hasSurvey,
                 hasZoning: hasZoning,
+                isDownloaded: isDownloaded,
+                downloadedAt: downloadedAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
               ),
@@ -5415,6 +5676,8 @@ class $$ProjectsTableTableManager
                 required int assignedOn,
                 Value<bool> hasSurvey = const Value.absent(),
                 Value<bool> hasZoning = const Value.absent(),
+                Value<bool> isDownloaded = const Value.absent(),
+                Value<int?> downloadedAt = const Value.absent(),
                 required int updatedAt,
                 Value<int> rowid = const Value.absent(),
               }) => ProjectsCompanion.insert(
@@ -5425,6 +5688,8 @@ class $$ProjectsTableTableManager
                 assignedOn: assignedOn,
                 hasSurvey: hasSurvey,
                 hasZoning: hasZoning,
+                isDownloaded: isDownloaded,
+                downloadedAt: downloadedAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
               ),
@@ -6642,8 +6907,10 @@ typedef $$FormFieldsTableProcessedTableManager =
 typedef $$SurveyResponsesTableCreateCompanionBuilder =
     SurveyResponsesCompanion Function({
       required String id,
+      required String surveyId,
       required String projectId,
       required int questionnaireId,
+      Value<String?> questionnaireSlug,
       Value<String?> formSlug,
       required String answersJson,
       Value<bool> isDraft,
@@ -6655,8 +6922,10 @@ typedef $$SurveyResponsesTableCreateCompanionBuilder =
 typedef $$SurveyResponsesTableUpdateCompanionBuilder =
     SurveyResponsesCompanion Function({
       Value<String> id,
+      Value<String> surveyId,
       Value<String> projectId,
       Value<int> questionnaireId,
+      Value<String?> questionnaireSlug,
       Value<String?> formSlug,
       Value<String> answersJson,
       Value<bool> isDraft,
@@ -6680,6 +6949,11 @@ class $$SurveyResponsesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get surveyId => $composableBuilder(
+    column: $table.surveyId,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get projectId => $composableBuilder(
     column: $table.projectId,
     builder: (column) => ColumnFilters(column),
@@ -6687,6 +6961,11 @@ class $$SurveyResponsesTableFilterComposer
 
   ColumnFilters<int> get questionnaireId => $composableBuilder(
     column: $table.questionnaireId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get questionnaireSlug => $composableBuilder(
+    column: $table.questionnaireSlug,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6735,6 +7014,11 @@ class $$SurveyResponsesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get surveyId => $composableBuilder(
+    column: $table.surveyId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get projectId => $composableBuilder(
     column: $table.projectId,
     builder: (column) => ColumnOrderings(column),
@@ -6742,6 +7026,11 @@ class $$SurveyResponsesTableOrderingComposer
 
   ColumnOrderings<int> get questionnaireId => $composableBuilder(
     column: $table.questionnaireId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get questionnaireSlug => $composableBuilder(
+    column: $table.questionnaireSlug,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -6788,11 +7077,19 @@ class $$SurveyResponsesTableAnnotationComposer
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
+  GeneratedColumn<String> get surveyId =>
+      $composableBuilder(column: $table.surveyId, builder: (column) => column);
+
   GeneratedColumn<String> get projectId =>
       $composableBuilder(column: $table.projectId, builder: (column) => column);
 
   GeneratedColumn<int> get questionnaireId => $composableBuilder(
     column: $table.questionnaireId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get questionnaireSlug => $composableBuilder(
+    column: $table.questionnaireSlug,
     builder: (column) => column,
   );
 
@@ -6864,8 +7161,10 @@ class $$SurveyResponsesTableTableManager
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
+                Value<String> surveyId = const Value.absent(),
                 Value<String> projectId = const Value.absent(),
                 Value<int> questionnaireId = const Value.absent(),
+                Value<String?> questionnaireSlug = const Value.absent(),
                 Value<String?> formSlug = const Value.absent(),
                 Value<String> answersJson = const Value.absent(),
                 Value<bool> isDraft = const Value.absent(),
@@ -6875,8 +7174,10 @@ class $$SurveyResponsesTableTableManager
                 Value<int> rowid = const Value.absent(),
               }) => SurveyResponsesCompanion(
                 id: id,
+                surveyId: surveyId,
                 projectId: projectId,
                 questionnaireId: questionnaireId,
+                questionnaireSlug: questionnaireSlug,
                 formSlug: formSlug,
                 answersJson: answersJson,
                 isDraft: isDraft,
@@ -6888,8 +7189,10 @@ class $$SurveyResponsesTableTableManager
           createCompanionCallback:
               ({
                 required String id,
+                required String surveyId,
                 required String projectId,
                 required int questionnaireId,
+                Value<String?> questionnaireSlug = const Value.absent(),
                 Value<String?> formSlug = const Value.absent(),
                 required String answersJson,
                 Value<bool> isDraft = const Value.absent(),
@@ -6899,8 +7202,10 @@ class $$SurveyResponsesTableTableManager
                 Value<int> rowid = const Value.absent(),
               }) => SurveyResponsesCompanion.insert(
                 id: id,
+                surveyId: surveyId,
                 projectId: projectId,
                 questionnaireId: questionnaireId,
+                questionnaireSlug: questionnaireSlug,
                 formSlug: formSlug,
                 answersJson: answersJson,
                 isDraft: isDraft,

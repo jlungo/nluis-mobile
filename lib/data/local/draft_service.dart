@@ -9,21 +9,22 @@ class DraftService {
 
   DraftService(this._database);
 
-  /// Save or update a form draft
+  /// Save or update a form within a survey
   Future<String> saveDraft({
     required String projectId,
     required String questionnaireSlug,
     required String formSlug,
     required Map<String, dynamic> formData,
+    String? surveyId, // If null, creates new survey
   }) async {
     final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    final actualSurveyId = surveyId ?? const Uuid().v4();
 
-    // Check if draft already exists
+    // Check if draft already exists for this survey and form
     final existing = await (_database.select(_database.surveyResponses)
           ..where((tbl) =>
-              tbl.projectId.equals(projectId) &
-              tbl.formSlug.equals(formSlug) &
-              tbl.isDraft.equals(true)))
+              tbl.surveyId.equals(actualSurveyId) &
+              tbl.formSlug.equals(formSlug)))
         .getSingleOrNull();
 
     final answersJson = jsonEncode(formData);
@@ -34,18 +35,21 @@ class DraftService {
             ..where((tbl) => tbl.id.equals(existing.id)))
           .write(SurveyResponsesCompanion(
             answersJson: Value(answersJson),
+            questionnaireSlug: Value(questionnaireSlug),
             updatedAt: Value(now),
             dirty: const Value(true),
           ));
-      return existing.id;
+      return actualSurveyId;
     } else {
-      // Create new draft
-      final draftId = const Uuid().v4();
+      // Create new form response in this survey
+      final responseId = const Uuid().v4();
       await _database.into(_database.surveyResponses).insert(
         SurveyResponsesCompanion.insert(
-          id: draftId,
+          id: responseId,
+          surveyId: actualSurveyId,
           projectId: projectId,
           questionnaireId: 0, // Will be set properly when submitting
+          questionnaireSlug: Value(questionnaireSlug),
           formSlug: Value(formSlug),
           answersJson: answersJson,
           isDraft: const Value(true),
@@ -53,8 +57,66 @@ class DraftService {
           dirty: const Value(true),
         ),
       );
-      return draftId;
+      return actualSurveyId;
     }
+  }
+
+  /// Save a survey (mark it as complete/ready)
+  Future<bool> saveSurvey({
+    required String surveyId,
+  }) async {
+    final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+
+    // Get all forms for this survey
+    final forms = await (_database.select(_database.surveyResponses)
+          ..where((tbl) => tbl.surveyId.equals(surveyId)))
+        .get();
+
+    if (forms.isEmpty) {
+      return false;
+    }
+
+    // Mark survey as saved (not draft = true, but dirty = true for upload)
+    await (_database.update(_database.surveyResponses)
+          ..where((tbl) => tbl.surveyId.equals(surveyId)))
+        .write(SurveyResponsesCompanion(
+          isDraft: const Value(false),
+          updatedAt: Value(now),
+          dirty: const Value(true),
+        ));
+
+    return true;
+  }
+
+  /// Get all surveys for a project
+  Future<List<String>> getProjectSurveys({
+    required String projectId,
+  }) async {
+    final responses = await (_database.select(_database.surveyResponses)
+          ..where((tbl) => tbl.projectId.equals(projectId)))
+        .get();
+
+    // Get unique survey IDs
+    final surveyIds = responses.map((r) => r.surveyId).toSet().toList();
+    return surveyIds;
+  }
+
+  /// Check if all forms in a questionnaire have been filled
+  Future<bool> isQuestionnaireComplete({
+    required String projectId,
+    required String questionnaireSlug,
+    required int totalFormsCount,
+  }) async {
+    final drafts = await (_database.select(_database.surveyResponses)
+          ..where((tbl) =>
+              tbl.projectId.equals(projectId) &
+              tbl.questionnaireSlug.equals(questionnaireSlug) &
+              tbl.isDraft.equals(true)))
+        .get();
+
+    // Check if we have drafts for all forms and they have data
+    return drafts.length >= totalFormsCount &&
+           drafts.every((draft) => draft.answersJson.isNotEmpty && draft.answersJson != '{}');
   }
 
   /// Get draft for a specific form
@@ -80,6 +142,16 @@ class DraftService {
           ..where((tbl) =>
               tbl.projectId.equals(projectId) &
               tbl.isDraft.equals(true))
+          ..orderBy([(tbl) => OrderingTerm.desc(tbl.updatedAt)]))
+        .get();
+  }
+
+  /// Get all submitted (completed) questionnaires for a project
+  Future<List<SurveyResponse>> getProjectCompletedQuestionnaires(String projectId) async {
+    return await (_database.select(_database.surveyResponses)
+          ..where((tbl) =>
+              tbl.projectId.equals(projectId) &
+              tbl.isDraft.equals(false))
           ..orderBy([(tbl) => OrderingTerm.desc(tbl.updatedAt)]))
         .get();
   }

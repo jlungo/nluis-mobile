@@ -24,6 +24,8 @@ class Projects extends Table {
   IntColumn get assignedOn => integer().named('assigned_on')();
   BoolColumn get hasSurvey => boolean().named('has_survey').withDefault(const Constant(false))();
   BoolColumn get hasZoning => boolean().named('has_zoning').withDefault(const Constant(false))();
+  BoolColumn get isDownloaded => boolean().named('is_downloaded').withDefault(const Constant(false))();
+  IntColumn get downloadedAt => integer().named('downloaded_at').nullable()();
   IntColumn get updatedAt => integer().named('updated_at')();
 
   @override
@@ -94,8 +96,10 @@ class FormFields extends Table {
 
 class SurveyResponses extends Table {
   TextColumn get id => text()();
+  TextColumn get surveyId => text().named('survey_id')(); // Group forms into one survey
   TextColumn get projectId => text().named('project_id')();
   IntColumn get questionnaireId => integer().named('questionnaire_id')();
+  TextColumn get questionnaireSlug => text().named('questionnaire_slug').nullable()();
   TextColumn get formSlug => text().named('form_slug').nullable()();
   TextColumn get answersJson => text().named('answers_json')();
   BoolColumn get isDraft => boolean().named('is_draft').withDefault(const Constant(true))();
@@ -160,7 +164,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration {
@@ -169,7 +173,19 @@ class AppDatabase extends _$AppDatabase {
         await m.createAll();
       },
       onUpgrade: (Migrator m, int from, int to) async {
-        // Handle migrations here when schema changes
+        if (from < 2) {
+          // Add questionnaireSlug column to survey_responses table
+          await m.addColumn(surveyResponses, surveyResponses.questionnaireSlug);
+        }
+        if (from < 3) {
+          // Add surveyId column to group forms into surveys
+          await m.addColumn(surveyResponses, surveyResponses.surveyId);
+        }
+        if (from < 4) {
+          // Add download tracking columns to projects
+          await m.addColumn(projects, projects.isDownloaded);
+          await m.addColumn(projects, projects.downloadedAt);
+        }
       },
     );
   }
