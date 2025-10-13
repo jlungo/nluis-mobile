@@ -69,7 +69,7 @@ class _AppShellState extends State<AppShell> {
                 _NavItem(
                   icon: Icons.description_outlined,
                   label: 'Dodoso',
-                  badge: '2',
+                  // badge: '2',
                   isSelected: currentIndex == 2,
                   onTap: () => context.goNamed('drafts'),
                   theme: theme,

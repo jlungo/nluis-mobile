@@ -14,6 +14,18 @@ class AppDrawer extends ConsumerWidget {
     final isDark = theme.brightness == Brightness.dark;
     final authState = ref.watch(authStateProvider);
     final user = authState.valueOrNull;
+    final location = GoRouterState.of(context).matchedLocation;
+
+    bool _matchesLocation(String path) => location.startsWith(path);
+
+    final isOnSwitchboard = location == '/module-switch';
+    final isOnDashboard = _matchesLocation('/module/land-use/dashboard');
+    final isOnProjects =
+        _matchesLocation('/module/land-use/projects') ||
+        _matchesLocation('/module/land-use/survey') ||
+        _matchesLocation('/module/land-use/zoning');
+    final isOnSettings = _matchesLocation('/settings');
+    final isOnNotifications = _matchesLocation('/notifications');
 
     return Drawer(
       backgroundColor:
@@ -80,7 +92,7 @@ class AppDrawer extends ConsumerWidget {
                 _DrawerMenuItem(
                   icon: Icons.home_outlined,
                   label: 'Switchboard',
-                  isSelected: false,
+                  isSelected: isOnSwitchboard,
                   onTap: () {
                     Navigator.pop(context);
                     context.goNamed('moduleSwitch');
@@ -89,7 +101,7 @@ class AppDrawer extends ConsumerWidget {
                 _DrawerMenuItem(
                   icon: Icons.dashboard_outlined,
                   label: 'Dashboard',
-                  isSelected: true,
+                  isSelected: isOnDashboard,
                   onTap: () {
                     Navigator.pop(context);
                     context.goNamed('luDashboard');
@@ -98,6 +110,7 @@ class AppDrawer extends ConsumerWidget {
                 _DrawerMenuItem(
                   icon: Icons.folder_outlined,
                   label: 'My Projects',
+                  isSelected: isOnProjects,
                   onTap: () {
                     Navigator.pop(context);
                     context.goNamed('luProjects');
@@ -106,6 +119,7 @@ class AppDrawer extends ConsumerWidget {
                 _DrawerMenuItem(
                   icon: Icons.settings_outlined,
                   label: 'Settings',
+                  isSelected: isOnSettings,
                   onTap: () {
                     Navigator.pop(context);
                     context.goNamed('settings');
@@ -115,9 +129,10 @@ class AppDrawer extends ConsumerWidget {
                   icon: Icons.notifications_outlined,
                   label: 'Notifications',
                   badge: '1',
+                  isSelected: isOnNotifications,
                   onTap: () {
                     Navigator.pop(context);
-                    // Navigate to notifications
+                    context.goNamed('notifications');
                   },
                 ),
               ],
