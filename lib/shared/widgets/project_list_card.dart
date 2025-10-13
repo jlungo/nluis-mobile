@@ -8,6 +8,9 @@ class ProjectListCard extends StatelessWidget {
   final Project project;
   final VoidCallback onTap;
   final VoidCallback? onMoreTap;
+  final VoidCallback? onDownload;
+  final VoidCallback? onUpload;
+  final bool isDownloaded;
   final IconData? icon;
 
   const ProjectListCard({
@@ -15,6 +18,9 @@ class ProjectListCard extends StatelessWidget {
     required this.project,
     required this.onTap,
     this.onMoreTap,
+    this.onDownload,
+    this.onUpload,
+    this.isDownloaded = false,
     this.icon,
   });
 
@@ -59,26 +65,57 @@ class ProjectListCard extends StatelessWidget {
             padding: const EdgeInsets.all(AppConstants.spacingMd),
             child: Row(
               children: [
-                // Icon
-                Container(
-                  padding: const EdgeInsets.all(AppConstants.spacingMd),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors:
-                          isDark
-                              ? [
-                                AppColors.darkPrimary,
-                                AppColors.darkPrimaryDark,
-                              ]
-                              : [AppColors.primary, AppColors.primaryDark],
+                // Icon with download indicator
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(AppConstants.spacingMd),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors:
+                              isDark
+                                  ? [
+                                    AppColors.darkPrimary,
+                                    AppColors.darkPrimaryDark,
+                                  ]
+                                  : [AppColors.primary, AppColors.primaryDark],
+                        ),
+                        borderRadius: BorderRadius.circular(
+                          AppConstants.radiusSm,
+                        ),
+                      ),
+                      child: Icon(
+                        icon ?? Icons.description_outlined,
+                        color:
+                            isDark ? AppColors.darkTextInverse : Colors.white,
+                        size: 24,
+                      ),
                     ),
-                    borderRadius: BorderRadius.circular(AppConstants.radiusSm),
-                  ),
-                  child: Icon(
-                    icon ?? Icons.description_outlined,
-                    color: isDark ? AppColors.darkTextInverse : Colors.white,
-                    size: 24,
-                  ),
+                    // Download indicator badge
+                    if (isDownloaded)
+                      Positioned(
+                        right: -4,
+                        top: -4,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: AppColors.success,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color:
+                                  isDark ? AppColors.darkSurface : Colors.white,
+                              width: 2,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.cloud_done,
+                            size: 12,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
                 const SizedBox(width: AppConstants.spacingMd),
                 // Content
@@ -159,9 +196,9 @@ class ProjectListCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                // More icon
-                if (onMoreTap != null)
-                  IconButton(
+                // Action menu dropdown
+                if (onDownload != null || onUpload != null || onMoreTap != null)
+                  PopupMenuButton<String>(
                     icon: Icon(
                       Icons.more_vert,
                       color:
@@ -169,7 +206,95 @@ class ProjectListCard extends StatelessWidget {
                               ? AppColors.darkTextSecondary
                               : AppColors.textSecondary,
                     ),
-                    onPressed: onMoreTap,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        AppConstants.radiusSm,
+                      ),
+                    ),
+                    onSelected: (value) {
+                      if (value == 'download' && onDownload != null) {
+                        onDownload!();
+                      } else if (value == 'upload' && onUpload != null) {
+                        onUpload!();
+                      } else if (value == 'more' && onMoreTap != null) {
+                        onMoreTap!();
+                      }
+                    },
+                    itemBuilder:
+                        (context) => [
+                          if (!isDownloaded && onDownload != null)
+                            PopupMenuItem(
+                              value: 'download',
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.cloud_download_outlined,
+                                    size: 20,
+                                    color: AppColors.primary,
+                                  ),
+                                  const SizedBox(width: AppConstants.spacingSm),
+                                  Text(
+                                    'Pakua Data',
+                                    style: TextStyle(
+                                      color:
+                                          isDark
+                                              ? AppColors.darkTextPrimary
+                                              : AppColors.textPrimary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          if (isDownloaded && onUpload != null)
+                            PopupMenuItem(
+                              value: 'upload',
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.cloud_upload_outlined,
+                                    size: 20,
+                                    color: AppColors.success,
+                                  ),
+                                  const SizedBox(width: AppConstants.spacingSm),
+                                  Text(
+                                    'Pakia Dodoso',
+                                    style: TextStyle(
+                                      color:
+                                          isDark
+                                              ? AppColors.darkTextPrimary
+                                              : AppColors.textPrimary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          if (onMoreTap != null)
+                            PopupMenuItem(
+                              value: 'more',
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.info_outline,
+                                    size: 20,
+                                    color:
+                                        isDark
+                                            ? AppColors.darkTextSecondary
+                                            : AppColors.textSecondary,
+                                  ),
+                                  const SizedBox(width: AppConstants.spacingSm),
+                                  Text(
+                                    'Maelezo',
+                                    style: TextStyle(
+                                      color:
+                                          isDark
+                                              ? AppColors.darkTextPrimary
+                                              : AppColors.textPrimary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
                   ),
               ],
             ),
