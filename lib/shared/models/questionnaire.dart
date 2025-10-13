@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-// Questionnaire List Item (API #4)
 class Questionnaire extends Equatable {
   final String slug;
   final String name;
@@ -80,7 +79,6 @@ class QuestionnaireModel extends Questionnaire {
   }
 }
 
-// Custom Form Field (nested in QuestionnaireForm)
 class CustomFormField extends Equatable {
   final String id;
   final String label;
@@ -142,7 +140,7 @@ class CustomFormFieldModel extends CustomFormField {
         [];
 
     return CustomFormFieldModel(
-      id: json['id'] as String,
+      id: json['id'].toString(),
       label: json['label'] as String,
       type: json['type'] as String,
       typeDisplay: json['type_display'] as String? ?? '',
@@ -211,7 +209,6 @@ class SelectOptionModel extends SelectOption {
   }
 }
 
-// Questionnaire Section Form (API #5)
 class QuestionnaireForm extends Equatable {
   final String slug;
   final String name;
@@ -405,7 +402,6 @@ class QuestionnaireSectionModel extends QuestionnaireSection {
   }
 }
 
-// Full Questionnaire Detail (API #5 response)
 class QuestionnaireDetail extends Equatable {
   final String slug;
   final String name;
