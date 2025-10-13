@@ -58,9 +58,11 @@ class _FormFieldBuilderState extends State<FormFieldBuilder> {
           placeholder: widget.field.placeholder,
           required: widget.field.required,
           controller: _textController,
-          validator: widget.field.required
-              ? (value) => value?.isEmpty ?? true ? 'Hii sehemu inahitajika' : null
-              : null,
+          validator:
+              widget.field.required
+                  ? (value) =>
+                      value?.isEmpty ?? true ? 'Hii sehemu inahitajika' : null
+                  : null,
         );
 
       case 'email':
@@ -70,16 +72,18 @@ class _FormFieldBuilderState extends State<FormFieldBuilder> {
           required: widget.field.required,
           controller: _textController,
           keyboardType: TextInputType.emailAddress,
-          validator: widget.field.required
-              ? (value) {
-                  if (value?.isEmpty ?? true) return 'Hii sehemu inahitajika';
-                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                      .hasMatch(value!)) {
-                    return 'Weka barua pepe sahihi';
+          validator:
+              widget.field.required
+                  ? (value) {
+                    if (value?.isEmpty ?? true) return 'Hii sehemu inahitajika';
+                    if (!RegExp(
+                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                    ).hasMatch(value!)) {
+                      return 'Weka barua pepe sahihi';
+                    }
+                    return null;
                   }
-                  return null;
-                }
-              : null,
+                  : null,
         );
 
       case 'number':
@@ -89,15 +93,16 @@ class _FormFieldBuilderState extends State<FormFieldBuilder> {
           required: widget.field.required,
           controller: _textController,
           keyboardType: TextInputType.number,
-          validator: widget.field.required
-              ? (value) {
-                  if (value?.isEmpty ?? true) return 'Hii sehemu inahitajika';
-                  if (double.tryParse(value!) == null) {
-                    return 'Weka namba sahihi';
+          validator:
+              widget.field.required
+                  ? (value) {
+                    if (value?.isEmpty ?? true) return 'Hii sehemu inahitajika';
+                    if (double.tryParse(value!) == null) {
+                      return 'Weka namba sahihi';
+                    }
+                    return null;
                   }
-                  return null;
-                }
-              : null,
+                  : null,
         );
 
       case 'textarea':
@@ -106,9 +111,11 @@ class _FormFieldBuilderState extends State<FormFieldBuilder> {
           placeholder: widget.field.placeholder,
           required: widget.field.required,
           controller: _textController,
-          validator: widget.field.required
-              ? (value) => value?.isEmpty ?? true ? 'Hii sehemu inahitajika' : null
-              : null,
+          validator:
+              widget.field.required
+                  ? (value) =>
+                      value?.isEmpty ?? true ? 'Hii sehemu inahitajika' : null
+                  : null,
         );
 
       case 'select':
@@ -121,9 +128,10 @@ class _FormFieldBuilderState extends State<FormFieldBuilder> {
           onChanged: (value) {
             widget.onChanged(value);
           },
-          validator: widget.field.required
-              ? (value) => value == null ? 'Hii sehemu inahitajika' : null
-              : null,
+          validator:
+              widget.field.required
+                  ? (value) => value == null ? 'Hii sehemu inahitajika' : null
+                  : null,
         );
 
       case 'checkbox':
@@ -145,9 +153,10 @@ class _FormFieldBuilderState extends State<FormFieldBuilder> {
           onChanged: (value) {
             widget.onChanged(value);
           },
-          validator: widget.field.required
-              ? (value) => value == null ? 'Hii sehemu inahitajika' : null
-              : null,
+          validator:
+              widget.field.required
+                  ? (value) => value == null ? 'Hii sehemu inahitajika' : null
+                  : null,
         );
 
       case 'file':
@@ -178,19 +187,31 @@ class _FormFieldBuilderState extends State<FormFieldBuilder> {
         );
 
       case 'table':
-        // Parse table data from field metadata
-        final tableJson = widget.value as Map<String, dynamic>? ?? {
-          'label': widget.field.label,
-          'required': widget.field.required,
-          'columns': [],
-          'rows': [],
-        };
+        // Parse existing rows from saved value
+        final existingData = widget.value as Map<String, dynamic>?;
+        final existingRows = existingData?['rows'] as List<dynamic>?;
 
-        final backendTable = table.BackendTable.fromJson(tableJson);
+        // Create table from field's select options (columns)
+        final tableData = table.DynamicTable.fromField(
+          label: widget.field.label,
+          required: widget.field.required,
+          selectOptions: widget.field.selectOptions.map((opt) => {
+            'position': opt.position,
+            'value': opt.value,
+            'text_label': opt.textLabel,
+          }).toList(),
+          existingRows: existingRows,
+        );
 
         return table.DynamicFillableTable(
-          tableData: backendTable,
+          tableData: tableData,
           readOnly: false,
+          onChanged: (rows) {
+            // Save table data when changed
+            widget.onChanged({
+              'rows': rows.map((r) => r.toJson()).toList(),
+            });
+          },
         );
 
       case 'zoning':
@@ -209,9 +230,11 @@ class _FormFieldBuilderState extends State<FormFieldBuilder> {
           placeholder: widget.field.placeholder,
           required: widget.field.required,
           controller: _textController,
-          validator: widget.field.required
-              ? (value) => value?.isEmpty ?? true ? 'Hii sehemu inahitajika' : null
-              : null,
+          validator:
+              widget.field.required
+                  ? (value) =>
+                      value?.isEmpty ?? true ? 'Hii sehemu inahitajika' : null
+                  : null,
         );
     }
   }

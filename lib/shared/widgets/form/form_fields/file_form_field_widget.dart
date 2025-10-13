@@ -29,11 +29,13 @@ class FileFormFieldWidget extends StatelessWidget {
       children: [
         Row(
           children: [
-            Text(
-              label,
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+            Expanded(
+              child: Text(
+                label,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                ),
               ),
             ),
             if (required) ...[

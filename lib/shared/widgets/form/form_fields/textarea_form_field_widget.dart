@@ -30,11 +30,16 @@ class TextareaFormFieldWidget extends StatelessWidget {
       children: [
         Row(
           children: [
-            Text(
-              label,
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+            Expanded(
+              child: Text(
+                label,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color:
+                      isDark
+                          ? AppColors.darkTextPrimary
+                          : AppColors.textPrimary,
+                ),
               ),
             ),
             if (required) ...[
@@ -57,7 +62,10 @@ class TextareaFormFieldWidget extends StatelessWidget {
           decoration: InputDecoration(
             hintText: placeholder ?? label,
             filled: true,
-            fillColor: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
+            fillColor:
+                isDark
+                    ? AppColors.darkSurfaceVariant
+                    : AppColors.surfaceVariant,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppConstants.radiusMd),
               borderSide: BorderSide.none,
