@@ -6,7 +6,6 @@ import '../../../../../shared/theme/app_colors.dart';
 import '../../../../../shared/widgets/app_button.dart';
 import '../../../../../shared/widgets/app_drawer.dart';
 import '../../../../../features/auth/presentation/providers/auth_providers.dart';
-import '../../../../../shared/widgets/app_input_field.dart';
 import '../../../../../shared/widgets/badge_chip.dart';
 import '../../../../../shared/widgets/project_list_card.dart';
 import '../../../../../shared/widgets/stat_card.dart';
@@ -150,6 +149,8 @@ class LandUseDashboardPage extends ConsumerWidget {
     final isDark = theme.brightness == Brightness.dark;
     final user = authState.valueOrNull;
 
+    final surveyStatsAsync = ref.watch(surveyDashboardStatsProvider);
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
@@ -163,307 +164,370 @@ class LandUseDashboardPage extends ConsumerWidget {
         appBar: const CustomAppBar(hasNotification: true),
         body: projectsAsync.when(
           data:
-              (projects) => Container(
-                padding: const EdgeInsets.all(AppConstants.spacingLg),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Header
-                    Text(
-                      'Karibu ${user != null ? user.firstName : 'User'}',
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color:
-                            isDark
-                                ? AppColors.darkTextPrimary
-                                : AppColors.textPrimary,
-                      ),
+              (projects) => surveyStatsAsync.when(
+                data:
+                    (surveyStats) => _DashboardView(
+                      projects: projects,
+                      surveyStats: surveyStats,
+                      isDark: isDark,
+                      theme: theme,
+                      userName: user?.firstName ?? 'User',
+                      onShowAllProjects: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const ProjectsListPage(),
+                          ),
+                        );
+                      },
+                      onRefresh: () async {
+                        ref.invalidate(assignedProjectsProvider);
+                        await ref.read(assignedProjectsProvider.future);
+                      },
+                      onProjectActions:
+                          (project) => _showProjectActions(context, project),
                     ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        BadgeChip(
-                          color: AppColors.primary,
-                          label: 'Miradi ${projects.length}',
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          '•',
-                          style: TextStyle(
-                            color:
-                                isDark
-                                    ? AppColors.darkTextSecondary
-                                    : AppColors.textSecondary,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Matumizi ya Ardhi',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color:
-                                isDark
-                                    ? AppColors.darkTextSecondary
-                                    : AppColors.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppConstants.spacingMd),
-
-                    // Search and Filter
-                    Row(
-                      children: [
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const ProjectsListPage(),
-                                ),
-                              );
-                            },
-                            child: AbsorbPointer(
-                              child: AppInputField(
-                                hintText: 'Tafuta mradi...',
-                                prefixIcon: Icons.search,
-                                onChanged: (value) {},
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: AppConstants.spacingMd),
-
-                        AppButton(
-                          icon: Icons.tune,
-                          gradientColors:
-                              isDark
-                                  ? [
-                                    AppColors.darkPrimary,
-                                    AppColors.darkPrimaryDark,
-                                  ]
-                                  : [AppColors.primary, AppColors.primaryDark],
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const ProjectsListPage(),
-                              ),
-                            );
-                          },
-                          borderRadius: AppConstants.radiusMd.toDouble(),
-                          iconSize: 20,
-                          isDisabled: false,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppConstants.spacingMd),
-
-                    // Stats Cards
-                    Row(
-                      children: [
-                        Expanded(
-                          child: StatCard(
-                            count: '${projects.length}',
-                            label: 'Total Projects',
-                            color:
-                                isDark
-                                    ? const Color(0xFF64B5F6)
-                                    : const Color(0xFF2196F3),
-                            isDark: isDark,
-                          ),
-                        ),
-                        const SizedBox(width: AppConstants.spacingMd),
-                        Expanded(
-                          child: StatCard(
-                            count:
-                                '${projects.where((p) => p.status == 'active').length}',
-                            label: 'Completed',
-                            color:
-                                isDark
-                                    ? AppColors.successDark
-                                    : AppColors.success,
-                            isDark: isDark,
-                          ),
-                        ),
-                        const SizedBox(width: AppConstants.spacingMd),
-                        Expanded(
-                          child: StatCard(
-                            count: '0',
-                            label: 'Pending',
-                            color:
-                                isDark
-                                    ? AppColors.warningDark
-                                    : AppColors.warning,
-                            isDark: isDark,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppConstants.spacingLg),
-
-                    // Recent Projects header
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Recent Projects',
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color:
-                                isDark
-                                    ? AppColors.darkTextPrimary
-                                    : AppColors.textPrimary,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const ProjectsListPage(),
-                              ),
-                            );
-                          },
-                          child: Text(
-                            'View All',
-                            style: TextStyle(
-                              color:
-                                  isDark
-                                      ? AppColors.darkPrimary
-                                      : AppColors.primary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppConstants.spacingMd),
-
-                    Expanded(
-                      child:
-                          projects.isEmpty
-                              ? Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(
-                                    AppConstants.spacing2xl,
-                                  ),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.folder_open_outlined,
-                                        size: 64,
-                                        color:
-                                            isDark
-                                                ? AppColors.darkTextHint
-                                                : AppColors.textHint,
-                                      ),
-                                      const SizedBox(
-                                        height: AppConstants.spacingMd,
-                                      ),
-                                      Text(
-                                        'Hakuna miradi iliyopatikana',
-                                        style: theme.textTheme.bodyLarge
-                                            ?.copyWith(
-                                              color:
-                                                  isDark
-                                                      ? AppColors
-                                                          .darkTextSecondary
-                                                      : AppColors.textSecondary,
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )
-                              : Builder(
-                                builder: (context) {
-                                  final total = projects.length;
-                                  final limitDisplay = 10;
-                                  final displayCount =
-                                      total > limitDisplay
-                                          ? limitDisplay
-                                          : total;
-                                  final showViewAll = total > limitDisplay;
-
-                                  return ListView.separated(
-                                    padding: EdgeInsets.zero,
-                                    itemCount:
-                                        displayCount + (showViewAll ? 1 : 0),
-                                    separatorBuilder:
-                                        (_, _) => const SizedBox(height: 0),
-                                    itemBuilder: (context, index) {
-                                      if (index < displayCount) {
-                                        final project = projects[index];
-                                        return ProjectListCard(
-                                          project: project,
-                                          onTap: () {
-                                            _showProjectActions(
-                                              context,
-                                              project,
-                                            );
-                                          },
-                                          onMoreTap: () {
-                                            _showProjectActions(
-                                              context,
-                                              project,
-                                            );
-                                          },
-                                        );
-                                      }
-
-                                      final totalLabel =
-                                          'View all $total ${total == 1 ? 'project' : 'projects'}';
-
-                                      return Padding(
-                                        padding: const EdgeInsets.only(
-                                          top: AppConstants.spacingSm,
-                                        ),
-                                        child: SizedBox(
-                                          // height: 40,
-                                          child: AppButton(
-                                            label: totalLabel,
-                                            icon: Icons.chevron_right,
-                                            iconOnRight: true,
-                                            gradientColors:
-                                                isDark
-                                                    ? [
-                                                      AppColors.darkPrimary,
-                                                      AppColors.darkPrimaryDark,
-                                                    ]
-                                                    : [
-                                                      AppColors.primary,
-                                                      AppColors.primaryDark,
-                                                    ],
-                                            borderRadius:
-                                                AppConstants.radiusSm
-                                                    .toDouble(),
-                                            textStyle: theme
-                                                .textTheme
-                                                .labelLarge
-                                                ?.copyWith(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.w700,
-                                                ),
-                                            onPressed: () {
-                                              // context.goNamed('allProjects');
-                                            },
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  );
-                                },
-                              ),
-                    ),
-                  ],
-                ),
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, stack) => Center(child: Text('Error: $error')),
               ),
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (error, stack) => Center(child: Text('Error: $error')),
         ),
       ),
+    );
+  }
+}
+
+class _DashboardView extends StatefulWidget {
+  final List<Project> projects;
+  final SurveyDashboardStats surveyStats;
+  final bool isDark;
+  final ThemeData theme;
+  final String userName;
+  final VoidCallback onShowAllProjects;
+  final Future<void> Function() onRefresh;
+  final void Function(Project project) onProjectActions;
+
+  const _DashboardView({
+    required this.projects,
+    required this.surveyStats,
+    required this.isDark,
+    required this.theme,
+    required this.userName,
+    required this.onShowAllProjects,
+    required this.onRefresh,
+    required this.onProjectActions,
+  });
+
+  @override
+  State<_DashboardView> createState() => _DashboardViewState();
+}
+
+class _DashboardViewState extends State<_DashboardView> {
+  bool _isStatsExpanded = true;
+
+  @override
+  Widget build(BuildContext context) {
+    final totalProjects = widget.projects.length;
+    const limitDisplay = 10;
+    final displayCount =
+        totalProjects > limitDisplay ? limitDisplay : totalProjects;
+    final showViewAll = totalProjects > limitDisplay;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Header Section - Fixed
+        Container(
+          color:
+              widget.isDark ? AppColors.darkBackground : AppColors.background,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppConstants.spacingLg,
+              AppConstants.spacingLg,
+              AppConstants.spacingLg,
+              AppConstants.spacingLg,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Karibu ${widget.userName}',
+                  style: widget.theme.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color:
+                        widget.isDark
+                            ? AppColors.darkTextPrimary
+                            : AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    BadgeChip(
+                      color: AppColors.primary,
+                      label: 'Miradi ${widget.projects.length}',
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '•',
+                      style: TextStyle(
+                        color:
+                            widget.isDark
+                                ? AppColors.darkTextSecondary
+                                : AppColors.textSecondary,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Matumizi ya Ardhi',
+                      style: widget.theme.textTheme.bodyMedium?.copyWith(
+                        color:
+                            widget.isDark
+                                ? AppColors.darkTextSecondary
+                                : AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        // Stats Section - Collapsible
+        if (_isStatsExpanded)
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppConstants.spacingLg,
+            ),
+            child: _SurveyStatsGrid(
+              stats: widget.surveyStats,
+              isDark: widget.isDark,
+            ),
+          ),
+
+        if (_isStatsExpanded) const SizedBox(height: AppConstants.spacingLg),
+
+        // Recent Projects Header - Fixed
+        Container(
+          color:
+              widget.isDark ? AppColors.darkBackground : AppColors.background,
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppConstants.spacingLg,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Recent Projects',
+                style: widget.theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color:
+                      widget.isDark
+                          ? AppColors.darkTextPrimary
+                          : AppColors.textPrimary,
+                ),
+              ),
+              Row(
+                children: [
+                  IconButton(
+                    icon: Icon(
+                      _isStatsExpanded ? Icons.expand_less : Icons.expand_more,
+                      color:
+                          widget.isDark
+                              ? AppColors.darkPrimary
+                              : AppColors.primary,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isStatsExpanded = !_isStatsExpanded;
+                      });
+                    },
+                    tooltip: _isStatsExpanded ? 'Hide Stats' : 'Show Stats',
+                  ),
+                  TextButton(
+                    onPressed: widget.onShowAllProjects,
+                    child: Text(
+                      'View All',
+                      style: TextStyle(
+                        color:
+                            widget.isDark
+                                ? AppColors.darkPrimary
+                                : AppColors.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+
+        // Projects List - Scrollable
+        Expanded(
+          child: RefreshIndicator(
+            onRefresh: widget.onRefresh,
+            child:
+                totalProjects == 0
+                    ? ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            top: AppConstants.spacing2xl,
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.folder_open_outlined,
+                                size: 64,
+                                color:
+                                    widget.isDark
+                                        ? AppColors.darkTextHint
+                                        : AppColors.textHint,
+                              ),
+                              const SizedBox(height: AppConstants.spacingMd),
+                              Text(
+                                'Hakuna miradi iliyopatikana',
+                                style: widget.theme.textTheme.bodyLarge
+                                    ?.copyWith(
+                                      color:
+                                          widget.isDark
+                                              ? AppColors.darkTextSecondary
+                                              : AppColors.textSecondary,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    )
+                    : ListView.builder(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.fromLTRB(
+                        AppConstants.spacingLg,
+                        AppConstants.spacingSm,
+                        AppConstants.spacingLg,
+                        AppConstants.spacing2xl,
+                      ),
+                      itemCount: displayCount + (showViewAll ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        if (index < displayCount) {
+                          final project = widget.projects[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: AppConstants.spacingSm,
+                            ),
+                            child: ProjectListCard(
+                              project: project,
+                              onTap: () => widget.onProjectActions(project),
+                              onMoreTap: () => widget.onProjectActions(project),
+                            ),
+                          );
+                        }
+
+                        // View All Button
+                        final totalLabel =
+                            'View all $totalProjects ${totalProjects == 1 ? 'project' : 'projects'}';
+
+                        return Padding(
+                          padding: const EdgeInsets.only(
+                            top: AppConstants.spacingSm,
+                          ),
+                          child: AppButton(
+                            label: totalLabel,
+                            icon: Icons.chevron_right,
+                            iconOnRight: true,
+                            gradientColors:
+                                widget.isDark
+                                    ? [
+                                      AppColors.darkPrimary,
+                                      AppColors.darkPrimaryDark,
+                                    ]
+                                    : [
+                                      AppColors.primary,
+                                      AppColors.primaryDark,
+                                    ],
+                            borderRadius: AppConstants.radiusSm.toDouble(),
+                            textStyle: widget.theme.textTheme.labelLarge
+                                ?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                            onPressed: widget.onShowAllProjects,
+                          ),
+                        );
+                      },
+                    ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SurveyStatsGrid extends StatelessWidget {
+  final SurveyDashboardStats stats;
+  final bool isDark;
+
+  const _SurveyStatsGrid({required this.stats, required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final spacing = AppConstants.spacingMd;
+        final isWide = constraints.maxWidth > 640;
+        final columns = isWide ? 4 : 2;
+        final itemWidth =
+            (constraints.maxWidth - spacing * (columns - 1)) / columns;
+
+        return Wrap(
+          spacing: spacing,
+          runSpacing: spacing,
+          children: [
+            SizedBox(
+              width: itemWidth,
+              child: StatCard(
+                count: '${stats.total}',
+                label: 'Total Surveys',
+                color: isDark ? AppColors.darkPrimary : AppColors.primary,
+                isDark: isDark,
+              ),
+            ),
+            SizedBox(
+              width: itemWidth,
+              child: StatCard(
+                count: '${stats.completed}',
+                label: 'Completed Surveys',
+                color: isDark ? AppColors.successDark : AppColors.success,
+                isDark: isDark,
+              ),
+            ),
+            SizedBox(
+              width: itemWidth,
+              child: StatCard(
+                count: '${stats.drafts}',
+                label: 'Draft Surveys',
+                color: isDark ? AppColors.warningDark : AppColors.warning,
+                isDark: isDark,
+              ),
+            ),
+            SizedBox(
+              width: itemWidth,
+              child: StatCard(
+                count: '${stats.uploaded}',
+                label: 'Uploaded Surveys',
+                color: isDark ? AppColors.infoDark : AppColors.info,
+                isDark: isDark,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
