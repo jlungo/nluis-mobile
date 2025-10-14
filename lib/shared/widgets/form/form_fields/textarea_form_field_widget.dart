@@ -61,6 +61,9 @@ class TextareaFormFieldWidget extends StatelessWidget {
           validator: validator,
           decoration: InputDecoration(
             hintText: placeholder ?? label,
+            hintStyle: TextStyle(
+              color: isDark ? AppColors.darkTextHint : AppColors.textHint,
+            ),
             filled: true,
             fillColor:
                 isDark

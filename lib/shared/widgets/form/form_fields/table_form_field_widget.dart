@@ -26,16 +26,10 @@ class TableRow {
   final String id; // Unique identifier for the row
   final Map<String, String> data;
 
-  TableRow({
-    required this.id,
-    required this.data,
-  });
+  TableRow({required this.id, required this.data});
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'data': data,
-    };
+    return {'id': id, 'data': data};
   }
 
   factory TableRow.fromJson(Map<String, dynamic> json) {
@@ -67,17 +61,19 @@ class DynamicTable {
     List<dynamic>? existingRows,
   }) {
     // Parse columns from questionnaire_select_options
-    final columns = (selectOptions)
-        .map((opt) => TableColumn.fromJson(opt as Map<String, dynamic>))
-        .toList()
-      ..sort((a, b) => a.position.compareTo(b.position));
+    final columns =
+        (selectOptions)
+            .map((opt) => TableColumn.fromJson(opt as Map<String, dynamic>))
+            .toList()
+          ..sort((a, b) => a.position.compareTo(b.position));
 
     // Parse existing rows or start with one empty row
     List<TableRow> rows;
     if (existingRows != null && existingRows.isNotEmpty) {
-      rows = existingRows
-          .map((row) => TableRow.fromJson(row as Map<String, dynamic>))
-          .toList();
+      rows =
+          existingRows
+              .map((row) => TableRow.fromJson(row as Map<String, dynamic>))
+              .toList();
     } else {
       // Start with one empty row
       rows = [
@@ -100,11 +96,16 @@ class DynamicTable {
     return {
       'label': label,
       'required': required,
-      'columns': columns.map((c) => {
-        'position': c.position,
-        'value': c.value,
-        'text_label': c.textLabel,
-      }).toList(),
+      'columns':
+          columns
+              .map(
+                (c) => {
+                  'position': c.position,
+                  'value': c.value,
+                  'text_label': c.textLabel,
+                },
+              )
+              .toList(),
       'rows': rows.map((r) => r.toJson()).toList(),
     };
   }
@@ -217,6 +218,7 @@ class _DynamicFillableTableState extends State<DynamicFillableTable> {
         controller: controller,
         decoration: InputDecoration(
           hintText: column.textLabel,
+          hintStyle: TextStyle(color: AppColors.textHint),
           isDense: true,
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 12,
@@ -253,7 +255,10 @@ class _DynamicFillableTableState extends State<DynamicFillableTable> {
                 widget.tableData.label,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                  color:
+                      isDark
+                          ? AppColors.darkTextPrimary
+                          : AppColors.textPrimary,
                 ),
                 softWrap: true,
                 overflow: TextOverflow.visible,
@@ -290,6 +295,7 @@ class _DynamicFillableTableState extends State<DynamicFillableTable> {
                         ? AppColors.darkSurface.withValues(alpha: 0.5)
                         : Colors.grey.shade100,
                   ),
+                  dividerThickness: 0.5,
                   dataRowColor: WidgetStateProperty.all(
                     isDark ? AppColors.darkBackground : Colors.white,
                   ),
@@ -301,9 +307,10 @@ class _DynamicFillableTableState extends State<DynamicFillableTable> {
                         'Na.',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: isDark
-                              ? AppColors.darkTextPrimary
-                              : AppColors.textPrimary,
+                          color:
+                              isDark
+                                  ? AppColors.darkTextPrimary
+                                  : AppColors.textPrimary,
                         ),
                       ),
                     ),
@@ -314,9 +321,10 @@ class _DynamicFillableTableState extends State<DynamicFillableTable> {
                             column.textLabel,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: isDark
-                                  ? AppColors.darkTextPrimary
-                                  : AppColors.textPrimary,
+                              color:
+                                  isDark
+                                      ? AppColors.darkTextPrimary
+                                      : AppColors.textPrimary,
                             ),
                             softWrap: true,
                             overflow: TextOverflow.visible,
@@ -331,58 +339,70 @@ class _DynamicFillableTableState extends State<DynamicFillableTable> {
                           'Futa',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: isDark
-                                ? AppColors.darkTextPrimary
-                                : AppColors.textPrimary,
+                            color:
+                                isDark
+                                    ? AppColors.darkTextPrimary
+                                    : AppColors.textPrimary,
                           ),
                         ),
                       ),
                   ],
-                  rows: rows.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final row = entry.value;
+                  rows:
+                      rows.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final row = entry.value;
 
-                    return DataRow(
-                      cells: [
-                        DataCell(
-                          Text(
-                            '${index + 1}',
-                            style: TextStyle(
-                              color: isDark
-                                  ? AppColors.darkTextSecondary
-                                  : AppColors.textSecondary,
-                            ),
-                          ),
-                        ),
-                        ...columns.map(
-                          (column) => DataCell(
-                            SizedBox(
-                              width: 150,
-                              child: _buildCell(column, row),
-                            ),
-                          ),
-                        ),
-                        if (!widget.readOnly)
-                          DataCell(
-                            IconButton(
-                              icon: Icon(
-                                Icons.delete_outline,
-                                color: rows.length > 1
-                                    ? (isDark ? AppColors.errorDark : AppColors.error)
-                                    : (isDark
-                                        ? AppColors.darkTextSecondary.withValues(alpha: 0.3)
-                                        : AppColors.textSecondary.withValues(alpha: 0.3)),
-                                size: 20,
+                        return DataRow(
+                          cells: [
+                            DataCell(
+                              Text(
+                                '${index + 1}',
+                                style: TextStyle(
+                                  color:
+                                      isDark
+                                          ? AppColors.darkTextSecondary
+                                          : AppColors.textSecondary,
+                                ),
                               ),
-                              onPressed: rows.length > 1
-                                  ? () => _deleteRow(row.id)
-                                  : null,
-                              tooltip: rows.length > 1 ? 'Futa mstari' : 'Lazima uwe na mstari mmoja',
                             ),
-                          ),
-                      ],
-                    );
-                  }).toList(),
+                            ...columns.map(
+                              (column) => DataCell(
+                                SizedBox(
+                                  width: 150,
+                                  child: _buildCell(column, row),
+                                ),
+                              ),
+                            ),
+                            if (!widget.readOnly)
+                              DataCell(
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.delete_outline,
+                                    color:
+                                        rows.length > 1
+                                            ? (isDark
+                                                ? AppColors.errorDark
+                                                : AppColors.error)
+                                            : (isDark
+                                                ? AppColors.darkTextSecondary
+                                                    .withValues(alpha: 0.3)
+                                                : AppColors.textSecondary
+                                                    .withValues(alpha: 0.3)),
+                                    size: 20,
+                                  ),
+                                  onPressed:
+                                      rows.length > 1
+                                          ? () => _deleteRow(row.id)
+                                          : null,
+                                  tooltip:
+                                      rows.length > 1
+                                          ? 'Futa mstari'
+                                          : 'Lazima uwe na mstari mmoja',
+                                ),
+                              ),
+                          ],
+                        );
+                      }).toList(),
                 ),
               ),
 
@@ -394,7 +414,8 @@ class _DynamicFillableTableState extends State<DynamicFillableTable> {
                   decoration: BoxDecoration(
                     border: Border(
                       top: BorderSide(
-                        color: isDark ? AppColors.darkDivider : AppColors.divider,
+                        color:
+                            isDark ? AppColors.darkDivider : AppColors.divider,
                       ),
                     ),
                   ),

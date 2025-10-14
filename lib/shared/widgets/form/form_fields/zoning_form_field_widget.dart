@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../constants/app_constants.dart';
 import '../../../theme/app_colors.dart';
 
-// Placeholder for zoning input - custom widget for Zoning module (not for Survey)
 class ZoningFormFieldWidget extends StatelessWidget {
   final String label;
   final bool required;
@@ -60,7 +59,7 @@ class ZoningFormFieldWidget extends StatelessWidget {
           ),
           child: Center(
             child: Text(
-              'Zoning input - Custom widget for Zoning module (not for Survey)',
+              'Zoning input - Custom widget for Zoning module',
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
               ),

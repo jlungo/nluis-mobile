@@ -3,6 +3,8 @@ import 'package:nluis_app/shared/widgets/form/form_section_tile.dart';
 import 'package:nluis_app/shared/constants/app_constants.dart';
 import 'package:nluis_app/shared/models/questionnaire.dart';
 import 'package:nluis_app/shared/theme/app_colors.dart';
+import 'package:nluis_app/shared/widgets/form/form_completion_state.dart';
+import 'package:nluis_app/shared/widgets/form/form_status_badge.dart';
 
 class FormSectionCard extends StatelessWidget {
   final QuestionnaireSection section;
@@ -12,6 +14,8 @@ class FormSectionCard extends StatelessWidget {
   final Map<String, DateTime?> formLastSavedAt;
   final Map<String, bool> expandedSections;
   final Map<String, bool> expandedForms;
+  final Map<String, FormCompletionState> formStatuses;
+  final Map<String, FormCompletionState> sectionStatuses;
   final Function(String, String, dynamic) onFieldChanged;
   final Function(String) onSaveForm;
   final Function(String, bool) onSectionExpandChanged;
@@ -26,6 +30,8 @@ class FormSectionCard extends StatelessWidget {
     required this.formLastSavedAt,
     required this.expandedSections,
     required this.expandedForms,
+    required this.formStatuses,
+    required this.sectionStatuses,
     required this.onFieldChanged,
     required this.onSaveForm,
     required this.onSectionExpandChanged,
@@ -36,13 +42,15 @@ class FormSectionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isExpanded = expandedSections[section.slug] ?? false;
+    final sectionStatus =
+        sectionStatuses[section.slug] ?? FormCompletionState.notStarted;
 
     // Sort forms by position
     final sortedForms = List<QuestionnaireForm>.from(section.forms)
       ..sort((a, b) => a.position.compareTo(b.position));
 
     return Container(
-      margin: const EdgeInsets.only(bottom: AppConstants.spacingMd),
+      margin: const EdgeInsets.only(bottom: AppConstants.spacingSm),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(AppConstants.radiusMd),
@@ -78,12 +86,26 @@ class FormSectionCard extends StatelessWidget {
               ),
             ),
           ),
-          title: Text(
-            section.name,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-            ),
+          title: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  section.name,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color:
+                        isDark
+                            ? AppColors.darkTextPrimary
+                            : AppColors.textPrimary,
+                  ),
+                ),
+              ),
+              const SizedBox(width: AppConstants.spacingSm),
+              FormStatusBadge(
+                status: sectionStatus,
+                isDark: isDark,
+              ),
+            ],
           ),
           subtitle:
               section.description.isNotEmpty
@@ -109,6 +131,9 @@ class FormSectionCard extends StatelessWidget {
                       formValues: formDataByFormSlug[form.slug] ?? {},
                       lastSavedAt: formLastSavedAt[form.slug],
                       isExpanded: expandedForms[form.slug] ?? false,
+                      status:
+                          formStatuses[form.slug] ??
+                          FormCompletionState.notStarted,
                       onExpansionChanged: (isExpanded) {
                         onFormExpandChanged(form.slug, isExpanded);
                       },

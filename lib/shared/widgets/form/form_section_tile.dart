@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:nluis_app/shared/constants/app_constants.dart';
 import 'package:nluis_app/shared/models/questionnaire.dart';
 import 'package:nluis_app/shared/theme/app_colors.dart';
-import 'package:nluis_app/shared/widgets/form/form_field_builder.dart'
-    as custom;
+import 'package:nluis_app/shared/widgets/form/form_completion_state.dart';
+import 'package:nluis_app/shared/widgets/form/form_field_builder.dart' as custom;
+import 'package:nluis_app/shared/widgets/form/form_status_badge.dart';
 
 class FormSectionTile extends StatelessWidget {
   final QuestionnaireForm form;
@@ -11,6 +12,7 @@ class FormSectionTile extends StatelessWidget {
   final Map<String, dynamic> formValues;
   final DateTime? lastSavedAt;
   final bool isExpanded;
+  final FormCompletionState status;
   final Function(bool) onExpansionChanged;
   final Function(String, dynamic) onFieldChanged;
   final VoidCallback onSaveForm;
@@ -22,6 +24,7 @@ class FormSectionTile extends StatelessWidget {
     required this.formValues,
     this.lastSavedAt,
     required this.isExpanded,
+    required this.status,
     required this.onExpansionChanged,
     required this.onFieldChanged,
     required this.onSaveForm,
@@ -42,20 +45,38 @@ class FormSectionTile extends StatelessWidget {
         onExpansionChanged: onExpansionChanged,
         tilePadding: const EdgeInsets.symmetric(
           horizontal: AppConstants.spacingMd,
-          vertical: 8,
+          vertical: AppConstants.spacingXs,
         ),
-        childrenPadding: const EdgeInsets.all(AppConstants.spacingMd),
+        childrenPadding: const EdgeInsets.symmetric(
+          horizontal: AppConstants.spacingMd,
+          vertical: AppConstants.spacingSm,
+        ),
         backgroundColor:
             isDark
                 ? AppColors.darkSurfaceVariant.withValues(alpha: 0.3)
                 : AppColors.surfaceVariant.withValues(alpha: 0.3),
         collapsedBackgroundColor: Colors.transparent,
-        title: Text(
-          form.name,
-          style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-          ),
+        title: Row(
+          children: [
+            Expanded(
+              child: Text(
+                form.name,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color:
+                      isDark
+                          ? AppColors.darkTextPrimary
+                          : AppColors.textPrimary,
+                ),
+              ),
+            ),
+            const SizedBox(width: AppConstants.spacingSm),
+            FormStatusBadge(
+              status: status,
+              isDark: isDark,
+              compact: true,
+            ),
+          ],
         ),
         subtitle:
             form.description.isNotEmpty
@@ -76,17 +97,17 @@ class FormSectionTile extends StatelessWidget {
           // Form fields
           ...sortedFields.map(
             (field) => Padding(
-              padding: const EdgeInsets.only(bottom: AppConstants.spacingMd),
+              padding: const EdgeInsets.only(bottom: AppConstants.spacingSm),
               child: custom.FormFieldBuilder(
                 field: field,
-                value: formValues[field.id],
+                value: _resolveFieldValue(field, formValues[field.id]),
                 onChanged: (value) => onFieldChanged(field.id, value),
               ),
             ),
           ),
 
           // Save button
-          const SizedBox(height: AppConstants.spacingSm),
+          const SizedBox(height: AppConstants.spacingXs),
           Row(
             children: [
               if (lastSavedAt != null)
@@ -134,5 +155,35 @@ class FormSectionTile extends StatelessWidget {
     if (diff.inMinutes < 60) return '${diff.inMinutes}m zilizopita';
     if (diff.inHours < 24) return '${diff.inHours}h zilizopita';
     return '${diff.inDays}d zilizopita';
+  }
+}
+
+dynamic _resolveFieldValue(CustomFormField field, dynamic rawValue) {
+  if (rawValue == null) return null;
+
+  switch (field.type.toLowerCase()) {
+    case 'checkbox':
+      if (rawValue is bool) return rawValue;
+      if (rawValue is String) {
+        return rawValue.toLowerCase() == 'true';
+      }
+      return false;
+    case 'select':
+      if (rawValue is String) return rawValue;
+      return rawValue.toString();
+    case 'multiselect':
+      if (rawValue is List<String>) return rawValue;
+      if (rawValue is List) {
+        return rawValue.map((item) => item.toString()).toList();
+      }
+      return <String>[];
+    case 'date':
+      if (rawValue is DateTime) return rawValue;
+      if (rawValue is String) {
+        return DateTime.tryParse(rawValue);
+      }
+      return null;
+    default:
+      return rawValue;
   }
 }

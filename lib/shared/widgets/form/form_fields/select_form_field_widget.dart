@@ -39,7 +39,10 @@ class SelectFormFieldWidget extends StatelessWidget {
                 label,
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                  color:
+                      isDark
+                          ? AppColors.darkTextPrimary
+                          : AppColors.textPrimary,
                 ),
                 softWrap: true,
                 overflow: TextOverflow.visible,
@@ -64,8 +67,14 @@ class SelectFormFieldWidget extends StatelessWidget {
           validator: validator,
           decoration: InputDecoration(
             hintText: placeholder ?? 'Chagua...',
+            hintStyle: TextStyle(
+              color: isDark ? AppColors.darkTextHint : AppColors.textHint,
+            ),
             filled: true,
-            fillColor: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
+            fillColor:
+                isDark
+                    ? AppColors.darkSurfaceVariant
+                    : AppColors.surfaceVariant,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppConstants.radiusMd),
               borderSide: BorderSide.none,
@@ -90,12 +99,13 @@ class SelectFormFieldWidget extends StatelessWidget {
               ),
             ),
           ),
-          items: options.map((option) {
-            return DropdownMenuItem<String>(
-              value: option.value,
-              child: Text(option.textLabel),
-            );
-          }).toList(),
+          items:
+              options.map((option) {
+                return DropdownMenuItem<String>(
+                  value: option.value,
+                  child: Text(option.textLabel),
+                );
+              }).toList(),
         ),
       ],
     );

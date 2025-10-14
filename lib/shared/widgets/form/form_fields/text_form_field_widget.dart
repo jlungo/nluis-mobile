@@ -36,7 +36,10 @@ class TextFormFieldWidget extends StatelessWidget {
                 label,
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                  color:
+                      isDark
+                          ? AppColors.darkTextPrimary
+                          : AppColors.textPrimary,
                 ),
                 softWrap: true,
                 overflow: TextOverflow.visible,
@@ -61,8 +64,14 @@ class TextFormFieldWidget extends StatelessWidget {
           validator: validator,
           decoration: InputDecoration(
             hintText: placeholder ?? label,
+            hintStyle: TextStyle(
+              color: isDark ? AppColors.darkTextHint : AppColors.textHint,
+            ),
             filled: true,
-            fillColor: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
+            fillColor:
+                isDark
+                    ? AppColors.darkSurfaceVariant
+                    : AppColors.surfaceVariant,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppConstants.radiusMd),
               borderSide: BorderSide.none,
