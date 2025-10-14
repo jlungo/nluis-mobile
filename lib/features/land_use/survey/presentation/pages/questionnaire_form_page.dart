@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nluis_app/shared/widgets/form/form_completion_state.dart';
 import 'package:nluis_app/shared/widgets/form/form_section_card.dart';
 import '../../../../../shared/constants/app_constants.dart';
 import '../../../../../shared/theme/app_colors.dart';
@@ -25,6 +26,25 @@ class QuestionnaireFormPage extends ConsumerStatefulWidget {
   @override
   ConsumerState<QuestionnaireFormPage> createState() =>
       _QuestionnaireFormPageState();
+}
+
+class _SurveyProgress {
+  final Map<String, FormCompletionState> formStatuses;
+  final Map<String, FormCompletionState> sectionStatuses;
+  final List<String> incompleteFormNames;
+  final List<String> incompleteSectionNames;
+  final bool hasAnyData;
+
+  const _SurveyProgress({
+    required this.formStatuses,
+    required this.sectionStatuses,
+    required this.incompleteFormNames,
+    required this.incompleteSectionNames,
+    required this.hasAnyData,
+  });
+
+  bool get isComplete =>
+      incompleteFormNames.isEmpty && incompleteSectionNames.isEmpty;
 }
 
 class _QuestionnaireFormPageState extends ConsumerState<QuestionnaireFormPage> {
@@ -89,34 +109,256 @@ class _QuestionnaireFormPageState extends ConsumerState<QuestionnaireFormPage> {
 
   void _onFieldChanged(String formSlug, String fieldId, dynamic value) {
     setState(() {
-      if (!_formDataByFormSlug.containsKey(formSlug)) {
-        _formDataByFormSlug[formSlug] = {};
+      final formData =
+          _formDataByFormSlug.putIfAbsent(formSlug, () => <String, dynamic>{});
+      if (_isMeaningfulValue(value)) {
+        formData[fieldId] = value;
+      } else {
+        formData.remove(fieldId);
       }
-      _formDataByFormSlug[formSlug]![fieldId] = value;
+
+      if (formData.isEmpty) {
+        _formDataByFormSlug.remove(formSlug);
+      }
     });
+  }
+
+  bool _isMeaningfulValue(dynamic value) {
+    if (value == null) return false;
+    if (value is bool) return value;
+    if (value is String) return value.trim().isNotEmpty;
+    if (value is num) return true;
+    if (value is DateTime) return true;
+    if (value is List) return value.any(_isMeaningfulValue);
+    if (value is Map<String, dynamic>) {
+      if (value.containsKey('rows') && value['rows'] is List) {
+        return (value['rows'] as List).isNotEmpty;
+      }
+      return value.values.any(_isMeaningfulValue);
+    }
+    return true;
+  }
+
+  bool _hasAnyValue(Map<String, dynamic>? formData) {
+    if (formData == null || formData.isEmpty) return false;
+    return formData.values.any(_isMeaningfulValue);
+  }
+
+  Map<String, dynamic> _prepareFormDataForStorage(
+    Map<String, dynamic> formData,
+  ) {
+    return formData.map(
+      (key, value) => MapEntry(key, _serializeValueForStorage(value)),
+    );
+  }
+
+  dynamic _serializeValueForStorage(dynamic value) {
+    if (value == null) return null;
+    if (value is DateTime) return value.toIso8601String();
+    if (value is List) {
+      return value.map(_serializeValueForStorage).toList();
+    }
+    if (value is Map) {
+      return value.map(
+        (key, item) => MapEntry(
+          key,
+          _serializeValueForStorage(item),
+        ),
+      );
+    }
+    return value;
+  }
+
+  bool _formHasRequiredFields(QuestionnaireForm form) {
+    return form.customFormFields.any((field) => field.required);
+  }
+
+  bool _isRequiredFieldFilled(
+    CustomFormField field,
+    Map<String, dynamic>? formData,
+  ) {
+    final value = formData?[field.id];
+
+    switch (field.type.toLowerCase()) {
+      case 'text':
+      case 'textarea':
+      case 'email':
+      case 'number':
+        return value != null && value.toString().trim().isNotEmpty;
+      case 'select':
+        return value != null && value.toString().trim().isNotEmpty;
+      case 'multiselect':
+        return value is List && value.isNotEmpty;
+      case 'checkbox':
+        return value == true;
+      case 'date':
+        if (value is DateTime) return true;
+        if (value is String) return value.trim().isNotEmpty;
+        return false;
+      case 'file':
+        return value != null;
+      case 'table':
+        if (value is Map<String, dynamic>) {
+          final rows = value['rows'];
+          return rows is List && rows.isNotEmpty;
+        }
+        return false;
+      case 'zoning':
+        return value is Map && value.isNotEmpty;
+      default:
+        return value != null && value.toString().trim().isNotEmpty;
+    }
+  }
+
+  _SurveyProgress _computeSurveyProgress(QuestionnaireDetail questionnaire) {
+    final formStatuses = <String, FormCompletionState>{};
+    final sectionStatuses = <String, FormCompletionState>{};
+    final incompleteForms = <String>[];
+    final incompleteSections = <String>[];
+    var hasAnyData = false;
+
+    for (final section in questionnaire.sections) {
+      for (final form in section.forms) {
+        final formData = _formDataByFormSlug[form.slug];
+        final formHasData = _hasAnyValue(formData);
+        hasAnyData = hasAnyData || formHasData;
+
+        final requiredFields =
+            form.customFormFields.where((field) => field.required).toList();
+        final hasRequired = requiredFields.isNotEmpty;
+        final allRequiredFilled =
+            hasRequired
+                ? requiredFields.every(
+                    (field) => _isRequiredFieldFilled(field, formData),
+                  )
+                : true;
+
+        FormCompletionState status;
+        if (!hasRequired && !formHasData) {
+          status = FormCompletionState.notStarted;
+        } else if (allRequiredFilled) {
+          status = FormCompletionState.complete;
+        } else if (formHasData) {
+          status = FormCompletionState.inProgress;
+        } else {
+          status = FormCompletionState.notStarted;
+        }
+
+        formStatuses[form.slug] = status;
+
+        if (hasRequired && status != FormCompletionState.complete) {
+          incompleteForms.add(form.name);
+        }
+      }
+
+      final requiredForms =
+          section.forms.where(_formHasRequiredFields).toList();
+      if (requiredForms.isEmpty) {
+        final sectionHasData = section.forms.any(
+          (form) => _hasAnyValue(_formDataByFormSlug[form.slug]),
+        );
+        sectionStatuses[section.slug] =
+            sectionHasData
+                ? FormCompletionState.inProgress
+                : FormCompletionState.complete;
+      } else {
+        final statuses = requiredForms
+            .map(
+              (form) =>
+                  formStatuses[form.slug] ?? FormCompletionState.notStarted,
+            )
+            .toList();
+
+        if (statuses.every((status) => status == FormCompletionState.complete)) {
+          sectionStatuses[section.slug] = FormCompletionState.complete;
+        } else if (statuses
+            .every((status) => status == FormCompletionState.notStarted)) {
+          sectionStatuses[section.slug] = FormCompletionState.notStarted;
+        } else {
+          sectionStatuses[section.slug] = FormCompletionState.inProgress;
+        }
+
+        if (sectionStatuses[section.slug] != FormCompletionState.complete) {
+          incompleteSections.add(section.name);
+        }
+      }
+    }
+
+    return _SurveyProgress(
+      formStatuses: formStatuses,
+      sectionStatuses: sectionStatuses,
+      incompleteFormNames: incompleteForms,
+      incompleteSectionNames: incompleteSections,
+      hasAnyData: hasAnyData,
+    );
+  }
+
+  Future<void> _persistAllForms(QuestionnaireDetail questionnaire) async {
+    final draftService = ref.read(draftServiceProvider);
+    String? latestSurveyId = _currentSurveyId;
+    final Map<String, DateTime> savedTimestamps = {};
+
+    for (final section in questionnaire.sections) {
+      for (final form in section.forms) {
+        final formData = _formDataByFormSlug[form.slug];
+        if (!_hasAnyValue(formData)) continue;
+
+        final preparedData =
+            _prepareFormDataForStorage(Map<String, dynamic>.from(formData!));
+        latestSurveyId = await draftService.saveDraft(
+          projectId: widget.projectId,
+          questionnaireSlug: widget.questionnaireSlug,
+          formSlug: form.slug,
+          formData: preparedData,
+          surveyId: latestSurveyId,
+        );
+        savedTimestamps[form.slug] = DateTime.now();
+      }
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _currentSurveyId = latestSurveyId;
+      for (final entry in savedTimestamps.entries) {
+        _formLastSavedAt[entry.key] = entry.value;
+      }
+    });
+  }
+
+  void _showSnackBar(
+    String message, {
+    Color? backgroundColor,
+  }) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 3),
+        backgroundColor: backgroundColor,
+      ),
+    );
   }
 
   Future<void> _saveFormDraft(String formSlug) async {
     final formData = _formDataByFormSlug[formSlug];
-    if (formData == null || formData.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Hakuna data ya kuhifadhi'),
-          duration: Duration(seconds: 2),
-        ),
+    if (!_hasAnyValue(formData)) {
+      _showSnackBar(
+        'Jaza angalau sehemu moja kabla ya kuhifadhi.',
+        backgroundColor: AppColors.warning,
       );
       return;
     }
 
     try {
       final draftService = ref.read(draftServiceProvider);
+      final preparedData = _prepareFormDataForStorage(formData!);
 
       // Save the form and get the surveyId back
       final surveyId = await draftService.saveDraft(
         projectId: widget.projectId,
         questionnaireSlug: widget.questionnaireSlug,
         formSlug: formSlug,
-        formData: formData,
+        formData: preparedData,
         surveyId: _currentSurveyId,
       );
 
@@ -126,84 +368,75 @@ class _QuestionnaireFormPageState extends ConsumerState<QuestionnaireFormPage> {
         _formLastSavedAt[formSlug] = DateTime.now();
       });
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Fomu imehifadhiwa'),
-            duration: Duration(seconds: 2),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
+      _showSnackBar(
+        'Fomu imehifadhiwa',
+        backgroundColor: AppColors.success,
+      );
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Hitilafu: $e'),
-            duration: const Duration(seconds: 3),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+      _showSnackBar(
+        'Hitilafu: $e',
+        backgroundColor: AppColors.error,
+      );
     }
   }
 
-  Future<void> _saveSurvey() async {
-    if (_currentSurveyId == null) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Tafadhali hifadhi angalau fomu moja kwanza'),
-            duration: Duration(seconds: 2),
-            backgroundColor: Colors.orange,
-          ),
-        );
-      }
+  Future<void> _saveSurvey(
+    QuestionnaireDetail questionnaire,
+    _SurveyProgress progress,
+  ) async {
+    if (!progress.isComplete) {
+      final incompleteFormsPreview = progress.incompleteFormNames.take(3).toList();
+      final moreHidden =
+          progress.incompleteFormNames.length > incompleteFormsPreview.length
+              ? ' ...'
+              : '';
+      final details =
+          incompleteFormsPreview.isNotEmpty
+              ? '\n• ${incompleteFormsPreview.join('\n• ')}$moreHidden'
+              : '';
+
+      _showSnackBar(
+        'Huwezi kukamilisha dodoso. Kuna sehemu za lazima ambazo hazijajazwa kikamilifu.$details',
+        backgroundColor: AppColors.error,
+      );
       return;
     }
 
     try {
-      final draftService = ref.read(draftServiceProvider);
+      await _persistAllForms(questionnaire);
 
+      if (_currentSurveyId == null) {
+        _showSnackBar(
+          'Hakuna fomu za kuhifadhi. Hifadhi data katika sehemu husika kwanza.',
+          backgroundColor: AppColors.warning,
+        );
+        return;
+      }
+
+      final draftService = ref.read(draftServiceProvider);
       final saved = await draftService.saveSurvey(
         surveyId: _currentSurveyId!,
       );
 
       if (!saved) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Hakuna fomu za kuhifadhi'),
-              duration: Duration(seconds: 2),
-              backgroundColor: Colors.orange,
-            ),
-          );
-        }
+        _showSnackBar(
+          'Hakuna fomu za kuhifadhi.',
+          backgroundColor: AppColors.warning,
+        );
         return;
       }
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Dodoso limehifadhiwa!'),
-            duration: Duration(seconds: 2),
-            backgroundColor: Colors.green,
-          ),
-        );
+      _showSnackBar(
+        'Dodoso limekamilika!',
+        backgroundColor: AppColors.success,
+      );
 
-        // Go back to survey list
-        Navigator.pop(context);
-      }
+      Navigator.pop(context);
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Hitilafu: $e'),
-            duration: const Duration(seconds: 3),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+      _showSnackBar(
+        'Hitilafu: $e',
+        backgroundColor: AppColors.error,
+      );
     }
   }
 
@@ -215,6 +448,14 @@ class _QuestionnaireFormPageState extends ConsumerState<QuestionnaireFormPage> {
     final questionnaireAsync = ref.watch(
       questionnaireDetailProvider(widget.questionnaireSlug),
     );
+    final questionnaire = questionnaireAsync.asData?.value;
+    final surveyProgress =
+        questionnaire != null ? _computeSurveyProgress(questionnaire) : null;
+    final isSurveyComplete = surveyProgress?.isComplete ?? false;
+    final saveButtonColor =
+        questionnaire == null
+            ? (isDark ? AppColors.darkDivider : AppColors.divider)
+            : (isSurveyComplete ? AppColors.success : AppColors.warning);
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
@@ -241,9 +482,15 @@ class _QuestionnaireFormPageState extends ConsumerState<QuestionnaireFormPage> {
           Padding(
             padding: const EdgeInsets.only(right: 8),
             child: ElevatedButton.icon(
-              onPressed: _saveSurvey,
+              onPressed:
+                  questionnaire == null
+                      ? null
+                      : () => _saveSurvey(
+                        questionnaire,
+                        surveyProgress ?? _computeSurveyProgress(questionnaire),
+                      ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.success,
+                backgroundColor: saveButtonColor,
                 foregroundColor: Colors.white,
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(
@@ -252,13 +499,15 @@ class _QuestionnaireFormPageState extends ConsumerState<QuestionnaireFormPage> {
                 ),
               ),
               icon: const Icon(Icons.save_outlined, size: 20),
-              label: const Text('Hifadhi'),
+              label: const Text('Hifadhi Kamili'),
             ),
           ),
         ],
       ),
       body: questionnaireAsync.when(
           data: (questionnaire) {
+            final progressForBuild =
+                surveyProgress ?? _computeSurveyProgress(questionnaire);
             // Sort sections by position
             final sortedSections = List<QuestionnaireSection>.from(
               questionnaire.sections,
@@ -349,6 +598,8 @@ class _QuestionnaireFormPageState extends ConsumerState<QuestionnaireFormPage> {
                     formLastSavedAt: _formLastSavedAt,
                     expandedSections: _expandedSections,
                     expandedForms: _expandedForms,
+                    formStatuses: progressForBuild.formStatuses,
+                    sectionStatuses: progressForBuild.sectionStatuses,
                     onFieldChanged: _onFieldChanged,
                     onSaveForm: _saveFormDraft,
                     onSectionExpandChanged: (sectionSlug, isExpanded) {
