@@ -332,42 +332,53 @@ class _DraftDodososPageState extends ConsumerState<DraftDodososPage> {
             ),
             if (_drafts.isEmpty)
               Expanded(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                child: RefreshIndicator(
+                  onRefresh: _loadDrafts,
+                  child: ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(32),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              AppColors.info.withValues(alpha: 0.1),
-                              AppColors.info.withValues(alpha: 0.05),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.6,
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(32),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [
+                                      AppColors.info.withValues(alpha: 0.1),
+                                      AppColors.info.withValues(alpha: 0.05),
+                                    ],
+                                  ),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.drafts_outlined,
+                                  size: 80,
+                                  color: AppColors.info,
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                              Text(
+                                'Hakuna Rasimu',
+                                style: theme.textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Rasimu zako zitaonyeshwa hapa',
+                                style: theme.textTheme.bodyLarge?.copyWith(
+                                  color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                                ),
+                              ),
                             ],
                           ),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.drafts_outlined,
-                          size: 80,
-                          color: AppColors.info,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      Text(
-                        'Hakuna Rasimu',
-                        style: theme.textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Rasimu zako zitaonyeshwa hapa',
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                         ),
                       ),
                     ],
@@ -376,43 +387,47 @@ class _DraftDodososPageState extends ConsumerState<DraftDodososPage> {
               )
             else
               Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppConstants.spacingLg,
-                    vertical: AppConstants.spacingSm,
-                  ),
-                  itemCount: _drafts.length,
-                  itemBuilder: (context, index) {
-                    return _DraftCard(
-                      draft: _drafts[index],
-                      isDark: isDark,
-                      onDelete: () => _confirmDelete(context, _drafts[index]),
-                      onEdit: () {
-                        final draft = _drafts[index];
-                        if (draft.questionnaireSlug.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Dodoso haipo'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                          return;
-                        }
+                child: RefreshIndicator(
+                  onRefresh: _loadDrafts,
+                  child: ListView.builder(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppConstants.spacingLg,
+                      vertical: AppConstants.spacingSm,
+                    ),
+                    itemCount: _drafts.length,
+                    itemBuilder: (context, index) {
+                      return _DraftCard(
+                        draft: _drafts[index],
+                        isDark: isDark,
+                        onDelete: () => _confirmDelete(context, _drafts[index]),
+                        onEdit: () {
+                          final draft = _drafts[index];
+                          if (draft.questionnaireSlug.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Dodoso haipo'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                            return;
+                          }
 
-                        // Navigate to questionnaire form page
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => QuestionnaireFormPage(
-                              questionnaireSlug: draft.questionnaireSlug,
-                              projectId: draft.projectId,
-                              projectName: draft.projectName,
+                          // Navigate to questionnaire form page
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => QuestionnaireFormPage(
+                                questionnaireSlug: draft.questionnaireSlug,
+                                projectId: draft.projectId,
+                                projectName: draft.projectName,
+                              ),
                             ),
-                          ),
-                        ).then((_) => _loadDrafts()); // Refresh drafts when returning
-                      },
-                    );
-                  },
+                          ).then((_) => _loadDrafts()); // Refresh drafts when returning
+                        },
+                      );
+                    },
+                  ),
                 ),
               ),
           ],
