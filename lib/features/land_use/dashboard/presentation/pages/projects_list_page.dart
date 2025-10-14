@@ -397,26 +397,40 @@ class _ProjectsListPageState extends ConsumerState<ProjectsListPage> {
                     }).toList();
 
                 if (filteredProjects.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      ref.invalidate(assignedProjectsProvider);
+                      await ref.read(assignedProjectsProvider.future);
+                    },
+                    child: ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
                       children: [
-                        Icon(
-                          Icons.search_off,
-                          size: 64,
-                          color:
-                              isDark
-                                  ? AppColors.darkTextHint
-                                  : AppColors.textHint,
-                        ),
-                        const SizedBox(height: AppConstants.spacingMd),
-                        Text(
-                          'No projects found',
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            color:
-                                isDark
-                                    ? AppColors.darkTextSecondary
-                                    : AppColors.textSecondary,
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.5,
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.search_off,
+                                  size: 64,
+                                  color:
+                                      isDark
+                                          ? AppColors.darkTextHint
+                                          : AppColors.textHint,
+                                ),
+                                const SizedBox(height: AppConstants.spacingMd),
+                                Text(
+                                  'No projects found',
+                                  style: theme.textTheme.bodyLarge?.copyWith(
+                                    color:
+                                        isDark
+                                            ? AppColors.darkTextSecondary
+                                            : AppColors.textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
@@ -424,18 +438,25 @@ class _ProjectsListPageState extends ConsumerState<ProjectsListPage> {
                   );
                 }
 
-                return ListView.builder(
-                  controller: _scrollController,
-                  padding: const EdgeInsets.all(AppConstants.spacingMd),
-                  itemCount: filteredProjects.length,
-                  itemBuilder: (context, index) {
-                    final project = filteredProjects[index];
-                    return ProjectListCard(
-                      project: project,
-                      onTap: () => _showProjectActions(context, project),
-                      onMoreTap: () => _showProjectActions(context, project),
-                    );
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    ref.invalidate(assignedProjectsProvider);
+                    await ref.read(assignedProjectsProvider.future);
                   },
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.all(AppConstants.spacingMd),
+                    itemCount: filteredProjects.length,
+                    itemBuilder: (context, index) {
+                      final project = filteredProjects[index];
+                      return ProjectListCard(
+                        project: project,
+                        onTap: () => _showProjectActions(context, project),
+                        onMoreTap: () => _showProjectActions(context, project),
+                      );
+                    },
+                  ),
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
