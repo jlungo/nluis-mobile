@@ -339,6 +339,30 @@ class _QuestionnaireFormPageState extends ConsumerState<QuestionnaireFormPage> {
     );
   }
 
+  String _extractErrorMessage(Object error) {
+    final errorString = error.toString();
+
+    // Try to extract message from Exception: ServerFailure(message)
+    final serverFailurePattern = RegExp(r'ServerFailure\(([^)]+)\)');
+    final match = serverFailurePattern.firstMatch(errorString);
+    if (match != null) {
+      return match.group(1) ?? errorString;
+    }
+
+    // Try to extract from Exception: message format
+    if (errorString.startsWith('Exception: ')) {
+      final message = errorString.substring('Exception: '.length);
+      // If it's still a ServerFailure, extract the inner message
+      final innerMatch = serverFailurePattern.firstMatch(message);
+      if (innerMatch != null) {
+        return innerMatch.group(1) ?? message;
+      }
+      return message;
+    }
+
+    return errorString;
+  }
+
   Future<void> _saveFormDraft(String formSlug) async {
     final formData = _formDataByFormSlug[formSlug];
     if (!_hasAnyValue(formData)) {
@@ -632,7 +656,7 @@ class _QuestionnaireFormPageState extends ConsumerState<QuestionnaireFormPage> {
                       ),
                       const SizedBox(height: AppConstants.spacingMd),
                       Text(
-                        'Hitilafu imetokea',
+                        '${_extractErrorMessage(error)}',
                         style: theme.textTheme.titleLarge?.copyWith(
                           color: isDark ? AppColors.errorDark : AppColors.error,
                         ),
