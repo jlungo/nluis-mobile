@@ -299,9 +299,16 @@ class _SurveyListPageState extends ConsumerState<SurveyListPage> {
             );
           }
 
-          await (database.delete(database.surveyResponses)
+          final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+          await (database.update(database.surveyResponses)
                 ..where((tbl) => tbl.surveyId.equals(surveyId)))
-              .go();
+              .write(
+                SurveyResponsesCompanion(
+                  isDraft: const drift.Value(false),
+                  dirty: const drift.Value(false),
+                  updatedAt: drift.Value(now),
+                ),
+              );
 
           successes.add(surveyId);
           idsToUnselect.add(surveyId);
