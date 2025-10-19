@@ -17,6 +17,7 @@ import '../../../../../shared/widgets/stat_card.dart';
 import '../../../../../shared/widgets/custom_app_bar.dart';
 import '../../../../../shared/widgets/action_menu_item.dart';
 import '../../../../../shared/widgets/offline_banner.dart';
+import '../../../../../shared/utils/snackbar_utils.dart';
 import '../providers/project_providers.dart';
 import 'projects_list_page.dart';
 import '../../../../../shared/models/project.dart';
@@ -162,13 +163,15 @@ class LandUseDashboardPage extends ConsumerWidget {
     final surveyStatsAsync = ref.watch(surveyDashboardStatsProvider);
 
     void showSnackBar(String message, {Color color = AppColors.warning}) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          duration: const Duration(seconds: 3),
-          backgroundColor: color,
-        ),
-      );
+      if (color == AppColors.success) {
+        SnackBarUtils.showSuccess(context, message);
+      } else if (color == AppColors.error) {
+        SnackBarUtils.showError(context, message);
+      } else if (color == AppColors.warning) {
+        SnackBarUtils.showWarning(context, message);
+      } else {
+        SnackBarUtils.showInfo(context, message);
+      }
     }
 
     Future<void> refreshProjects() async {
