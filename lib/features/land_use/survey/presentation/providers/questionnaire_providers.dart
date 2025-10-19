@@ -24,7 +24,7 @@ final questionnaireRepositoryProvider = Provider<QuestionnaireRepository>((
   final database = ref.watch(databaseProvider);
   final networkInfo = ref.watch(networkInfoProvider);
   return QuestionnaireRepositoryImpl(
-    dio: dioClient.dio,
+    dioClient: dioClient,
     database: database,
     networkInfo: networkInfo,
   );
