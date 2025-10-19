@@ -1,14 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:dio/dio.dart';
 import '../local/draft_provider.dart';
 import 'project_download_service.dart';
-
-final dioProvider = Provider<Dio>((ref) {
-  return Dio();
-});
+import '../../core/network/dio_client.dart';
+import '../../features/auth/presentation/providers/auth_providers.dart';
 
 final downloadServiceProvider = Provider<ProjectDownloadService>((ref) {
   final database = ref.watch(databaseProvider);
-  final dio = ref.watch(dioProvider);
-  return ProjectDownloadService(database, dio);
+  final DioClient dioClient = ref.watch(dioClientProvider);
+  return ProjectDownloadService(database, dioClient);
 });
