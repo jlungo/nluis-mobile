@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:drift/drift.dart' as drift;
 import '../local/database.dart';
@@ -146,7 +148,9 @@ class ProjectDownloadService {
                   required: drift.Value(field['required'] as bool? ?? false),
                   position: field['position'] as int,
                   optionsJson: drift.Value(
-                    field['questionnaire_select_options']?.toString(),
+                    field['questionnaire_select_options'] != null
+                        ? jsonEncode(field['questionnaire_select_options'])
+                        : null,
                   ),
                 ),
               );
