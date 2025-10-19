@@ -6,7 +6,7 @@ import '../../shared/constants/app_constants.dart';
 import 'network_info.dart';
 
 class DioClient {
-  late final Dio dio;
+  late final Dio _dio;
   final FlutterSecureStorage secureStorage;
   final NetworkInfo networkInfo;
   final Future<void> Function()? onTokenRefreshFailedWhileOnline;
@@ -16,12 +16,12 @@ class DioClient {
     required this.networkInfo,
     this.onTokenRefreshFailedWhileOnline,
   }) {
-    dio = Dio(
+    _dio = Dio(
       BaseOptions(
         baseUrl: Env.baseUrl,
         connectTimeout: Duration(milliseconds: Env.connectionTimeout),
         receiveTimeout: Duration(milliseconds: Env.receiveTimeout),
-        headers: {
+        headers: const {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
@@ -31,8 +31,100 @@ class DioClient {
     _setupInterceptors();
   }
 
+  Future<Response<T>> get<T>(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onReceiveProgress,
+  }) {
+    return _dio.get(
+      path,
+      queryParameters: queryParameters,
+      options: options,
+      cancelToken: cancelToken,
+      onReceiveProgress: onReceiveProgress,
+    );
+  }
+
+  Future<Response<T>> post<T>(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) {
+    return _dio.post(
+      path,
+      data: data,
+      queryParameters: queryParameters,
+      options: options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+  }
+
+  Future<Response<T>> put<T>(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) {
+    return _dio.put(
+      path,
+      data: data,
+      queryParameters: queryParameters,
+      options: options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+  }
+
+  Future<Response<T>> patch<T>(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) {
+    return _dio.patch(
+      path,
+      data: data,
+      queryParameters: queryParameters,
+      options: options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+  }
+
+  Future<Response<T>> delete<T>(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+  }) {
+    return _dio.delete(
+      path,
+      data: data,
+      queryParameters: queryParameters,
+      options: options,
+      cancelToken: cancelToken,
+    );
+  }
+
   void _setupInterceptors() {
-    dio.interceptors.add(
+    _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           // Add auth token to requests
@@ -44,7 +136,9 @@ class DioClient {
             options.headers['Authorization'] = 'Bearer $token';
           }
 
-          AppLogger.debug('REQUEST[${options.method}] => PATH: ${options.path}');
+          AppLogger.debug(
+            'REQUEST[${options.method}] => PATH: ${options.path}',
+          );
           return handler.next(options);
         },
         onResponse: (response, handler) {
@@ -71,7 +165,7 @@ class DioClient {
               options.headers['Authorization'] = 'Bearer $token';
 
               try {
-                final response = await dio.fetch(options);
+                final response = await _dio.fetch(options);
                 return handler.resolve(response);
               } catch (e) {
                 return handler.reject(error);
@@ -107,7 +201,7 @@ class DioClient {
     );
 
     // Logging interceptor (debug only)
-    dio.interceptors.add(
+    _dio.interceptors.add(
       LogInterceptor(
         request: true,
         requestHeader: true,
