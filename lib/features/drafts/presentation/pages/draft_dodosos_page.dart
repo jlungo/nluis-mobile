@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart' as drift;
 import '../../../../shared/constants/app_constants.dart';
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/utils/dialog_utils.dart';
+import '../../../../shared/utils/snackbar_utils.dart';
 import '../../../../shared/widgets/custom_app_bar.dart';
 import '../../../../shared/widgets/app_drawer.dart';
 import '../../../../shared/widgets/overlay_loader.dart';
@@ -114,12 +117,7 @@ class _DraftDodososPageState extends ConsumerState<DraftDodososPage> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Hitilafu: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        SnackBarUtils.showError(context, 'Hitilafu: $e');
       }
     }
   }
@@ -163,35 +161,23 @@ class _DraftDodososPageState extends ConsumerState<DraftDodososPage> {
           _isDeleting = false;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Rasimu imefutwa'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 2),
-          ),
-        );
+        SnackBarUtils.showSuccess(context, 'Rasimu imefutwa');
       }
     } catch (e) {
       if (mounted) {
         setState(() => _isDeleting = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Hitilafu: $e'),
-            backgroundColor: Colors.red,
-            duration: Duration(seconds: 3),
-          ),
-        );
+        SnackBarUtils.showError(context, 'Hitilafu: $e');
       }
     }
   }
 
-  void _confirmDelete(BuildContext context, _DraftDodosoItem draft) {
+  Future<void> _confirmDelete(BuildContext context, _DraftDodosoItem draft) async {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
+    await DialogUtils.showCustomDialog<void>(
+      context,
+      builder: (dialogContext) => AlertDialog(
         backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppConstants.radiusMd),
@@ -266,7 +252,7 @@ class _DraftDodososPageState extends ConsumerState<DraftDodososPage> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.of(dialogContext).pop(),
             child: Text(
               'Ghairi',
               style: TextStyle(
@@ -276,7 +262,7 @@ class _DraftDodososPageState extends ConsumerState<DraftDodososPage> {
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.of(dialogContext).pop();
               _deleteDraft(draft);
             },
             style: ElevatedButton.styleFrom(
@@ -400,16 +386,11 @@ class _DraftDodososPageState extends ConsumerState<DraftDodososPage> {
                       return _DraftCard(
                         draft: _drafts[index],
                         isDark: isDark,
-                        onDelete: () => _confirmDelete(context, _drafts[index]),
+                        onDelete: () => unawaited(_confirmDelete(context, _drafts[index])),
                         onEdit: () {
                           final draft = _drafts[index];
                           if (draft.questionnaireSlug.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Dodoso haipo'),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
+                            SnackBarUtils.showError(context, 'Dodoso haipo');
                             return;
                           }
 
