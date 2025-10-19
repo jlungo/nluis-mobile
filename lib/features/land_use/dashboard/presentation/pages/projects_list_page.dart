@@ -6,6 +6,7 @@ import '../../../../../core/network/network_info.dart';
 import '../../../../../data/services/download_provider.dart';
 import '../../../../../shared/constants/app_constants.dart';
 import '../../../../../shared/theme/app_colors.dart';
+import '../../../../../shared/utils/project_action_handler.dart';
 import '../../../../../shared/widgets/app_drawer.dart';
 import '../../../../../shared/widgets/custom_app_bar.dart';
 import '../../../../../shared/widgets/app_input_field.dart';
@@ -50,13 +51,13 @@ class _ProjectsListPageState extends ConsumerState<ProjectsListPage> {
     }
   }
 
-  void _showSnackBar(String message) {
+  void _showSnackBar(String message, [Color? backgroundColor]) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
         duration: const Duration(seconds: 3),
-        backgroundColor: AppColors.info,
+        backgroundColor: backgroundColor ?? AppColors.info,
       ),
     );
   }
@@ -497,14 +498,30 @@ class _ProjectsListPageState extends ConsumerState<ProjectsListPage> {
                   itemCount: filteredProjects.length,
                   itemBuilder: (context, index) {
                     final project = filteredProjects[index];
-                    return ProjectListCard(
-                      project: project,
-                      onTap: () => unawaited(
-                        _handleProjectTap(project, isOnline),
-                      ),
-                      onMoreTap: () => unawaited(
-                        _handleProjectTap(project, isOnline),
-                      ),
+
+                    // Check if project is downloaded
+                    final downloadService = ref.read(downloadServiceProvider);
+
+                    return FutureBuilder<bool>(
+                      future: downloadService.isProjectDownloaded(project.id),
+                      builder: (context, snapshot) {
+                        final isDownloaded = snapshot.data ?? false;
+
+                        return ProjectListCard(
+                          project: project,
+                          isDownloaded: isDownloaded,
+                          onTap: () => unawaited(
+                            _handleProjectTap(project, isOnline),
+                          ),
+                          onDownload: () {
+                            final handler = ProjectActionHandler(context, ref);
+                            unawaited(handler.downloadProject(project, isOnline));
+                          },
+                          onMoreTap: () => unawaited(
+                            _handleProjectTap(project, isOnline),
+                          ),
+                        );
+                      },
                     );
                   },
                 );
