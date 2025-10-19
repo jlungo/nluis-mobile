@@ -1796,6 +1796,42 @@ class $QuestionnairesTable extends Questionnaires
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _moduleSlugMeta = const VerificationMeta(
+    'moduleSlug',
+  );
+  @override
+  late final GeneratedColumn<String> moduleSlug = GeneratedColumn<String>(
+    'module_slug',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _moduleNameMeta = const VerificationMeta(
+    'moduleName',
+  );
+  @override
+  late final GeneratedColumn<String> moduleName = GeneratedColumn<String>(
+    'module_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1805,6 +1841,9 @@ class $QuestionnairesTable extends Questionnaires
     version,
     updatedAt,
     localityId,
+    description,
+    moduleSlug,
+    moduleName,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1869,6 +1908,27 @@ class $QuestionnairesTable extends Questionnaires
     } else if (isInserting) {
       context.missing(_localityIdMeta);
     }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('module_slug')) {
+      context.handle(
+        _moduleSlugMeta,
+        moduleSlug.isAcceptableOrUnknown(data['module_slug']!, _moduleSlugMeta),
+      );
+    }
+    if (data.containsKey('module_name')) {
+      context.handle(
+        _moduleNameMeta,
+        moduleName.isAcceptableOrUnknown(data['module_name']!, _moduleNameMeta),
+      );
+    }
     return context;
   }
 
@@ -1913,6 +1973,21 @@ class $QuestionnairesTable extends Questionnaires
             DriftSqlType.int,
             data['${effectivePrefix}locality_id'],
           )!,
+      description:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}description'],
+          )!,
+      moduleSlug:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}module_slug'],
+          )!,
+      moduleName:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}module_name'],
+          )!,
     );
   }
 
@@ -1930,6 +2005,9 @@ class Questionnaire extends DataClass implements Insertable<Questionnaire> {
   final String version;
   final int updatedAt;
   final int localityId;
+  final String description;
+  final String moduleSlug;
+  final String moduleName;
   const Questionnaire({
     required this.id,
     required this.name,
@@ -1938,6 +2016,9 @@ class Questionnaire extends DataClass implements Insertable<Questionnaire> {
     required this.version,
     required this.updatedAt,
     required this.localityId,
+    required this.description,
+    required this.moduleSlug,
+    required this.moduleName,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1949,6 +2030,9 @@ class Questionnaire extends DataClass implements Insertable<Questionnaire> {
     map['version'] = Variable<String>(version);
     map['updated_at'] = Variable<int>(updatedAt);
     map['locality_id'] = Variable<int>(localityId);
+    map['description'] = Variable<String>(description);
+    map['module_slug'] = Variable<String>(moduleSlug);
+    map['module_name'] = Variable<String>(moduleName);
     return map;
   }
 
@@ -1961,6 +2045,9 @@ class Questionnaire extends DataClass implements Insertable<Questionnaire> {
       version: Value(version),
       updatedAt: Value(updatedAt),
       localityId: Value(localityId),
+      description: Value(description),
+      moduleSlug: Value(moduleSlug),
+      moduleName: Value(moduleName),
     );
   }
 
@@ -1977,6 +2064,9 @@ class Questionnaire extends DataClass implements Insertable<Questionnaire> {
       version: serializer.fromJson<String>(json['version']),
       updatedAt: serializer.fromJson<int>(json['updatedAt']),
       localityId: serializer.fromJson<int>(json['localityId']),
+      description: serializer.fromJson<String>(json['description']),
+      moduleSlug: serializer.fromJson<String>(json['moduleSlug']),
+      moduleName: serializer.fromJson<String>(json['moduleName']),
     );
   }
   @override
@@ -1990,6 +2080,9 @@ class Questionnaire extends DataClass implements Insertable<Questionnaire> {
       'version': serializer.toJson<String>(version),
       'updatedAt': serializer.toJson<int>(updatedAt),
       'localityId': serializer.toJson<int>(localityId),
+      'description': serializer.toJson<String>(description),
+      'moduleSlug': serializer.toJson<String>(moduleSlug),
+      'moduleName': serializer.toJson<String>(moduleName),
     };
   }
 
@@ -2001,6 +2094,9 @@ class Questionnaire extends DataClass implements Insertable<Questionnaire> {
     String? version,
     int? updatedAt,
     int? localityId,
+    String? description,
+    String? moduleSlug,
+    String? moduleName,
   }) => Questionnaire(
     id: id ?? this.id,
     name: name ?? this.name,
@@ -2009,6 +2105,9 @@ class Questionnaire extends DataClass implements Insertable<Questionnaire> {
     version: version ?? this.version,
     updatedAt: updatedAt ?? this.updatedAt,
     localityId: localityId ?? this.localityId,
+    description: description ?? this.description,
+    moduleSlug: moduleSlug ?? this.moduleSlug,
+    moduleName: moduleName ?? this.moduleName,
   );
   Questionnaire copyWithCompanion(QuestionnairesCompanion data) {
     return Questionnaire(
@@ -2020,6 +2119,12 @@ class Questionnaire extends DataClass implements Insertable<Questionnaire> {
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       localityId:
           data.localityId.present ? data.localityId.value : this.localityId,
+      description:
+          data.description.present ? data.description.value : this.description,
+      moduleSlug:
+          data.moduleSlug.present ? data.moduleSlug.value : this.moduleSlug,
+      moduleName:
+          data.moduleName.present ? data.moduleName.value : this.moduleName,
     );
   }
 
@@ -2032,14 +2137,27 @@ class Questionnaire extends DataClass implements Insertable<Questionnaire> {
           ..write('typeId: $typeId, ')
           ..write('version: $version, ')
           ..write('updatedAt: $updatedAt, ')
-          ..write('localityId: $localityId')
+          ..write('localityId: $localityId, ')
+          ..write('description: $description, ')
+          ..write('moduleSlug: $moduleSlug, ')
+          ..write('moduleName: $moduleName')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, name, slug, typeId, version, updatedAt, localityId);
+  int get hashCode => Object.hash(
+    id,
+    name,
+    slug,
+    typeId,
+    version,
+    updatedAt,
+    localityId,
+    description,
+    moduleSlug,
+    moduleName,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2050,7 +2168,10 @@ class Questionnaire extends DataClass implements Insertable<Questionnaire> {
           other.typeId == this.typeId &&
           other.version == this.version &&
           other.updatedAt == this.updatedAt &&
-          other.localityId == this.localityId);
+          other.localityId == this.localityId &&
+          other.description == this.description &&
+          other.moduleSlug == this.moduleSlug &&
+          other.moduleName == this.moduleName);
 }
 
 class QuestionnairesCompanion extends UpdateCompanion<Questionnaire> {
@@ -2061,6 +2182,9 @@ class QuestionnairesCompanion extends UpdateCompanion<Questionnaire> {
   final Value<String> version;
   final Value<int> updatedAt;
   final Value<int> localityId;
+  final Value<String> description;
+  final Value<String> moduleSlug;
+  final Value<String> moduleName;
   const QuestionnairesCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
@@ -2069,6 +2193,9 @@ class QuestionnairesCompanion extends UpdateCompanion<Questionnaire> {
     this.version = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.localityId = const Value.absent(),
+    this.description = const Value.absent(),
+    this.moduleSlug = const Value.absent(),
+    this.moduleName = const Value.absent(),
   });
   QuestionnairesCompanion.insert({
     this.id = const Value.absent(),
@@ -2078,6 +2205,9 @@ class QuestionnairesCompanion extends UpdateCompanion<Questionnaire> {
     required String version,
     required int updatedAt,
     required int localityId,
+    this.description = const Value.absent(),
+    this.moduleSlug = const Value.absent(),
+    this.moduleName = const Value.absent(),
   }) : name = Value(name),
        slug = Value(slug),
        typeId = Value(typeId),
@@ -2092,6 +2222,9 @@ class QuestionnairesCompanion extends UpdateCompanion<Questionnaire> {
     Expression<String>? version,
     Expression<int>? updatedAt,
     Expression<int>? localityId,
+    Expression<String>? description,
+    Expression<String>? moduleSlug,
+    Expression<String>? moduleName,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2101,6 +2234,9 @@ class QuestionnairesCompanion extends UpdateCompanion<Questionnaire> {
       if (version != null) 'version': version,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (localityId != null) 'locality_id': localityId,
+      if (description != null) 'description': description,
+      if (moduleSlug != null) 'module_slug': moduleSlug,
+      if (moduleName != null) 'module_name': moduleName,
     });
   }
 
@@ -2112,6 +2248,9 @@ class QuestionnairesCompanion extends UpdateCompanion<Questionnaire> {
     Value<String>? version,
     Value<int>? updatedAt,
     Value<int>? localityId,
+    Value<String>? description,
+    Value<String>? moduleSlug,
+    Value<String>? moduleName,
   }) {
     return QuestionnairesCompanion(
       id: id ?? this.id,
@@ -2121,6 +2260,9 @@ class QuestionnairesCompanion extends UpdateCompanion<Questionnaire> {
       version: version ?? this.version,
       updatedAt: updatedAt ?? this.updatedAt,
       localityId: localityId ?? this.localityId,
+      description: description ?? this.description,
+      moduleSlug: moduleSlug ?? this.moduleSlug,
+      moduleName: moduleName ?? this.moduleName,
     );
   }
 
@@ -2148,6 +2290,15 @@ class QuestionnairesCompanion extends UpdateCompanion<Questionnaire> {
     if (localityId.present) {
       map['locality_id'] = Variable<int>(localityId.value);
     }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (moduleSlug.present) {
+      map['module_slug'] = Variable<String>(moduleSlug.value);
+    }
+    if (moduleName.present) {
+      map['module_name'] = Variable<String>(moduleName.value);
+    }
     return map;
   }
 
@@ -2160,7 +2311,10 @@ class QuestionnairesCompanion extends UpdateCompanion<Questionnaire> {
           ..write('typeId: $typeId, ')
           ..write('version: $version, ')
           ..write('updatedAt: $updatedAt, ')
-          ..write('localityId: $localityId')
+          ..write('localityId: $localityId, ')
+          ..write('description: $description, ')
+          ..write('moduleSlug: $moduleSlug, ')
+          ..write('moduleName: $moduleName')
           ..write(')'))
         .toString();
   }
@@ -2255,6 +2409,53 @@ class $FormsTable extends Forms with TableInfo<$FormsTable, Form> {
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _sectionSlugMeta = const VerificationMeta(
+    'sectionSlug',
+  );
+  @override
+  late final GeneratedColumn<String> sectionSlug = GeneratedColumn<String>(
+    'section_slug',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _sectionNameMeta = const VerificationMeta(
+    'sectionName',
+  );
+  @override
+  late final GeneratedColumn<String> sectionName = GeneratedColumn<String>(
+    'section_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _sectionPositionMeta = const VerificationMeta(
+    'sectionPosition',
+  );
+  @override
+  late final GeneratedColumn<int> sectionPosition = GeneratedColumn<int>(
+    'section_position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _sectionDescriptionMeta =
+      const VerificationMeta('sectionDescription');
+  @override
+  late final GeneratedColumn<String> sectionDescription =
+      GeneratedColumn<String>(
+        'section_description',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   @override
   List<GeneratedColumn> get $columns => [
     slug,
@@ -2265,6 +2466,10 @@ class $FormsTable extends Forms with TableInfo<$FormsTable, Form> {
     workflowSlug,
     position,
     updatedAt,
+    sectionSlug,
+    sectionName,
+    sectionPosition,
+    sectionDescription,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -2349,6 +2554,42 @@ class $FormsTable extends Forms with TableInfo<$FormsTable, Form> {
     } else if (isInserting) {
       context.missing(_updatedAtMeta);
     }
+    if (data.containsKey('section_slug')) {
+      context.handle(
+        _sectionSlugMeta,
+        sectionSlug.isAcceptableOrUnknown(
+          data['section_slug']!,
+          _sectionSlugMeta,
+        ),
+      );
+    }
+    if (data.containsKey('section_name')) {
+      context.handle(
+        _sectionNameMeta,
+        sectionName.isAcceptableOrUnknown(
+          data['section_name']!,
+          _sectionNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('section_position')) {
+      context.handle(
+        _sectionPositionMeta,
+        sectionPosition.isAcceptableOrUnknown(
+          data['section_position']!,
+          _sectionPositionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('section_description')) {
+      context.handle(
+        _sectionDescriptionMeta,
+        sectionDescription.isAcceptableOrUnknown(
+          data['section_description']!,
+          _sectionDescriptionMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -2397,6 +2638,25 @@ class $FormsTable extends Forms with TableInfo<$FormsTable, Form> {
             DriftSqlType.int,
             data['${effectivePrefix}updated_at'],
           )!,
+      sectionSlug:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}section_slug'],
+          )!,
+      sectionName:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}section_name'],
+          )!,
+      sectionPosition:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}section_position'],
+          )!,
+      sectionDescription: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}section_description'],
+      ),
     );
   }
 
@@ -2415,6 +2675,10 @@ class Form extends DataClass implements Insertable<Form> {
   final String workflowSlug;
   final int position;
   final int updatedAt;
+  final String sectionSlug;
+  final String sectionName;
+  final int sectionPosition;
+  final String? sectionDescription;
   const Form({
     required this.slug,
     this.questionnaireId,
@@ -2424,6 +2688,10 @@ class Form extends DataClass implements Insertable<Form> {
     required this.workflowSlug,
     required this.position,
     required this.updatedAt,
+    required this.sectionSlug,
+    required this.sectionName,
+    required this.sectionPosition,
+    this.sectionDescription,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2438,6 +2706,12 @@ class Form extends DataClass implements Insertable<Form> {
     map['workflow_slug'] = Variable<String>(workflowSlug);
     map['position'] = Variable<int>(position);
     map['updated_at'] = Variable<int>(updatedAt);
+    map['section_slug'] = Variable<String>(sectionSlug);
+    map['section_name'] = Variable<String>(sectionName);
+    map['section_position'] = Variable<int>(sectionPosition);
+    if (!nullToAbsent || sectionDescription != null) {
+      map['section_description'] = Variable<String>(sectionDescription);
+    }
     return map;
   }
 
@@ -2454,6 +2728,13 @@ class Form extends DataClass implements Insertable<Form> {
       workflowSlug: Value(workflowSlug),
       position: Value(position),
       updatedAt: Value(updatedAt),
+      sectionSlug: Value(sectionSlug),
+      sectionName: Value(sectionName),
+      sectionPosition: Value(sectionPosition),
+      sectionDescription:
+          sectionDescription == null && nullToAbsent
+              ? const Value.absent()
+              : Value(sectionDescription),
     );
   }
 
@@ -2471,6 +2752,12 @@ class Form extends DataClass implements Insertable<Form> {
       workflowSlug: serializer.fromJson<String>(json['workflowSlug']),
       position: serializer.fromJson<int>(json['position']),
       updatedAt: serializer.fromJson<int>(json['updatedAt']),
+      sectionSlug: serializer.fromJson<String>(json['sectionSlug']),
+      sectionName: serializer.fromJson<String>(json['sectionName']),
+      sectionPosition: serializer.fromJson<int>(json['sectionPosition']),
+      sectionDescription: serializer.fromJson<String?>(
+        json['sectionDescription'],
+      ),
     );
   }
   @override
@@ -2485,6 +2772,10 @@ class Form extends DataClass implements Insertable<Form> {
       'workflowSlug': serializer.toJson<String>(workflowSlug),
       'position': serializer.toJson<int>(position),
       'updatedAt': serializer.toJson<int>(updatedAt),
+      'sectionSlug': serializer.toJson<String>(sectionSlug),
+      'sectionName': serializer.toJson<String>(sectionName),
+      'sectionPosition': serializer.toJson<int>(sectionPosition),
+      'sectionDescription': serializer.toJson<String?>(sectionDescription),
     };
   }
 
@@ -2497,6 +2788,10 @@ class Form extends DataClass implements Insertable<Form> {
     String? workflowSlug,
     int? position,
     int? updatedAt,
+    String? sectionSlug,
+    String? sectionName,
+    int? sectionPosition,
+    Value<String?> sectionDescription = const Value.absent(),
   }) => Form(
     slug: slug ?? this.slug,
     questionnaireId:
@@ -2507,6 +2802,13 @@ class Form extends DataClass implements Insertable<Form> {
     workflowSlug: workflowSlug ?? this.workflowSlug,
     position: position ?? this.position,
     updatedAt: updatedAt ?? this.updatedAt,
+    sectionSlug: sectionSlug ?? this.sectionSlug,
+    sectionName: sectionName ?? this.sectionName,
+    sectionPosition: sectionPosition ?? this.sectionPosition,
+    sectionDescription:
+        sectionDescription.present
+            ? sectionDescription.value
+            : this.sectionDescription,
   );
   Form copyWithCompanion(FormsCompanion data) {
     return Form(
@@ -2526,6 +2828,18 @@ class Form extends DataClass implements Insertable<Form> {
               : this.workflowSlug,
       position: data.position.present ? data.position.value : this.position,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      sectionSlug:
+          data.sectionSlug.present ? data.sectionSlug.value : this.sectionSlug,
+      sectionName:
+          data.sectionName.present ? data.sectionName.value : this.sectionName,
+      sectionPosition:
+          data.sectionPosition.present
+              ? data.sectionPosition.value
+              : this.sectionPosition,
+      sectionDescription:
+          data.sectionDescription.present
+              ? data.sectionDescription.value
+              : this.sectionDescription,
     );
   }
 
@@ -2539,7 +2853,11 @@ class Form extends DataClass implements Insertable<Form> {
           ..write('moduleSlug: $moduleSlug, ')
           ..write('workflowSlug: $workflowSlug, ')
           ..write('position: $position, ')
-          ..write('updatedAt: $updatedAt')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('sectionSlug: $sectionSlug, ')
+          ..write('sectionName: $sectionName, ')
+          ..write('sectionPosition: $sectionPosition, ')
+          ..write('sectionDescription: $sectionDescription')
           ..write(')'))
         .toString();
   }
@@ -2554,6 +2872,10 @@ class Form extends DataClass implements Insertable<Form> {
     workflowSlug,
     position,
     updatedAt,
+    sectionSlug,
+    sectionName,
+    sectionPosition,
+    sectionDescription,
   );
   @override
   bool operator ==(Object other) =>
@@ -2566,7 +2888,11 @@ class Form extends DataClass implements Insertable<Form> {
           other.moduleSlug == this.moduleSlug &&
           other.workflowSlug == this.workflowSlug &&
           other.position == this.position &&
-          other.updatedAt == this.updatedAt);
+          other.updatedAt == this.updatedAt &&
+          other.sectionSlug == this.sectionSlug &&
+          other.sectionName == this.sectionName &&
+          other.sectionPosition == this.sectionPosition &&
+          other.sectionDescription == this.sectionDescription);
 }
 
 class FormsCompanion extends UpdateCompanion<Form> {
@@ -2578,6 +2904,10 @@ class FormsCompanion extends UpdateCompanion<Form> {
   final Value<String> workflowSlug;
   final Value<int> position;
   final Value<int> updatedAt;
+  final Value<String> sectionSlug;
+  final Value<String> sectionName;
+  final Value<int> sectionPosition;
+  final Value<String?> sectionDescription;
   final Value<int> rowid;
   const FormsCompanion({
     this.slug = const Value.absent(),
@@ -2588,6 +2918,10 @@ class FormsCompanion extends UpdateCompanion<Form> {
     this.workflowSlug = const Value.absent(),
     this.position = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.sectionSlug = const Value.absent(),
+    this.sectionName = const Value.absent(),
+    this.sectionPosition = const Value.absent(),
+    this.sectionDescription = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   FormsCompanion.insert({
@@ -2599,6 +2933,10 @@ class FormsCompanion extends UpdateCompanion<Form> {
     required String workflowSlug,
     required int position,
     required int updatedAt,
+    this.sectionSlug = const Value.absent(),
+    this.sectionName = const Value.absent(),
+    this.sectionPosition = const Value.absent(),
+    this.sectionDescription = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : slug = Value(slug),
        name = Value(name),
@@ -2616,6 +2954,10 @@ class FormsCompanion extends UpdateCompanion<Form> {
     Expression<String>? workflowSlug,
     Expression<int>? position,
     Expression<int>? updatedAt,
+    Expression<String>? sectionSlug,
+    Expression<String>? sectionName,
+    Expression<int>? sectionPosition,
+    Expression<String>? sectionDescription,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -2627,6 +2969,10 @@ class FormsCompanion extends UpdateCompanion<Form> {
       if (workflowSlug != null) 'workflow_slug': workflowSlug,
       if (position != null) 'position': position,
       if (updatedAt != null) 'updated_at': updatedAt,
+      if (sectionSlug != null) 'section_slug': sectionSlug,
+      if (sectionName != null) 'section_name': sectionName,
+      if (sectionPosition != null) 'section_position': sectionPosition,
+      if (sectionDescription != null) 'section_description': sectionDescription,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -2640,6 +2986,10 @@ class FormsCompanion extends UpdateCompanion<Form> {
     Value<String>? workflowSlug,
     Value<int>? position,
     Value<int>? updatedAt,
+    Value<String>? sectionSlug,
+    Value<String>? sectionName,
+    Value<int>? sectionPosition,
+    Value<String?>? sectionDescription,
     Value<int>? rowid,
   }) {
     return FormsCompanion(
@@ -2651,6 +3001,10 @@ class FormsCompanion extends UpdateCompanion<Form> {
       workflowSlug: workflowSlug ?? this.workflowSlug,
       position: position ?? this.position,
       updatedAt: updatedAt ?? this.updatedAt,
+      sectionSlug: sectionSlug ?? this.sectionSlug,
+      sectionName: sectionName ?? this.sectionName,
+      sectionPosition: sectionPosition ?? this.sectionPosition,
+      sectionDescription: sectionDescription ?? this.sectionDescription,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2682,6 +3036,18 @@ class FormsCompanion extends UpdateCompanion<Form> {
     if (updatedAt.present) {
       map['updated_at'] = Variable<int>(updatedAt.value);
     }
+    if (sectionSlug.present) {
+      map['section_slug'] = Variable<String>(sectionSlug.value);
+    }
+    if (sectionName.present) {
+      map['section_name'] = Variable<String>(sectionName.value);
+    }
+    if (sectionPosition.present) {
+      map['section_position'] = Variable<int>(sectionPosition.value);
+    }
+    if (sectionDescription.present) {
+      map['section_description'] = Variable<String>(sectionDescription.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -2699,6 +3065,10 @@ class FormsCompanion extends UpdateCompanion<Form> {
           ..write('workflowSlug: $workflowSlug, ')
           ..write('position: $position, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('sectionSlug: $sectionSlug, ')
+          ..write('sectionName: $sectionName, ')
+          ..write('sectionPosition: $sectionPosition, ')
+          ..write('sectionDescription: $sectionDescription, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -6144,6 +6514,9 @@ typedef $$QuestionnairesTableCreateCompanionBuilder =
       required String version,
       required int updatedAt,
       required int localityId,
+      Value<String> description,
+      Value<String> moduleSlug,
+      Value<String> moduleName,
     });
 typedef $$QuestionnairesTableUpdateCompanionBuilder =
     QuestionnairesCompanion Function({
@@ -6154,6 +6527,9 @@ typedef $$QuestionnairesTableUpdateCompanionBuilder =
       Value<String> version,
       Value<int> updatedAt,
       Value<int> localityId,
+      Value<String> description,
+      Value<String> moduleSlug,
+      Value<String> moduleName,
     });
 
 class $$QuestionnairesTableFilterComposer
@@ -6197,6 +6573,21 @@ class $$QuestionnairesTableFilterComposer
 
   ColumnFilters<int> get localityId => $composableBuilder(
     column: $table.localityId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get moduleSlug => $composableBuilder(
+    column: $table.moduleSlug,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get moduleName => $composableBuilder(
+    column: $table.moduleName,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -6244,6 +6635,21 @@ class $$QuestionnairesTableOrderingComposer
     column: $table.localityId,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get moduleSlug => $composableBuilder(
+    column: $table.moduleSlug,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get moduleName => $composableBuilder(
+    column: $table.moduleName,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$QuestionnairesTableAnnotationComposer
@@ -6275,6 +6681,21 @@ class $$QuestionnairesTableAnnotationComposer
 
   GeneratedColumn<int> get localityId => $composableBuilder(
     column: $table.localityId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get moduleSlug => $composableBuilder(
+    column: $table.moduleSlug,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get moduleName => $composableBuilder(
+    column: $table.moduleName,
     builder: (column) => column,
   );
 }
@@ -6323,6 +6744,9 @@ class $$QuestionnairesTableTableManager
                 Value<String> version = const Value.absent(),
                 Value<int> updatedAt = const Value.absent(),
                 Value<int> localityId = const Value.absent(),
+                Value<String> description = const Value.absent(),
+                Value<String> moduleSlug = const Value.absent(),
+                Value<String> moduleName = const Value.absent(),
               }) => QuestionnairesCompanion(
                 id: id,
                 name: name,
@@ -6331,6 +6755,9 @@ class $$QuestionnairesTableTableManager
                 version: version,
                 updatedAt: updatedAt,
                 localityId: localityId,
+                description: description,
+                moduleSlug: moduleSlug,
+                moduleName: moduleName,
               ),
           createCompanionCallback:
               ({
@@ -6341,6 +6768,9 @@ class $$QuestionnairesTableTableManager
                 required String version,
                 required int updatedAt,
                 required int localityId,
+                Value<String> description = const Value.absent(),
+                Value<String> moduleSlug = const Value.absent(),
+                Value<String> moduleName = const Value.absent(),
               }) => QuestionnairesCompanion.insert(
                 id: id,
                 name: name,
@@ -6349,6 +6779,9 @@ class $$QuestionnairesTableTableManager
                 version: version,
                 updatedAt: updatedAt,
                 localityId: localityId,
+                description: description,
+                moduleSlug: moduleSlug,
+                moduleName: moduleName,
               ),
           withReferenceMapper:
               (p0) =>
@@ -6392,6 +6825,10 @@ typedef $$FormsTableCreateCompanionBuilder =
       required String workflowSlug,
       required int position,
       required int updatedAt,
+      Value<String> sectionSlug,
+      Value<String> sectionName,
+      Value<int> sectionPosition,
+      Value<String?> sectionDescription,
       Value<int> rowid,
     });
 typedef $$FormsTableUpdateCompanionBuilder =
@@ -6404,6 +6841,10 @@ typedef $$FormsTableUpdateCompanionBuilder =
       Value<String> workflowSlug,
       Value<int> position,
       Value<int> updatedAt,
+      Value<String> sectionSlug,
+      Value<String> sectionName,
+      Value<int> sectionPosition,
+      Value<String?> sectionDescription,
       Value<int> rowid,
     });
 
@@ -6452,6 +6893,26 @@ class $$FormsTableFilterComposer extends Composer<_$AppDatabase, $FormsTable> {
 
   ColumnFilters<int> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sectionSlug => $composableBuilder(
+    column: $table.sectionSlug,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sectionName => $composableBuilder(
+    column: $table.sectionName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sectionPosition => $composableBuilder(
+    column: $table.sectionPosition,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sectionDescription => $composableBuilder(
+    column: $table.sectionDescription,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -6504,6 +6965,26 @@ class $$FormsTableOrderingComposer
     column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get sectionSlug => $composableBuilder(
+    column: $table.sectionSlug,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sectionName => $composableBuilder(
+    column: $table.sectionName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sectionPosition => $composableBuilder(
+    column: $table.sectionPosition,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sectionDescription => $composableBuilder(
+    column: $table.sectionDescription,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$FormsTableAnnotationComposer
@@ -6546,6 +7027,26 @@ class $$FormsTableAnnotationComposer
 
   GeneratedColumn<int> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get sectionSlug => $composableBuilder(
+    column: $table.sectionSlug,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sectionName => $composableBuilder(
+    column: $table.sectionName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get sectionPosition => $composableBuilder(
+    column: $table.sectionPosition,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sectionDescription => $composableBuilder(
+    column: $table.sectionDescription,
+    builder: (column) => column,
+  );
 }
 
 class $$FormsTableTableManager
@@ -6584,6 +7085,10 @@ class $$FormsTableTableManager
                 Value<String> workflowSlug = const Value.absent(),
                 Value<int> position = const Value.absent(),
                 Value<int> updatedAt = const Value.absent(),
+                Value<String> sectionSlug = const Value.absent(),
+                Value<String> sectionName = const Value.absent(),
+                Value<int> sectionPosition = const Value.absent(),
+                Value<String?> sectionDescription = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => FormsCompanion(
                 slug: slug,
@@ -6594,6 +7099,10 @@ class $$FormsTableTableManager
                 workflowSlug: workflowSlug,
                 position: position,
                 updatedAt: updatedAt,
+                sectionSlug: sectionSlug,
+                sectionName: sectionName,
+                sectionPosition: sectionPosition,
+                sectionDescription: sectionDescription,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -6606,6 +7115,10 @@ class $$FormsTableTableManager
                 required String workflowSlug,
                 required int position,
                 required int updatedAt,
+                Value<String> sectionSlug = const Value.absent(),
+                Value<String> sectionName = const Value.absent(),
+                Value<int> sectionPosition = const Value.absent(),
+                Value<String?> sectionDescription = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => FormsCompanion.insert(
                 slug: slug,
@@ -6616,6 +7129,10 @@ class $$FormsTableTableManager
                 workflowSlug: workflowSlug,
                 position: position,
                 updatedAt: updatedAt,
+                sectionSlug: sectionSlug,
+                sectionName: sectionName,
+                sectionPosition: sectionPosition,
+                sectionDescription: sectionDescription,
                 rowid: rowid,
               ),
           withReferenceMapper:

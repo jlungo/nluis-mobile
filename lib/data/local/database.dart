@@ -61,6 +61,9 @@ class Questionnaires extends Table {
   TextColumn get version => text()();
   IntColumn get updatedAt => integer().named('updated_at')();
   IntColumn get localityId => integer().named('locality_id')();
+  TextColumn get description => text().named('description').withDefault(const Constant(''))();
+  TextColumn get moduleSlug => text().named('module_slug').withDefault(const Constant(''))();
+  TextColumn get moduleName => text().named('module_name').withDefault(const Constant(''))();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -75,6 +78,10 @@ class Forms extends Table {
   TextColumn get workflowSlug => text().named('workflow_slug')();
   IntColumn get position => integer()();
   IntColumn get updatedAt => integer().named('updated_at')();
+  TextColumn get sectionSlug => text().named('section_slug').withDefault(const Constant(''))();
+  TextColumn get sectionName => text().named('section_name').withDefault(const Constant(''))();
+  IntColumn get sectionPosition => integer().named('section_position').withDefault(const Constant(0))();
+  TextColumn get sectionDescription => text().named('section_description').nullable()();
 
   @override
   Set<Column> get primaryKey => {slug};
@@ -164,7 +171,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration {
@@ -185,6 +192,15 @@ class AppDatabase extends _$AppDatabase {
           // Add download tracking columns to projects
           await m.addColumn(projects, projects.isDownloaded);
           await m.addColumn(projects, projects.downloadedAt);
+        }
+        if (from < 5) {
+          await m.addColumn(questionnaires, questionnaires.description);
+          await m.addColumn(questionnaires, questionnaires.moduleSlug);
+          await m.addColumn(questionnaires, questionnaires.moduleName);
+          await m.addColumn(forms, forms.sectionSlug);
+          await m.addColumn(forms, forms.sectionName);
+          await m.addColumn(forms, forms.sectionPosition);
+          await m.addColumn(forms, forms.sectionDescription);
         }
       },
     );
