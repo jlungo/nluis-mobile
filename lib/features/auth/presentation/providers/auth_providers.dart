@@ -2,15 +2,30 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/network/dio_client.dart';
+import '../../../../core/network/network_info.dart';
+import '../../../../core/utils/logger.dart';
 import '../../data/datasources/auth_local_datasource.dart';
 import '../../data/datasources/auth_remote_datasource.dart';
 import '../../data/repositories/auth_repository_impl.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
 
+// State notifier for handling logout triggered by DioClient
+// This breaks the circular dependency by being a separate state holder
+final tokenExpiredLogoutTriggerProvider = StateProvider<int>((ref) => 0);
+
 // Dio Client Provider
 final dioClientProvider = Provider<DioClient>((ref) {
-  return DioClient(secureStorage: ref.watch(secureStorageProvider));
+  return DioClient(
+    secureStorage: ref.watch(secureStorageProvider),
+    networkInfo: ref.watch(networkInfoProvider),
+    onTokenRefreshFailedWhileOnline: () async {
+      // Trigger logout by incrementing the state
+      // This will be watched by the auth listener
+      AppLogger.warning('Triggering automatic logout due to token expiration while online');
+      ref.read(tokenExpiredLogoutTriggerProvider.notifier).state++;
+    },
+  );
 });
 
 // Secure Storage Provider
