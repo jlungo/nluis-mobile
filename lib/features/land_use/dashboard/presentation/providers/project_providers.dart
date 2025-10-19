@@ -15,7 +15,7 @@ final projectRepositoryProvider = Provider<ProjectRepository>((ref) {
   final SharedPreferences prefs = ref.watch(sharedPreferencesProvider);
 
   return ProjectRepositoryImpl(
-    dio: dioClient.dio,
+    dioClient: dioClient,
     database: database,
     networkInfo: networkInfo,
     preferences: prefs,
