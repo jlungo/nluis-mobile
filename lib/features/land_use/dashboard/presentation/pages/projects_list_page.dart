@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../../core/network/network_info.dart';
+import '../../../../../data/services/download_provider.dart';
 import '../../../../../shared/constants/app_constants.dart';
 import '../../../../../shared/theme/app_colors.dart';
 import '../../../../../shared/widgets/app_drawer.dart';
@@ -11,6 +15,7 @@ import '../../../../../shared/models/project.dart';
 import '../providers/project_providers.dart';
 import '../../../survey/presentation/pages/survey_list_page.dart';
 import '../../../zoning/presentation/pages/zoning_page.dart';
+import '../../../../../shared/widgets/offline_banner.dart';
 
 class ProjectsListPage extends ConsumerStatefulWidget {
   const ProjectsListPage({super.key});
@@ -43,6 +48,46 @@ class _ProjectsListPageState extends ConsumerState<ProjectsListPage> {
         _scrollController.position.maxScrollExtent * 0.9) {
       // Kumbuka kuload more items/pagination
     }
+  }
+
+  void _showSnackBar(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 3),
+        backgroundColor: AppColors.info,
+      ),
+    );
+  }
+
+  Future<void> _refreshProjects(bool isOnline) async {
+    if (!isOnline) {
+      _showSnackBar('Mtandao umezimwa. Washa data ili kusasisha miradi.');
+      return;
+    }
+    ref.invalidate(assignedProjectsProvider);
+    await ref.read(assignedProjectsProvider.future);
+  }
+
+  Future<void> _handleProjectTap(Project project, bool isOnline) async {
+    if (!mounted) return;
+
+    if (!isOnline) {
+      final downloadService = ref.read(downloadServiceProvider);
+      final isDownloaded = await downloadService.isProjectDownloaded(
+        project.id,
+      );
+
+      if (!isDownloaded) {
+        _showSnackBar(
+          'Mradi huu haukupakuliwa. Tafadhali washa mtandao ili kuupakua kwanza.',
+        );
+        return;
+      }
+    }
+
+    _showProjectActions(context, project);
   }
 
   void _showFilterSheet() {
@@ -262,6 +307,9 @@ class _ProjectsListPageState extends ConsumerState<ProjectsListPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final onlineStatus = ref.watch(onlineStatusProvider);
+    final isOnline =
+        onlineStatus.maybeWhen(data: (value) => value, orElse: () => true);
     final projectsAsync = ref.watch(assignedProjectsProvider);
 
     return Scaffold(
@@ -380,6 +428,7 @@ class _ProjectsListPageState extends ConsumerState<ProjectsListPage> {
               ],
             ),
           ),
+          if (!isOnline) const OfflineBanner(),
 
           // Projects List
           Expanded(
@@ -397,70 +446,122 @@ class _ProjectsListPageState extends ConsumerState<ProjectsListPage> {
                     }).toList();
 
                 if (filteredProjects.isEmpty) {
-                  return RefreshIndicator(
-                    onRefresh: () async {
-                      ref.invalidate(assignedProjectsProvider);
-                      await ref.read(assignedProjectsProvider.future);
-                    },
-                    child: ListView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      children: [
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.5,
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.search_off,
-                                  size: 64,
+                  final emptyState = ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    children: [
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.5,
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.search_off,
+                                size: 64,
+                                color:
+                                    isDark
+                                        ? AppColors.darkTextHint
+                                        : AppColors.textHint,
+                              ),
+                              const SizedBox(height: AppConstants.spacingMd),
+                              Text(
+                                'No projects found',
+                                style: theme.textTheme.bodyLarge?.copyWith(
                                   color:
                                       isDark
-                                          ? AppColors.darkTextHint
-                                          : AppColors.textHint,
+                                          ? AppColors.darkTextSecondary
+                                          : AppColors.textSecondary,
                                 ),
-                                const SizedBox(height: AppConstants.spacingMd),
-                                Text(
-                                  'No projects found',
-                                  style: theme.textTheme.bodyLarge?.copyWith(
-                                    color:
-                                        isDark
-                                            ? AppColors.darkTextSecondary
-                                            : AppColors.textSecondary,
-                                  ),
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
+                  );
+
+                  if (!isOnline) {
+                    return emptyState;
+                  }
+
+                  return RefreshIndicator(
+                    onRefresh: () => _refreshProjects(isOnline),
+                    child: emptyState,
                   );
                 }
 
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    ref.invalidate(assignedProjectsProvider);
-                    await ref.read(assignedProjectsProvider.future);
+                final listView = ListView.builder(
+                  controller: _scrollController,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(AppConstants.spacingMd),
+                  itemCount: filteredProjects.length,
+                  itemBuilder: (context, index) {
+                    final project = filteredProjects[index];
+                    return ProjectListCard(
+                      project: project,
+                      onTap: () => unawaited(
+                        _handleProjectTap(project, isOnline),
+                      ),
+                      onMoreTap: () => unawaited(
+                        _handleProjectTap(project, isOnline),
+                      ),
+                    );
                   },
-                  child: ListView.builder(
-                    controller: _scrollController,
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.all(AppConstants.spacingMd),
-                    itemCount: filteredProjects.length,
-                    itemBuilder: (context, index) {
-                      final project = filteredProjects[index];
-                      return ProjectListCard(
-                        project: project,
-                        onTap: () => _showProjectActions(context, project),
-                        onMoreTap: () => _showProjectActions(context, project),
-                      );
-                    },
-                  ),
+                );
+
+                if (!isOnline) {
+                  return listView;
+                }
+
+                return RefreshIndicator(
+                  onRefresh: () => _refreshProjects(isOnline),
+                  child: listView,
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stack) => Center(child: Text('Error: $error')),
+              error: (error, stack) {
+                final message = error.toString();
+                return SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.5,
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.wifi_off,
+                            size: 56,
+                            color:
+                                isDark
+                                    ? AppColors.darkTextSecondary
+                                    : AppColors.textSecondary,
+                          ),
+                          const SizedBox(height: AppConstants.spacingMd),
+                          Text(
+                            message,
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color:
+                                  isDark
+                                      ? AppColors.darkTextSecondary
+                                      : AppColors.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: AppConstants.spacingMd),
+                          ElevatedButton.icon(
+                            onPressed: () => _refreshProjects(isOnline),
+                            icon: Icon(isOnline ? Icons.refresh : Icons.wifi_off),
+                            label: Text(
+                              isOnline ? 'Jaribu tena' : 'Washa mtandao',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
           ),
         ],
