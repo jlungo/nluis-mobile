@@ -3,6 +3,7 @@ import '../../../../shared/constants/app_constants.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/custom_app_bar.dart';
 import '../../../../shared/widgets/app_drawer.dart';
+import '../../../../shared/utils/snackbar_utils.dart';
 
 class NotificationsPage extends StatelessWidget {
   const NotificationsPage({super.key});
@@ -62,10 +63,9 @@ class NotificationsPage extends StatelessWidget {
                   ),
                   TextButton.icon(
                     onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Taarifa zote zimesomwa'),
-                        ),
+                      SnackBarUtils.showInfo(
+                        context,
+                        'Taarifa zote zimesomwa',
                       );
                     },
                     icon: const Icon(Icons.done_all, size: 18),
@@ -227,10 +227,9 @@ class _NotificationCard extends StatelessWidget {
           ],
         ),
         onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Taarifa: ${notification.title}'),
-            ),
+          SnackBarUtils.showInfo(
+            context,
+            'Taarifa: ${notification.title}',
           );
         },
       ),
