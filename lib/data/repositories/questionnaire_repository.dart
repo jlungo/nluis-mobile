@@ -173,14 +173,26 @@ class QuestionnaireRepositoryImpl implements QuestionnaireRepository {
       final formsQuery =
           database.select(database.forms)
             ..where((tbl) => tbl.questionnaireId.equals(record.id))
-            ..orderBy([(tbl) => drift.OrderingTerm.asc(tbl.position)]);
+            ..orderBy([
+              (tbl) => drift.OrderingTerm.asc(tbl.sectionPosition),
+              (tbl) => drift.OrderingTerm.asc(tbl.position),
+            ]);
 
       final forms = await formsQuery.get();
       if (forms.isEmpty) continue;
 
-      final moduleSlug = forms.first.moduleSlug;
+      final moduleSlug =
+          record.moduleSlug.isNotEmpty
+              ? record.moduleSlug
+              : forms.first.moduleSlug;
+      final moduleName =
+          record.moduleName.isNotEmpty ? record.moduleName : moduleSlug;
+
       if (lowerModule != null && lowerModule.isNotEmpty) {
-        if (!moduleSlug.toLowerCase().contains(lowerModule)) {
+        final matchesModule =
+            moduleSlug.toLowerCase().contains(lowerModule) ||
+            moduleName.toLowerCase().contains(lowerModule);
+        if (!matchesModule) {
           continue;
         }
       }
@@ -191,17 +203,24 @@ class QuestionnaireRepositoryImpl implements QuestionnaireRepository {
         }
       }
 
+      final uniqueSections =
+          forms
+              .map((form) => form.sectionSlug)
+              .where((slug) => slug.isNotEmpty)
+              .toSet();
+
       results.add(
         QuestionnaireModel(
           slug: record.slug,
           name: record.name,
           category: record.typeId,
-          description: '',
+          description: record.description,
           version: int.tryParse(record.version) ?? 1,
           isActive: true,
           moduleSlug: moduleSlug,
-          moduleName: moduleSlug,
-          questionnaireSectionsCount: forms.length,
+          moduleName: moduleName,
+          questionnaireSectionsCount:
+              uniqueSections.isNotEmpty ? uniqueSections.length : forms.length,
         ),
       );
     }
@@ -224,16 +243,24 @@ class QuestionnaireRepositoryImpl implements QuestionnaireRepository {
     final forms =
         await (database.select(database.forms)
               ..where((tbl) => tbl.questionnaireId.equals(questionnaire.id))
-              ..orderBy([(tbl) => drift.OrderingTerm.asc(tbl.position)]))
+              ..orderBy([
+                (tbl) => drift.OrderingTerm.asc(tbl.sectionPosition),
+                (tbl) => drift.OrderingTerm.asc(tbl.position),
+              ]))
             .get();
 
     if (forms.isEmpty) return null;
 
-    final sectionSlug = '${slug}_section';
-    final sectionName = 'Sehemu';
-    final moduleSlug = forms.first.moduleSlug;
+    final moduleSlug =
+        questionnaire.moduleSlug.isNotEmpty
+            ? questionnaire.moduleSlug
+            : forms.first.moduleSlug;
+    final moduleName =
+        questionnaire.moduleName.isNotEmpty
+            ? questionnaire.moduleName
+            : moduleSlug;
 
-    final List<QuestionnaireForm> questionnaireForms = [];
+    final Map<String, _SectionAccumulator> sections = {};
 
     for (final form in forms) {
       final fields =
@@ -279,46 +306,66 @@ class QuestionnaireRepositoryImpl implements QuestionnaireRepository {
             );
           }).toList();
 
-      questionnaireForms.add(
+      final sectionSlug =
+          form.sectionSlug.isNotEmpty ? form.sectionSlug : '${slug}_section';
+      final section = sections.putIfAbsent(
+        sectionSlug,
+        () => _SectionAccumulator(
+          slug: sectionSlug,
+          name:
+              form.sectionName.isNotEmpty ? form.sectionName : 'Sehemu',
+          description: form.sectionDescription ?? '',
+          position: form.sectionPosition,
+        ),
+      );
+
+      section.forms.add(
         QuestionnaireFormModel(
           slug: form.slug,
           name: form.name,
           description: form.description,
           isActive: true,
-          questionnaireSectionSlug: sectionSlug,
-          questionnaireSectionName: sectionName,
+          questionnaireSectionSlug: section.slug,
+          questionnaireSectionName: section.name,
           questionnaireSlug: slug,
           questionnaireName: questionnaire.name,
           moduleSlug: form.moduleSlug,
-          moduleName: form.moduleSlug,
+          moduleName: moduleName,
           position: form.position,
           customFormFields: customFields,
         ),
       );
     }
 
-    final section = QuestionnaireSectionModel(
-      slug: sectionSlug,
-      name: sectionName,
-      description: '',
-      position: 1,
-      isActive: true,
-      questionnaireSlug: slug,
-      questionnaireName: questionnaire.name,
-      moduleSlug: moduleSlug,
-      moduleName: moduleSlug,
-      forms: questionnaireForms,
-    );
+    final orderedSections =
+        sections.values.toList()
+          ..sort((a, b) => a.position.compareTo(b.position));
+
+    final sectionModels = orderedSections.map((section) {
+      section.forms.sort((a, b) => a.position.compareTo(b.position));
+      return QuestionnaireSectionModel(
+        slug: section.slug,
+        name: section.name,
+        description: section.description,
+        position: section.position,
+        isActive: true,
+        questionnaireSlug: slug,
+        questionnaireName: questionnaire.name,
+        moduleSlug: moduleSlug,
+        moduleName: moduleName,
+        forms: section.forms,
+      );
+    }).toList();
 
     return QuestionnaireDetailModel(
       slug: slug,
       name: questionnaire.name,
       category: questionnaire.typeId,
-      description: '',
+      description: questionnaire.description,
       moduleSlug: moduleSlug,
-      moduleName: moduleSlug,
+      moduleName: moduleName,
       version: int.tryParse(questionnaire.version) ?? 1,
-      sections: [section],
+      sections: sectionModels,
     );
   }
 
@@ -336,6 +383,9 @@ class QuestionnaireRepositoryImpl implements QuestionnaireRepository {
             version: drift.Value(detail.version.toString()),
             updatedAt: drift.Value(now),
             localityId: const drift.Value(0),
+            description: drift.Value(detail.description),
+            moduleSlug: drift.Value(detail.moduleSlug),
+            moduleName: drift.Value(detail.moduleName),
           ),
         );
 
@@ -353,6 +403,12 @@ class QuestionnaireRepositoryImpl implements QuestionnaireRepository {
                 workflowSlug: drift.Value(form.slug),
                 position: drift.Value(form.position),
                 updatedAt: drift.Value(now),
+                sectionSlug: drift.Value(section.slug),
+                sectionName: drift.Value(section.name),
+                sectionPosition: drift.Value(section.position),
+                sectionDescription: drift.Value(
+                  section.description.isEmpty ? null : section.description,
+                ),
               ),
             );
 
@@ -408,4 +464,19 @@ class QuestionnaireRepositoryImpl implements QuestionnaireRepository {
       return const [];
     }
   }
+}
+
+class _SectionAccumulator {
+  final String slug;
+  final String name;
+  final String description;
+  final int position;
+  final List<QuestionnaireForm> forms = [];
+
+  _SectionAccumulator({
+    required this.slug,
+    required this.name,
+    required this.description,
+    required this.position,
+  });
 }
