@@ -4,8 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nluis_app/shared/widgets/form/form_completion_state.dart';
 import 'package:nluis_app/shared/widgets/form/form_section_card.dart';
 import '../../../../../shared/constants/app_constants.dart';
-import '../../../../../shared/theme/app_colors.dart';
 import '../../../../../shared/models/questionnaire.dart';
+import '../../../../../shared/theme/app_colors.dart';
+import '../../../../../shared/utils/snackbar_utils.dart';
 import '../providers/questionnaire_providers.dart';
 import '../../../../../data/local/draft_provider.dart';
 
@@ -330,13 +331,15 @@ class _QuestionnaireFormPageState extends ConsumerState<QuestionnaireFormPage> {
     Color? backgroundColor,
   }) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: const Duration(seconds: 3),
-        backgroundColor: backgroundColor,
-      ),
-    );
+    if (backgroundColor == AppColors.success) {
+      SnackBarUtils.showSuccess(context, message);
+    } else if (backgroundColor == AppColors.error) {
+      SnackBarUtils.showError(context, message);
+    } else if (backgroundColor == AppColors.warning) {
+      SnackBarUtils.showWarning(context, message);
+    } else {
+      SnackBarUtils.showInfo(context, message);
+    }
   }
 
   String _extractErrorMessage(Object error) {
