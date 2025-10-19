@@ -50,6 +50,7 @@ dependencies:
   drift: ^2.28.2
   sqlite3_flutter_libs: ^0.5.40
   path_provider: ^2.1.5
+  path: ^1.9.0
   flutter_secure_storage: ^9.2.4
   shared_preferences: ^2.5.3
   flutter_map: ^8.2.2
@@ -81,6 +82,13 @@ dev_dependencies:
   freezed: ^3.1.0
   flutter_launcher_icons: "^0.14.4"
 
+  # The "flutter_lints" package below contains a set of recommended lints to
+  # encourage good coding practices. The lint set provided by the package is
+  # activated in the `analysis_options.yaml` file located at the root of your
+  # package. See that file for information about deactivating specific lint
+  # rules and activating additional ones.
+  flutter_lints: ^6.0.0
+
 flutter_launcher_icons:
   android: true
   ios: true
@@ -90,13 +98,6 @@ flutter_launcher_icons:
   adaptive_icon_foreground: "assets/images/logo/app_launcher.png"
   # For monochrome icons on Android 13+
   adaptive_icon_monochrome: "assets/images/logo/app_launcher.png"
-
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
-  flutter_lints: ^6.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
