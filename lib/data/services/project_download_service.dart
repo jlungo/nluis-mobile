@@ -3,13 +3,13 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:drift/drift.dart' as drift;
 import '../local/database.dart';
-import '../../core/env/env.dart';
+import '../../core/network/dio_client.dart';
 
 class ProjectDownloadService {
   final AppDatabase _database;
-  final Dio _dio;
+  final DioClient _dioClient;
 
-  ProjectDownloadService(this._database, this._dio);
+  ProjectDownloadService(this._database, this._dioClient);
 
   /// Download all project data (questionnaires, forms, fields) for offline use
   Future<DownloadResult> downloadProjectData(String projectId) async {
@@ -23,20 +23,13 @@ class ProjectDownloadService {
         return DownloadResult(success: false, message: 'Mradi haupatikani');
       }
 
-      final queryParameters = <String, dynamic>{};
-      queryParameters['module'] = 'land-uses';
-
-      print('Query parameters: ${queryParameters}');
-
       // 2. Fetch questionnaires for this project's locality -- Download all questionnaires for now
-      final questionnairesResponse = await _dio.get(
-        // '${Env.baseUrl}/questionnaires/?locality_id=${project.localityId}',
-        '${Env.baseUrl}/collect/questionnaire/list/',
-        queryParameters: queryParameters,
-      );
-
-      print(
-        'Questionnaires response status: ${questionnairesResponse.statusCode}',
+      final questionnairesResponse = await _dioClient.get(
+        '/collect/questionnaire/list/',
+        queryParameters: {
+          'module': 'land-uses',
+          'locality_id': project.localityId,
+        },
       );
 
       if (questionnairesResponse.statusCode != 200) {
@@ -57,8 +50,8 @@ class ProjectDownloadService {
         final questionnaireSlug = qnData['slug'] as String;
 
         // Fetch full questionnaire details with sections and forms
-        final detailResponse = await _dio.get(
-          '${Env.baseUrl}/collect/questionnaire/$questionnaireSlug/detail/',
+        final detailResponse = await _dioClient.get(
+          '/collect/questionnaire/$questionnaireSlug/detail/',
         );
 
         if (detailResponse.statusCode == 200) {
