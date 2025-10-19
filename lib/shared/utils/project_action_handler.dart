@@ -38,25 +38,29 @@ class ProjectActionHandler {
       final downloadService = ref.read(downloadServiceProvider);
       final result = await downloadService.downloadProjectData(project.id);
 
-      // Hide loading dialog
-      if (context.mounted) {
-        await DialogUtils.hideLoading(context);
+      if (!context.mounted) return;
 
-        // Show result
-        if (result.success) {
-          SnackBarUtils.showSuccess(context, result.message);
-          // Refresh the projects list to update UI
-          ref.invalidate(assignedProjectsProvider);
-        } else {
-          SnackBarUtils.showError(context, result.message);
-        }
+      // Hide loading dialog
+      await DialogUtils.hideLoading(context);
+
+      if (!context.mounted) return;
+
+      // Show result
+      if (result.success) {
+        SnackBarUtils.showSuccess(context, result.message);
+        // Refresh the projects list to update UI
+        ref.invalidate(assignedProjectsProvider);
+      } else {
+        SnackBarUtils.showError(context, result.message);
       }
     } catch (e) {
+      if (!context.mounted) return;
+
       // Hide loading dialog
-      if (context.mounted) {
-        await DialogUtils.hideLoading(context);
-        SnackBarUtils.showError(context, 'Hitilafu: $e');
-      }
+      await DialogUtils.hideLoading(context);
+
+      if (!context.mounted) return;
+      SnackBarUtils.showError(context, 'Hitilafu: $e');
     }
   }
 
@@ -72,6 +76,8 @@ class ProjectActionHandler {
 
     // Offline - check if downloaded
     final isDownloaded = await isProjectDownloaded(project.id);
+
+    if (!context.mounted) return false;
 
     if (!isDownloaded) {
       SnackBarUtils.showError(
