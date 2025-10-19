@@ -11,7 +11,7 @@ import '../../features/land_use/survey/presentation/pages/survey_edit_page.dart'
 import '../../features/land_use/zoning/presentation/pages/zoning_page.dart';
 import '../../features/settings/presentation/pages/settings_page.dart';
 import '../../features/notifications/presentation/pages/notifications_page.dart';
-import '../../features/drafts/presentation/pages/draft_dodosos_page.dart';
+import '../../features/madodoso/presentation/pages/madodoso_page.dart';
 import '../../shared/widgets/app_shell.dart';
 import '../../features/auth/presentation/providers/auth_providers.dart';
 import '../../features/auth/domain/entities/user.dart';
@@ -138,11 +138,11 @@ final routerProvider = Provider<GoRouter>((ref) {
             name: 'notifications',
             builder: (context, state) => const NotificationsPage(),
           ),
-          // DRAFTS
+          // DODOSO HUB
           GoRoute(
             path: '/drafts',
             name: 'drafts',
-            builder: (context, state) => const DraftDodososPage(),
+            builder: (context, state) => const MadodosoPage(),
           ),
           // SETTINGS
           GoRoute(
