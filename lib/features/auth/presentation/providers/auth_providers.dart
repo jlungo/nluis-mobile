@@ -43,7 +43,7 @@ final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
 // Auth Data Sources
 final authRemoteDataSourceProvider = Provider<AuthRemoteDataSource>((ref) {
   final dioClient = ref.watch(dioClientProvider);
-  return AuthRemoteDataSourceImpl(dioClient.dio);
+  return AuthRemoteDataSourceImpl(dioClient);
 });
 
 final authLocalDataSourceProvider = Provider<AuthLocalDataSource>((ref) {
