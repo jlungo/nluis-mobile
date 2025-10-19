@@ -1,4 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../../../../core/network/network_info.dart';
 import '../../../../../data/local/draft_provider.dart';
 import '../../../../../data/repositories/project_repository.dart';
 import '../../../../../features/auth/presentation/providers/auth_providers.dart';
@@ -7,7 +10,16 @@ import '../../../../../shared/models/project.dart';
 // Project Repository Provider
 final projectRepositoryProvider = Provider<ProjectRepository>((ref) {
   final dioClient = ref.watch(dioClientProvider);
-  return ProjectRepositoryImpl(dioClient.dio);
+  final database = ref.watch(databaseProvider);
+  final networkInfo = ref.watch(networkInfoProvider);
+  final SharedPreferences prefs = ref.watch(sharedPreferencesProvider);
+
+  return ProjectRepositoryImpl(
+    dio: dioClient.dio,
+    database: database,
+    networkInfo: networkInfo,
+    preferences: prefs,
+  );
 });
 
 // Assigned Projects Provider
