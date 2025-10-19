@@ -119,4 +119,35 @@ class ProjectModel extends Project {
       'has_zoning': hasZoning,
     };
   }
+
+  factory ProjectModel.fromJson(Map<String, dynamic> json) {
+    return ProjectModel(
+      id: json['id']?.toString() ?? '',
+      name: json['name'] as String? ?? '',
+      localityName:
+          (json['locality_name'] ?? json['localityName'] ?? '') as String,
+      parentProjectName:
+          (json['parent_project_name'] ?? json['parentProjectName'] ?? '')
+              as String,
+      organization: json['organization'] as String? ?? '',
+      authorizationDate:
+          json['authorization_date'] as String? ??
+          json['authorizationDate'] as String? ??
+          '',
+      projectStatus: json['project_status'] as int? ??
+          json['projectStatus'] as int? ??
+          0,
+      createdAt: json['created_at'] as String? ??
+          json['createdAt'] as String? ??
+          '',
+      progress: (json['progress'] as num?)?.toDouble() ?? 0.0,
+      remarks: json['remarks'] as String?,
+      hasSurvey: json['has_survey'] as bool? ??
+          json['hasSurvey'] as bool? ??
+          false,
+      hasZoning: json['has_zoning'] as bool? ??
+          json['hasZoning'] as bool? ??
+          false,
+    );
+  }
 }
