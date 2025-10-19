@@ -15,20 +15,28 @@ class ProjectDownloadService {
   Future<DownloadResult> downloadProjectData(String projectId) async {
     try {
       // 1. Get project details
-      final project = await (_database.select(_database.projects)
-            ..where((tbl) => tbl.id.equals(projectId)))
-          .getSingleOrNull();
+      final project =
+          await (_database.select(_database.projects)
+            ..where((tbl) => tbl.id.equals(projectId))).getSingleOrNull();
 
       if (project == null) {
-        return DownloadResult(
-          success: false,
-          message: 'Mradi haupatikani',
-        );
+        return DownloadResult(success: false, message: 'Mradi haupatikani');
       }
 
-      // 2. Fetch questionnaires for this project's locality
+      final queryParameters = <String, dynamic>{};
+      queryParameters['module'] = 'land-uses';
+
+      print('Query parameters: ${queryParameters}');
+
+      // 2. Fetch questionnaires for this project's locality -- Download all questionnaires for now
       final questionnairesResponse = await _dio.get(
-        '${Env.baseUrl}/questionnaires/?locality_id=${project.localityId}',
+        // '${Env.baseUrl}/questionnaires/?locality_id=${project.localityId}',
+        '${Env.baseUrl}/collect/questionnaire/list/',
+        queryParameters: queryParameters,
+      );
+
+      print(
+        'Questionnaires response status: ${questionnairesResponse.statusCode}',
       );
 
       if (questionnairesResponse.statusCode != 200) {
@@ -38,7 +46,8 @@ class ProjectDownloadService {
         );
       }
 
-      final questionnaires = questionnairesResponse.data['results'] as List<dynamic>? ??
+      final questionnaires =
+          questionnairesResponse.data['results'] as List<dynamic>? ??
           questionnairesResponse.data as List<dynamic>;
 
       int downloadedCount = 0;
@@ -49,7 +58,7 @@ class ProjectDownloadService {
 
         // Fetch full questionnaire details with sections and forms
         final detailResponse = await _dio.get(
-          '${Env.baseUrl}/questionnaires/$questionnaireSlug/',
+          '${Env.baseUrl}/collect/questionnaire/$questionnaireSlug/detail/',
         );
 
         if (detailResponse.statusCode == 200) {
@@ -61,11 +70,12 @@ class ProjectDownloadService {
       // 4. Mark project as downloaded
       final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
       await (_database.update(_database.projects)
-            ..where((tbl) => tbl.id.equals(projectId)))
-          .write(ProjectsCompanion(
-            isDownloaded: const drift.Value(true),
-            downloadedAt: drift.Value(now),
-          ));
+        ..where((tbl) => tbl.id.equals(projectId))).write(
+        ProjectsCompanion(
+          isDownloaded: const drift.Value(true),
+          downloadedAt: drift.Value(now),
+        ),
+      );
 
       return DownloadResult(
         success: true,
@@ -79,10 +89,7 @@ class ProjectDownloadService {
         isNetworkError: true,
       );
     } catch (e) {
-      return DownloadResult(
-        success: false,
-        message: 'Hitilafu: $e',
-      );
+      return DownloadResult(success: false, message: 'Hitilafu: $e');
     }
   }
 
@@ -92,7 +99,9 @@ class ProjectDownloadService {
 
     // Save questionnaire type
     final category = data['category'] as int;
-    await _database.into(_database.questionnaireTypes).insertOnConflictUpdate(
+    await _database
+        .into(_database.questionnaireTypes)
+        .insertOnConflictUpdate(
           QuestionnaireTypesCompanion.insert(
             id: drift.Value(category),
             name: data['name'] as String? ?? 'Unknown',
@@ -102,7 +111,9 @@ class ProjectDownloadService {
         );
 
     // Save questionnaire
-    await _database.into(_database.questionnaires).insertOnConflictUpdate(
+    await _database
+        .into(_database.questionnaires)
+        .insertOnConflictUpdate(
           QuestionnairesCompanion.insert(
             id: drift.Value(category),
             name: data['name'] as String,
@@ -117,12 +128,15 @@ class ProjectDownloadService {
     // Save sections and forms
     final sections = data['questionnaire_sections'] as List<dynamic>? ?? [];
     for (final section in sections) {
-      final sectionForms = section['questionnaire_section_forms'] as List<dynamic>? ?? [];
+      final sectionForms =
+          section['questionnaire_section_forms'] as List<dynamic>? ?? [];
 
       for (final formData in sectionForms) {
         // Save form
         final formSlug = formData['slug'] as String;
-        await _database.into(_database.forms).insertOnConflictUpdate(
+        await _database
+            .into(_database.forms)
+            .insertOnConflictUpdate(
               FormsCompanion.insert(
                 slug: formSlug,
                 questionnaireId: drift.Value(category),
@@ -138,7 +152,9 @@ class ProjectDownloadService {
         // Save form fields
         final fields = formData['custom_form_fields'] as List<dynamic>? ?? [];
         for (final field in fields) {
-          await _database.into(_database.formFields).insertOnConflictUpdate(
+          await _database
+              .into(_database.formFields)
+              .insertOnConflictUpdate(
                 FormFieldsCompanion.insert(
                   id: drift.Value(int.parse(field['id'].toString())),
                   formSlug: formSlug,
@@ -161,9 +177,9 @@ class ProjectDownloadService {
 
   /// Check if project data is downloaded
   Future<bool> isProjectDownloaded(String projectId) async {
-    final project = await (_database.select(_database.projects)
-          ..where((tbl) => tbl.id.equals(projectId)))
-        .getSingleOrNull();
+    final project =
+        await (_database.select(_database.projects)
+          ..where((tbl) => tbl.id.equals(projectId))).getSingleOrNull();
 
     return project?.isDownloaded ?? false;
   }
