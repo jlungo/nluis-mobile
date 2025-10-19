@@ -13,6 +13,7 @@ import '../../../../../data/local/draft_provider.dart';
 import '../../../../../data/local/database.dart';
 import '../../../../../shared/constants/app_constants.dart';
 import '../../../../../shared/theme/app_colors.dart';
+import '../../../../../shared/utils/snackbar_utils.dart';
 import '../../../../../shared/widgets/app_drawer.dart';
 import '../../../../../shared/widgets/custom_app_bar.dart';
 import '../../../../../shared/widgets/questionnaire_list_bottom_sheet.dart';
@@ -157,9 +158,7 @@ class _SurveyListPageState extends ConsumerState<SurveyListPage> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Hitilafu: $e'), backgroundColor: Colors.red),
-        );
+        _showSnackBar('Hitilafu: $e', AppColors.error);
       }
     }
   }
@@ -222,7 +221,7 @@ class _SurveyListPageState extends ConsumerState<SurveyListPage> {
     if (surveyIds.isEmpty) return;
 
     final database = ref.read(databaseProvider);
-    final dio = ref.read(dioClientProvider).dio;
+    final dioClient = ref.read(dioClientProvider);
 
     final idsSet = surveyIds.toSet();
 
@@ -293,7 +292,7 @@ class _SurveyListPageState extends ConsumerState<SurveyListPage> {
               fieldTypes: fieldTypes,
             );
 
-            await dio.post(
+            await dioClient.post(
               '/collect/questionnaire/submit-form-data/',
               data: formData,
               options: Options(contentType: 'multipart/form-data'),
@@ -653,13 +652,15 @@ class _SurveyListPageState extends ConsumerState<SurveyListPage> {
 
   void _showSnackBar(String message, Color color) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: const Duration(seconds: 3),
-        backgroundColor: color,
-      ),
-    );
+    if (color == AppColors.success) {
+      SnackBarUtils.showSuccess(context, message);
+    } else if (color == AppColors.error) {
+      SnackBarUtils.showError(context, message);
+    } else if (color == AppColors.warning) {
+      SnackBarUtils.showWarning(context, message);
+    } else {
+      SnackBarUtils.showInfo(context, message);
+    }
   }
 
   String _mapUploadError(Object error) {
