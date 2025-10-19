@@ -55,8 +55,6 @@ final questionnaireDetailProvider =
       final repository = ref.watch(questionnaireRepositoryProvider);
       final result = await repository.getQuestionnaireDetail(slug);
 
-      print("=== Result1s: $result");
-
       return result.fold(
         (failure) => throw Exception(failure.toString()),
         (detail) => detail,
