@@ -4,9 +4,9 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:drift/drift.dart' as drift;
 
-import '../../core/env/env.dart';
 import '../../core/error/failures.dart';
 import '../../core/network/network_info.dart';
+import '../../core/network/dio_client.dart';
 import '../../data/local/database.dart' as local_db;
 import '../../shared/models/questionnaire.dart';
 
@@ -23,12 +23,12 @@ abstract class QuestionnaireRepository {
 }
 
 class QuestionnaireRepositoryImpl implements QuestionnaireRepository {
-  final Dio dio;
+  final DioClient dioClient;
   final local_db.AppDatabase database;
   final NetworkInfo networkInfo;
 
   const QuestionnaireRepositoryImpl({
-    required this.dio,
+    required this.dioClient,
     required this.database,
     required this.networkInfo,
   });
@@ -53,8 +53,8 @@ class QuestionnaireRepositoryImpl implements QuestionnaireRepository {
           queryParameters['category'] = category;
         }
 
-        final response = await dio.get(
-          '${Env.baseUrl}/collect/questionnaire/list/',
+        final response = await dioClient.get(
+          '/collect/questionnaire/list/',
           queryParameters: queryParameters,
         );
 
@@ -117,8 +117,8 @@ class QuestionnaireRepositoryImpl implements QuestionnaireRepository {
     }
 
     try {
-      final response = await dio.get(
-        '${Env.baseUrl}/collect/questionnaire/$slug/detail/',
+      final response = await dioClient.get(
+        '/collect/questionnaire/$slug/detail/',
       );
 
       if (response.statusCode == 200) {
