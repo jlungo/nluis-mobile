@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nluis_app/features/madodoso/presentation/providers/madodoso_providers.dart';
+
 import '../theme/app_colors.dart';
 
-class AppShell extends StatefulWidget {
+class AppShell extends ConsumerStatefulWidget {
   final Widget child;
 
   const AppShell({super.key, required this.child});
 
   @override
-  State<AppShell> createState() => _AppShellState();
+  ConsumerState<AppShell> createState() => _AppShellState();
 }
 
-class _AppShellState extends State<AppShell> {
+class _AppShellState extends ConsumerState<AppShell> {
   int _getCurrentIndex(BuildContext context) {
     final location = GoRouterState.of(context).matchedLocation;
     if (location.contains('/dashboard')) return 0;
@@ -21,7 +24,7 @@ class _AppShellState extends State<AppShell> {
       return 1;
     }
     if (location.contains('/drafts')) return 2;
-    if (location.contains('/settings')) return 4;
+    if (location.contains('/settings')) return 3;
     return 0;
   }
 
@@ -29,6 +32,14 @@ class _AppShellState extends State<AppShell> {
   Widget build(BuildContext context) {
     final currentIndex = _getCurrentIndex(context);
     final theme = Theme.of(context);
+    final madodosoState = ref.watch(madodosoStateProvider);
+    final draftsBadge =
+        madodosoState.maybeWhen(
+          data:
+              (state) =>
+                  state.draftCount > 0 ? state.draftCount.toString() : null,
+          orElse: () => null,
+        );
 
     return Scaffold(
       body: widget.child,
@@ -68,25 +79,16 @@ class _AppShellState extends State<AppShell> {
                 ),
                 _NavItem(
                   icon: Icons.description_outlined,
-                  label: 'Dodoso',
-                  // badge: '2',
+                  label: 'Madodoso',
                   isSelected: currentIndex == 2,
                   onTap: () => context.goNamed('drafts'),
                   theme: theme,
-                ),
-                _NavItem(
-                  icon: Icons.map_outlined,
-                  label: 'Ramani',
-                  isSelected: currentIndex == 3,
-                  onTap: () {
-                    // Will navigate to zoning when project selected
-                  },
-                  theme: theme,
+                  badge: draftsBadge,
                 ),
                 _NavItem(
                   icon: Icons.person_outline,
                   label: 'Account',
-                  isSelected: currentIndex == 4,
+                  isSelected: currentIndex == 3,
                   onTap: () => context.goNamed('settings'),
                   theme: theme,
                 ),
