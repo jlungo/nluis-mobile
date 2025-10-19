@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../constants/app_constants.dart';
 import '../../../theme/app_colors.dart';
 import '../../../models/questionnaire.dart';
+import '../../../utils/dialog_utils.dart';
 
 class MultiselectFormFieldWidget extends StatelessWidget {
   final String label;
@@ -26,9 +27,9 @@ class MultiselectFormFieldWidget extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
     final selectedValues = List<String>.from(values);
 
-    showDialog(
-      context: context,
-      builder: (context) => StatefulBuilder(
+    DialogUtils.showCustomDialog<void>(
+      context,
+      builder: (dialogContext) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
           title: Text(label),
           content: SingleChildScrollView(
@@ -55,7 +56,7 @@ class MultiselectFormFieldWidget extends StatelessWidget {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => Navigator.of(dialogContext).pop(),
               child: Text(
                 'Ghairi',
                 style: TextStyle(
@@ -66,7 +67,7 @@ class MultiselectFormFieldWidget extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 onChanged(selectedValues);
-                Navigator.pop(context);
+                Navigator.of(dialogContext).pop();
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: isDark ? AppColors.darkPrimary : AppColors.primary,
