@@ -5,9 +5,9 @@ import 'package:dio/dio.dart';
 import 'package:drift/drift.dart' as drift;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../core/env/env.dart';
 import '../../core/error/failures.dart';
 import '../../core/network/network_info.dart';
+import '../../core/network/dio_client.dart';
 import '../../data/local/database.dart' as local_db;
 import '../../shared/models/project.dart';
 
@@ -26,13 +26,13 @@ class ApiResponse<T> {
 class ProjectRepositoryImpl implements ProjectRepository {
   static const _cachedProjectsKey = 'cached_projects_v1';
 
-  final Dio dio;
+  final DioClient dioClient;
   final local_db.AppDatabase database;
   final NetworkInfo networkInfo;
   final SharedPreferences preferences;
 
   const ProjectRepositoryImpl({
-    required this.dio,
+    required this.dioClient,
     required this.database,
     required this.networkInfo,
     required this.preferences,
@@ -44,8 +44,9 @@ class ProjectRepositoryImpl implements ProjectRepository {
 
     if (isOnline) {
       try {
-        final response = await dio.get(
-          '${Env.baseUrl}/projects/?is_app_user=true',
+        final response = await dioClient.get(
+          '/projects/',
+          queryParameters: {'is_app_user': true},
         );
 
         if (response.statusCode == 200) {
