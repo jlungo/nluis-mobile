@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import '../../../../core/env/env.dart';
 import '../../../../core/error/failures.dart';
+import '../../../../core/network/dio_client.dart';
 import '../models/auth_response_model.dart';
 
 abstract class AuthRemoteDataSource {
@@ -10,15 +10,15 @@ abstract class AuthRemoteDataSource {
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
-  final Dio dio;
+  final DioClient dioClient;
 
-  const AuthRemoteDataSourceImpl(this.dio);
+  const AuthRemoteDataSourceImpl(this.dioClient);
 
   @override
   Future<Either<Failure, AuthResponseModel>> login(String email, String password) async {
     try {
-      final response = await dio.post(
-        '${Env.baseUrl}/auth/login/',
+      final response = await dioClient.post(
+        '/auth/login/',
         data: {
           'email': email,
           'password': password,
@@ -57,8 +57,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<Either<Failure, String>> refreshToken(String refreshToken) async {
     try {
-      final response = await dio.post(
-        '${Env.baseUrl}/auth/refresh/',
+      final response = await dioClient.post(
+        '/auth/refresh/',
         data: {
           'refresh': refreshToken,
         },
