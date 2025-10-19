@@ -8,15 +8,21 @@ import '../theme/app_colors.dart';
 class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final bool hasNotification;
   final VoidCallback? onNotificationTap;
+  final String? title;
+  final PreferredSizeWidget? bottom;
 
   const CustomAppBar({
     super.key,
     this.hasNotification = false,
     this.onNotificationTap,
+    this.title,
+    this.bottom,
   });
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => Size.fromHeight(
+        kToolbarHeight + (bottom?.preferredSize.height ?? 0),
+      );
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -29,6 +35,14 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
       backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
       surfaceTintColor: isDark ? AppColors.darkSurface : Colors.white,
       elevation: 0,
+      title: title != null
+          ? Text(
+              title!,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+            )
+          : null,
       leading: Builder(
         builder:
             (context) => IconButton(
@@ -40,6 +54,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
               onPressed: () => Scaffold.of(context).openDrawer(),
             ),
       ),
+      bottom: bottom,
       actions: [
         Stack(
           children: [
