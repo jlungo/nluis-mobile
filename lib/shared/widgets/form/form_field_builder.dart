@@ -14,13 +14,15 @@ import 'form_fields/zoning_form_field_widget.dart';
 class FormFieldBuilder extends StatefulWidget {
   final CustomFormField field;
   final dynamic value;
-  final Function(dynamic) onChanged;
+  final Function(dynamic)? onChanged;
+  final bool isReadOnly;
 
   const FormFieldBuilder({
     super.key,
     required this.field,
     this.value,
     required this.onChanged,
+    this.isReadOnly = false,
   });
 
   @override
@@ -36,11 +38,15 @@ class _FormFieldBuilderState extends State<FormFieldBuilder> {
     _textController = TextEditingController(
       text: widget.value?.toString() ?? '',
     );
-    _textController.addListener(_onTextChanged);
+    if (!widget.isReadOnly) {
+      _textController.addListener(_onTextChanged);
+    }
   }
 
   void _onTextChanged() {
-    widget.onChanged(_textController.text);
+    if (widget.onChanged != null) {
+      widget.onChanged!(_textController.text);
+    }
   }
 
   @override
@@ -58,6 +64,7 @@ class _FormFieldBuilderState extends State<FormFieldBuilder> {
           placeholder: widget.field.placeholder,
           required: widget.field.required,
           controller: _textController,
+          enabled: !widget.isReadOnly,
           validator:
               widget.field.required
                   ? (value) =>
@@ -72,6 +79,7 @@ class _FormFieldBuilderState extends State<FormFieldBuilder> {
           required: widget.field.required,
           controller: _textController,
           keyboardType: TextInputType.emailAddress,
+          enabled: !widget.isReadOnly,
           validator:
               widget.field.required
                   ? (value) {
@@ -93,6 +101,7 @@ class _FormFieldBuilderState extends State<FormFieldBuilder> {
           required: widget.field.required,
           controller: _textController,
           keyboardType: TextInputType.number,
+          enabled: !widget.isReadOnly,
           validator:
               widget.field.required
                   ? (value) {
@@ -111,6 +120,7 @@ class _FormFieldBuilderState extends State<FormFieldBuilder> {
           placeholder: widget.field.placeholder,
           required: widget.field.required,
           controller: _textController,
+          enabled: !widget.isReadOnly,
           validator:
               widget.field.required
                   ? (value) =>
@@ -125,8 +135,9 @@ class _FormFieldBuilderState extends State<FormFieldBuilder> {
           required: widget.field.required,
           options: widget.field.selectOptions,
           value: widget.value as String?,
-          onChanged: (value) {
-            widget.onChanged(value);
+          enabled: !widget.isReadOnly,
+          onChanged: widget.isReadOnly ? null : (value) {
+            widget.onChanged?.call(value);
           },
           validator:
               widget.field.required
@@ -139,8 +150,9 @@ class _FormFieldBuilderState extends State<FormFieldBuilder> {
           label: widget.field.label,
           required: widget.field.required,
           value: widget.value as bool? ?? false,
-          onChanged: (value) {
-            widget.onChanged(value ?? false);
+          enabled: !widget.isReadOnly,
+          onChanged: widget.isReadOnly ? null : (value) {
+            widget.onChanged?.call(value ?? false);
           },
         );
 
@@ -150,8 +162,9 @@ class _FormFieldBuilderState extends State<FormFieldBuilder> {
           placeholder: widget.field.placeholder,
           required: widget.field.required,
           value: widget.value as DateTime?,
-          onChanged: (value) {
-            widget.onChanged(value);
+          enabled: !widget.isReadOnly,
+          onChanged: widget.isReadOnly ? null : (value) {
+            widget.onChanged?.call(value);
           },
           validator:
               widget.field.required
@@ -164,13 +177,14 @@ class _FormFieldBuilderState extends State<FormFieldBuilder> {
           label: widget.field.label,
           required: widget.field.required,
           value: widget.value as File?,
-          onPickFile: () async {
+          enabled: !widget.isReadOnly,
+          onPickFile: widget.isReadOnly ? null : () async {
             // TODO: Implement file picker
             // final file = await FilePicker.pickFile();
             // widget.onChanged(file);
           },
-          onRemove: () {
-            widget.onChanged(null);
+          onRemove: widget.isReadOnly ? null : () {
+            widget.onChanged?.call(null);
           },
         );
 
@@ -181,8 +195,9 @@ class _FormFieldBuilderState extends State<FormFieldBuilder> {
           required: widget.field.required,
           options: widget.field.selectOptions,
           values: widget.value as List<String>? ?? [],
-          onChanged: (values) {
-            widget.onChanged(values);
+          enabled: !widget.isReadOnly,
+          onChanged: widget.isReadOnly ? null : (values) {
+            widget.onChanged?.call(values);
           },
         );
 
@@ -205,10 +220,10 @@ class _FormFieldBuilderState extends State<FormFieldBuilder> {
 
         return table.DynamicFillableTable(
           tableData: tableData,
-          readOnly: false,
-          onChanged: (rows) {
+          readOnly: widget.isReadOnly,
+          onChanged: widget.isReadOnly ? null : (rows) {
             // Save table data when changed
-            widget.onChanged({
+            widget.onChanged?.call({
               'rows': rows.map((r) => r.toJson()).toList(),
             });
           },
@@ -219,8 +234,9 @@ class _FormFieldBuilderState extends State<FormFieldBuilder> {
           label: widget.field.label,
           required: widget.field.required,
           value: widget.value as Map<String, dynamic>?,
-          onChanged: (value) {
-            widget.onChanged(value);
+          enabled: !widget.isReadOnly,
+          onChanged: widget.isReadOnly ? null : (value) {
+            widget.onChanged?.call(value);
           },
         );
 
@@ -230,6 +246,7 @@ class _FormFieldBuilderState extends State<FormFieldBuilder> {
           placeholder: widget.field.placeholder,
           required: widget.field.required,
           controller: _textController,
+          enabled: !widget.isReadOnly,
           validator:
               widget.field.required
                   ? (value) =>
