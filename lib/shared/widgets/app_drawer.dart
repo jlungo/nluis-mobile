@@ -14,7 +14,10 @@ class AppDrawer extends ConsumerWidget {
     final isDark = theme.brightness == Brightness.dark;
     final authState = ref.watch(authStateProvider);
     final user = authState.valueOrNull;
-    final location = GoRouterState.of(context).matchedLocation;
+
+    final goRouter = GoRouter.maybeOf(context);
+    final location =
+        goRouter?.routeInformationProvider.value.uri.toString() ?? '';
 
     bool _matchesLocation(String path) => location.startsWith(path);
 
