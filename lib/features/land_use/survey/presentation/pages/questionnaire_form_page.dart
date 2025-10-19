@@ -15,6 +15,7 @@ class QuestionnaireFormPage extends ConsumerStatefulWidget {
   final String projectId;
   final String projectName;
   final String? surveyId; // if provided, load existing survey data
+  final bool isReadOnly; // if true, survey is uploaded and cannot be edited
 
   const QuestionnaireFormPage({
     super.key,
@@ -22,6 +23,7 @@ class QuestionnaireFormPage extends ConsumerStatefulWidget {
     required this.projectId,
     required this.projectName,
     this.surveyId,
+    this.isReadOnly = false,
   });
 
   @override
@@ -432,6 +434,8 @@ class _QuestionnaireFormPageState extends ConsumerState<QuestionnaireFormPage> {
     try {
       await _persistAllForms(questionnaire);
 
+      if (!mounted) return;
+
       if (_currentSurveyId == null) {
         _showSnackBar(
           'Hakuna fomu za kuhifadhi. Hifadhi data katika sehemu husika kwanza.',
@@ -444,6 +448,8 @@ class _QuestionnaireFormPageState extends ConsumerState<QuestionnaireFormPage> {
       final saved = await draftService.saveSurvey(
         surveyId: _currentSurveyId!,
       );
+
+      if (!mounted) return;
 
       if (!saved) {
         _showSnackBar(
@@ -458,6 +464,7 @@ class _QuestionnaireFormPageState extends ConsumerState<QuestionnaireFormPage> {
         backgroundColor: AppColors.success,
       );
 
+      if (!mounted) return;
       Navigator.pop(context);
     } catch (e) {
       _showSnackBar(
@@ -505,30 +512,67 @@ class _QuestionnaireFormPageState extends ConsumerState<QuestionnaireFormPage> {
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
-          // Save Survey Button
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: ElevatedButton.icon(
-              onPressed:
-                  questionnaire == null
-                      ? null
-                      : () => _saveSurvey(
-                        questionnaire,
-                        surveyProgress ?? _computeSurveyProgress(questionnaire),
-                      ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: saveButtonColor,
-                foregroundColor: Colors.white,
-                elevation: 0,
+          // Read-only indicator or Save Survey Button
+          if (widget.isReadOnly)
+            Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppConstants.spacingMd,
                   vertical: 8,
                 ),
+                decoration: BoxDecoration(
+                  color: AppColors.success.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: AppColors.success.withValues(alpha: 0.5),
+                    width: 1.5,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.cloud_done_outlined,
+                      size: 18,
+                      color: AppColors.success,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Imepakiwa',
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.success,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              icon: const Icon(Icons.save_outlined, size: 20),
-              label: const Text('Hifadhi Kamili'),
+            )
+          else
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: ElevatedButton.icon(
+                onPressed:
+                    questionnaire == null
+                        ? null
+                        : () => _saveSurvey(
+                          questionnaire,
+                          surveyProgress ?? _computeSurveyProgress(questionnaire),
+                        ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: saveButtonColor,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppConstants.spacingMd,
+                    vertical: 8,
+                  ),
+                ),
+                icon: const Icon(Icons.save_outlined, size: 20),
+                label: const Text('Hifadhi Kamili'),
+              ),
             ),
-          ),
         ],
       ),
       body: questionnaireAsync.when(
@@ -621,6 +665,7 @@ class _QuestionnaireFormPageState extends ConsumerState<QuestionnaireFormPage> {
                     section: section,
                     sectionIndex: sectionIndex,
                     isDark: isDark,
+                    isReadOnly: widget.isReadOnly,
                     formDataByFormSlug: _formDataByFormSlug,
                     formLastSavedAt: _formLastSavedAt,
                     expandedSections: _expandedSections,
@@ -659,7 +704,7 @@ class _QuestionnaireFormPageState extends ConsumerState<QuestionnaireFormPage> {
                       ),
                       const SizedBox(height: AppConstants.spacingMd),
                       Text(
-                        '${_extractErrorMessage(error)}',
+                        _extractErrorMessage(error),
                         style: theme.textTheme.titleLarge?.copyWith(
                           color: isDark ? AppColors.errorDark : AppColors.error,
                         ),
