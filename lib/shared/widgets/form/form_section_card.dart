@@ -10,6 +10,7 @@ class FormSectionCard extends StatelessWidget {
   final QuestionnaireSection section;
   final int sectionIndex;
   final bool isDark;
+  final bool isReadOnly;
   final Map<String, Map<String, dynamic>> formDataByFormSlug;
   final Map<String, DateTime?> formLastSavedAt;
   final Map<String, bool> expandedSections;
@@ -26,6 +27,7 @@ class FormSectionCard extends StatelessWidget {
     required this.section,
     required this.sectionIndex,
     required this.isDark,
+    this.isReadOnly = false,
     required this.formDataByFormSlug,
     required this.formLastSavedAt,
     required this.expandedSections,
@@ -128,6 +130,7 @@ class FormSectionCard extends StatelessWidget {
                     (form) => FormSectionTile(
                       form: form,
                       isDark: isDark,
+                      isReadOnly: isReadOnly,
                       formValues: formDataByFormSlug[form.slug] ?? {},
                       lastSavedAt: formLastSavedAt[form.slug],
                       isExpanded: expandedForms[form.slug] ?? false,
