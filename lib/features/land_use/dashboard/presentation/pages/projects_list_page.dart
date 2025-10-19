@@ -84,6 +84,8 @@ class _ProjectsListPageState extends ConsumerState<ProjectsListPage> {
         project.id,
       );
 
+      if (!mounted) return;
+
       if (!isDownloaded) {
         _showSnackBar(
           'Mradi huu haukupakuliwa. Tafadhali washa mtandao ili kuupakua kwanza.',
@@ -92,6 +94,7 @@ class _ProjectsListPageState extends ConsumerState<ProjectsListPage> {
       }
     }
 
+    if (!mounted) return;
     _showProjectActions(context, project);
   }
 
