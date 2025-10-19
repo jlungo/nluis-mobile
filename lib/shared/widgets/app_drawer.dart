@@ -19,16 +19,17 @@ class AppDrawer extends ConsumerWidget {
     final location =
         goRouter?.routeInformationProvider.value.uri.toString() ?? '';
 
-    bool _matchesLocation(String path) => location.startsWith(path);
+    bool matchesLocation(String path) => location.startsWith(path);
 
     final isOnSwitchboard = location == '/module-switch';
-    final isOnDashboard = _matchesLocation('/module/land-use/dashboard');
+    final isOnDashboard = matchesLocation('/module/land-use/dashboard');
     final isOnProjects =
-        _matchesLocation('/module/land-use/projects') ||
-        _matchesLocation('/module/land-use/survey') ||
-        _matchesLocation('/module/land-use/zoning');
-    final isOnSettings = _matchesLocation('/settings');
-    final isOnNotifications = _matchesLocation('/notifications');
+        matchesLocation('/module/land-use/projects') ||
+        matchesLocation('/module/land-use/survey') ||
+        matchesLocation('/module/land-use/zoning');
+    final isOnDrafts = matchesLocation('/drafts');
+    final isOnSettings = matchesLocation('/settings');
+    final isOnNotifications = matchesLocation('/notifications');
 
     return Drawer(
       backgroundColor:
@@ -117,6 +118,15 @@ class AppDrawer extends ConsumerWidget {
                   onTap: () {
                     Navigator.pop(context);
                     context.goNamed('luProjects');
+                  },
+                ),
+                _DrawerMenuItem(
+                  icon: Icons.description_outlined,
+                  label: 'Madodoso',
+                  isSelected: isOnDrafts,
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.goNamed('drafts');
                   },
                 ),
                 _DrawerMenuItem(
