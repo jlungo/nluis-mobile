@@ -6,6 +6,7 @@ import 'app/router/app_router.dart';
 import 'shared/theme/app_theme.dart';
 import 'shared/providers/theme_provider.dart';
 import 'features/auth/presentation/providers/auth_providers.dart';
+import 'features/auth/presentation/widgets/auth_session_listener.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,23 +31,25 @@ class MyApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
     final themeMode = ref.watch(themeModeProvider);
 
-    return MaterialApp.router(
-      title: 'NLUIS',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: themeMode,
-      routerConfig: router,
-      locale: const Locale('sw', 'TZ'),
-      supportedLocales: const [
-        Locale('sw', 'TZ'),
-        Locale('en', 'US'),
-      ],
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
+    return AuthSessionListener(
+      child: MaterialApp.router(
+        title: 'NLUIS',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode: themeMode,
+        routerConfig: router,
+        locale: const Locale('sw', 'TZ'),
+        supportedLocales: const [
+          Locale('sw', 'TZ'),
+          Locale('en', 'US'),
+        ],
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+      ),
     );
   }
 }
