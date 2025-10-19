@@ -124,4 +124,23 @@ class DialogUtils {
       ),
     );
   }
+
+  /// Shows a custom dialog using the shared configuration
+  static Future<T?> showCustomDialog<T>(
+    BuildContext context, {
+    required WidgetBuilder builder,
+    bool barrierDismissible = true,
+    Color barrierColor = Colors.black54,
+    bool useRootNavigator = true,
+  }) {
+    if (!context.mounted) return Future.value(null);
+
+    return showDialog<T>(
+      context: context,
+      barrierDismissible: barrierDismissible,
+      barrierColor: barrierColor,
+      useRootNavigator: useRootNavigator,
+      builder: builder,
+    );
+  }
 }
