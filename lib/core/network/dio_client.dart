@@ -3,12 +3,19 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../env/env.dart';
 import '../utils/logger.dart';
 import '../../shared/constants/app_constants.dart';
+import 'network_info.dart';
 
 class DioClient {
   late final Dio dio;
   final FlutterSecureStorage secureStorage;
+  final NetworkInfo networkInfo;
+  final Future<void> Function()? onTokenRefreshFailedWhileOnline;
 
-  DioClient({required this.secureStorage}) {
+  DioClient({
+    required this.secureStorage,
+    required this.networkInfo,
+    this.onTokenRefreshFailedWhileOnline,
+  }) {
     dio = Dio(
       BaseOptions(
         baseUrl: Env.baseUrl,
@@ -68,6 +75,28 @@ class DioClient {
                 return handler.resolve(response);
               } catch (e) {
                 return handler.reject(error);
+              }
+            } else {
+              // Token refresh failed - check if we're online
+              final isOnline = await networkInfo.isConnected;
+
+              if (isOnline) {
+                // User is online but refresh failed (refresh token expired/invalid)
+                // Trigger automatic logout
+                AppLogger.warning(
+                  'Token refresh failed while online. Logging out user...',
+                );
+
+                if (onTokenRefreshFailedWhileOnline != null) {
+                  // Call the logout callback asynchronously
+                  // Don't await to prevent blocking the error handler
+                  onTokenRefreshFailedWhileOnline!();
+                }
+              } else {
+                // User is offline - don't logout, they may be working offline
+                AppLogger.info(
+                  'Token refresh failed while offline. User can continue working offline.',
+                );
               }
             }
           }
