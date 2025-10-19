@@ -9,6 +9,7 @@ import 'package:nluis_app/shared/widgets/form/form_status_badge.dart';
 class FormSectionTile extends StatelessWidget {
   final QuestionnaireForm form;
   final bool isDark;
+  final bool isReadOnly;
   final Map<String, dynamic> formValues;
   final DateTime? lastSavedAt;
   final bool isExpanded;
@@ -21,6 +22,7 @@ class FormSectionTile extends StatelessWidget {
     super.key,
     required this.form,
     required this.isDark,
+    this.isReadOnly = false,
     required this.formValues,
     this.lastSavedAt,
     required this.isExpanded,
@@ -101,47 +103,84 @@ class FormSectionTile extends StatelessWidget {
               child: custom.FormFieldBuilder(
                 field: field,
                 value: _resolveFieldValue(field, formValues[field.id]),
-                onChanged: (value) => onFieldChanged(field.id, value),
+                onChanged: isReadOnly ? null : (value) => onFieldChanged(field.id, value),
+                isReadOnly: isReadOnly,
               ),
             ),
           ),
 
-          // Save button
-          const SizedBox(height: AppConstants.spacingXs),
-          Row(
-            children: [
-              if (lastSavedAt != null)
-                Expanded(
-                  child: Text(
-                    'Ilihifadhiwa ${_formatTime(lastSavedAt!)}',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color:
-                          isDark
-                              ? AppColors.darkTextSecondary
-                              : AppColors.textSecondary,
+          // Save button or read-only indicator
+          if (!isReadOnly) ...[
+            const SizedBox(height: AppConstants.spacingXs),
+            Row(
+              children: [
+                if (lastSavedAt != null)
+                  Expanded(
+                    child: Text(
+                      'Ilihifadhiwa ${_formatTime(lastSavedAt!)}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color:
+                            isDark
+                                ? AppColors.darkTextSecondary
+                                : AppColors.textSecondary,
+                      ),
+                    ),
+                  )
+                else
+                  const Expanded(child: SizedBox()),
+                ElevatedButton.icon(
+                  onPressed: onSaveForm,
+                  icon: const Icon(Icons.save_outlined, size: 18),
+                  label: const Text('Hifadhi'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isDark ? AppColors.darkPrimary : AppColors.primary,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppConstants.spacingMd,
+                      vertical: AppConstants.spacingSm,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppConstants.radiusSm),
                     ),
                   ),
-                )
-              else
-                const Expanded(child: SizedBox()),
-              ElevatedButton.icon(
-                onPressed: onSaveForm,
-                icon: const Icon(Icons.save_outlined, size: 18),
-                label: const Text('Hifadhi'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isDark ? AppColors.darkPrimary : AppColors.primary,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppConstants.spacingMd,
-                    vertical: AppConstants.spacingSm,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppConstants.radiusSm),
-                  ),
+                ),
+              ],
+            ),
+          ] else ...[
+            const SizedBox(height: AppConstants.spacingXs),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppConstants.spacingMd,
+                vertical: AppConstants.spacingSm,
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.info.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(AppConstants.radiusSm),
+                border: Border.all(
+                  color: AppColors.info.withValues(alpha: 0.3),
                 ),
               ),
-            ],
-          ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.lock_outline,
+                    size: 16,
+                    color: AppColors.info,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Fomu hii imeshapakiwa na haiwezi kubadilishwa',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: AppColors.info,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );
