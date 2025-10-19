@@ -7,6 +7,7 @@ import '../../../../../core/network/network_info.dart';
 import '../../../../../data/services/download_provider.dart';
 import '../../../../../shared/constants/app_constants.dart';
 import '../../../../../shared/theme/app_colors.dart';
+import '../../../../../shared/utils/project_action_handler.dart';
 import '../../../../../shared/widgets/app_button.dart';
 import '../../../../../shared/widgets/app_drawer.dart';
 import '../../../../../features/auth/presentation/providers/auth_providers.dart';
@@ -154,8 +155,10 @@ class LandUseDashboardPage extends ConsumerWidget {
     final isDark = theme.brightness == Brightness.dark;
     final user = authState.valueOrNull;
     final onlineStatus = ref.watch(onlineStatusProvider);
-    final isOnline =
-        onlineStatus.maybeWhen(data: (value) => value, orElse: () => true);
+    final isOnline = onlineStatus.maybeWhen(
+      data: (value) => value,
+      orElse: () => true,
+    );
     final surveyStatsAsync = ref.watch(surveyDashboardStatsProvider);
 
     void showSnackBar(String message, {Color color = AppColors.warning}) {
@@ -230,42 +233,48 @@ class LandUseDashboardPage extends ConsumerWidget {
                       onProjectActions: openProject,
                     ),
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, stack) => Center(
-                  child: Text(
-                    error.toString(),
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodyMedium,
-                  ),
-                ),
+                error:
+                    (error, stack) => Center(
+                      child: Text(
+                        error.toString(),
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                    ),
               ),
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, stack) => Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.wifi_off, size: 48, color: AppColors.warning),
-                const SizedBox(height: AppConstants.spacingSm),
-                Text(
-                  error.toString(),
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodyMedium,
+          error:
+              (error, stack) => Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.wifi_off,
+                      size: 48,
+                      color: AppColors.warning,
+                    ),
+                    const SizedBox(height: AppConstants.spacingSm),
+                    Text(
+                      error.toString(),
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: AppConstants.spacingSm),
+                    ElevatedButton.icon(
+                      onPressed: refreshProjects,
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Jaribu tena'),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: AppConstants.spacingSm),
-                ElevatedButton.icon(
-                  onPressed: refreshProjects,
-                  icon: const Icon(Icons.refresh),
-                  label: const Text('Jaribu tena'),
-                ),
-              ],
-            ),
-          ),
+              ),
         ),
       ),
     );
   }
 }
 
-class _DashboardView extends StatefulWidget {
+class _DashboardView extends ConsumerStatefulWidget {
   final List<Project> projects;
   final SurveyDashboardStats surveyStats;
   final bool isDark;
@@ -289,10 +298,10 @@ class _DashboardView extends StatefulWidget {
   });
 
   @override
-  State<_DashboardView> createState() => _DashboardViewState();
+  ConsumerState<_DashboardView> createState() => _DashboardViewState();
 }
 
-class _DashboardViewState extends State<_DashboardView> {
+class _DashboardViewState extends ConsumerState<_DashboardView> {
   bool _isStatsExpanded = true;
 
   @override
@@ -306,7 +315,7 @@ class _DashboardViewState extends State<_DashboardView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Header Section - Fixed
+        // Header Section - Fixed top
         Container(
           color:
               widget.isDark ? AppColors.darkBackground : AppColors.background,
@@ -365,6 +374,7 @@ class _DashboardViewState extends State<_DashboardView> {
         ),
 
         if (!widget.isOnline) const OfflineBanner(),
+        if (!widget.isOnline) const SizedBox(height: AppConstants.spacingSm),
 
         // Stats Section - Collapsible
         if (_isStatsExpanded)
@@ -438,20 +448,21 @@ class _DashboardViewState extends State<_DashboardView> {
 
         // Projects List - Scrollable
         Expanded(
-          child: widget.isOnline
-              ? RefreshIndicator(
-                  onRefresh: widget.onRefresh,
-                  child: _buildProjectsList(
+          child:
+              widget.isOnline
+                  ? RefreshIndicator(
+                    onRefresh: widget.onRefresh,
+                    child: _buildProjectsList(
+                      totalProjects: totalProjects,
+                      displayCount: displayCount,
+                      showViewAll: showViewAll,
+                    ),
+                  )
+                  : _buildProjectsList(
                     totalProjects: totalProjects,
                     displayCount: displayCount,
                     showViewAll: showViewAll,
                   ),
-                )
-              : _buildProjectsList(
-                  totalProjects: totalProjects,
-                  displayCount: displayCount,
-                  showViewAll: showViewAll,
-                ),
         ),
       ],
     );
@@ -508,13 +519,29 @@ class _DashboardViewState extends State<_DashboardView> {
       itemBuilder: (context, index) {
         if (index < displayCount) {
           final project = widget.projects[index];
-          return Padding(
-            padding: const EdgeInsets.only(bottom: AppConstants.spacingSm),
-            child: ProjectListCard(
-              project: project,
-              onTap: () => unawaited(widget.onProjectActions(project)),
-              onMoreTap: () => unawaited(widget.onProjectActions(project)),
-            ),
+
+          // Check if project is downloaded
+          final downloadService = ref.read(downloadServiceProvider);
+
+          return FutureBuilder<bool>(
+            future: downloadService.isProjectDownloaded(project.id),
+            builder: (context, snapshot) {
+              final isDownloaded = snapshot.data ?? false;
+
+              return Padding(
+                padding: const EdgeInsets.only(bottom: AppConstants.spacingSm),
+                child: ProjectListCard(
+                  project: project,
+                  isDownloaded: isDownloaded,
+                  onTap: () => unawaited(widget.onProjectActions(project)),
+                  onDownload: () {
+                    final handler = ProjectActionHandler(context, ref);
+                    unawaited(handler.downloadProject(project, widget.isOnline));
+                  },
+                  onMoreTap: () => unawaited(widget.onProjectActions(project)),
+                ),
+              );
+            },
           );
         }
 
@@ -529,14 +556,8 @@ class _DashboardViewState extends State<_DashboardView> {
             iconOnRight: true,
             gradientColors:
                 widget.isDark
-                    ? [
-                      AppColors.darkPrimary,
-                      AppColors.darkPrimaryDark,
-                    ]
-                    : [
-                      AppColors.primary,
-                      AppColors.primaryDark,
-                    ],
+                    ? [AppColors.darkPrimary, AppColors.darkPrimaryDark]
+                    : [AppColors.primary, AppColors.primaryDark],
             borderRadius: AppConstants.radiusSm.toDouble(),
             textStyle: widget.theme.textTheme.labelLarge?.copyWith(
               color: Colors.white,
