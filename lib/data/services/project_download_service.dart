@@ -91,10 +91,14 @@ class ProjectDownloadService {
     final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
 
     // Save questionnaire type
-    final category = data['category'] as int;
-    await _database
-        .into(_database.questionnaireTypes)
-        .insertOnConflictUpdate(
+    final fallbackId = int.tryParse(data['id']?.toString() ?? '') ?? 0;
+    final category = data['category'] as int? ?? fallbackId;
+    final questionnaireId = category != 0 ? category : fallbackId;
+    final description = data['description'] as String? ?? '';
+    final moduleSlug = data['module_slug'] as String? ?? '';
+    final moduleName = data['module_name'] as String? ?? moduleSlug;
+
+    await _database.into(_database.questionnaireTypes).insertOnConflictUpdate(
           QuestionnaireTypesCompanion.insert(
             id: drift.Value(category),
             name: data['name'] as String? ?? 'Unknown',
@@ -104,41 +108,56 @@ class ProjectDownloadService {
         );
 
     // Save questionnaire
-    await _database
-        .into(_database.questionnaires)
-        .insertOnConflictUpdate(
+    await _database.into(_database.questionnaires).insertOnConflictUpdate(
           QuestionnairesCompanion.insert(
-            id: drift.Value(category),
+            id: drift.Value(questionnaireId),
             name: data['name'] as String,
             slug: data['slug'] as String,
             typeId: category,
             version: (data['version'] as int).toString(),
             updatedAt: now,
             localityId: 0,
+            description: drift.Value(description),
+            moduleSlug: drift.Value(moduleSlug),
+            moduleName: drift.Value(moduleName),
           ),
         );
 
     // Save sections and forms
     final sections = data['questionnaire_sections'] as List<dynamic>? ?? [];
     for (final section in sections) {
+      final sectionSlug =
+          section['slug']?.toString() ??
+          '${data['slug']}_section_${section.hashCode}';
+      final sectionName = section['name'] as String? ?? 'Sehemu';
+      final sectionDescription = section['description'] as String? ?? '';
+      final sectionPosition =
+          section['position'] is num ? (section['position'] as num).toInt() : 0;
+
       final sectionForms =
           section['questionnaire_section_forms'] as List<dynamic>? ?? [];
 
       for (final formData in sectionForms) {
         // Save form
         final formSlug = formData['slug'] as String;
-        await _database
-            .into(_database.forms)
-            .insertOnConflictUpdate(
+        final formModuleSlug =
+            formData['module_slug'] as String? ?? moduleSlug;
+        await _database.into(_database.forms).insertOnConflictUpdate(
               FormsCompanion.insert(
                 slug: formSlug,
-                questionnaireId: drift.Value(category),
+                questionnaireId: drift.Value(questionnaireId),
                 name: formData['name'] as String,
                 description: formData['description'] as String? ?? '',
-                moduleSlug: formData['module_slug'] as String,
+                moduleSlug: formModuleSlug,
                 workflowSlug: formData['workflow_slug'] as String? ?? '',
                 position: formData['position'] as int,
                 updatedAt: now,
+                sectionSlug: drift.Value(sectionSlug),
+                sectionName: drift.Value(sectionName),
+                sectionPosition: drift.Value(sectionPosition),
+                sectionDescription: drift.Value(
+                  sectionDescription.isEmpty ? null : sectionDescription,
+                ),
               ),
             );
 
