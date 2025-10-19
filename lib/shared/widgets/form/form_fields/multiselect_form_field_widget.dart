@@ -10,7 +10,8 @@ class MultiselectFormFieldWidget extends StatelessWidget {
   final bool required;
   final List<SelectOption> options;
   final List<String> values;
-  final void Function(List<String>) onChanged;
+  final void Function(List<String>)? onChanged;
+  final bool enabled;
 
   const MultiselectFormFieldWidget({
     super.key,
@@ -20,9 +21,12 @@ class MultiselectFormFieldWidget extends StatelessWidget {
     required this.options,
     required this.values,
     required this.onChanged,
+    this.enabled = true,
   });
 
   void _showMultiselectDialog(BuildContext context) {
+    if (!enabled || onChanged == null) return;
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final selectedValues = List<String>.from(values);
@@ -66,7 +70,7 @@ class MultiselectFormFieldWidget extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                onChanged(selectedValues);
+                onChanged!(selectedValues);
                 Navigator.of(dialogContext).pop();
               },
               style: ElevatedButton.styleFrom(
@@ -114,9 +118,11 @@ class MultiselectFormFieldWidget extends StatelessWidget {
           ],
         ),
         const SizedBox(height: AppConstants.spacingSm),
-        InkWell(
-          onTap: () => _showMultiselectDialog(context),
-          child: Container(
+        Opacity(
+          opacity: enabled ? 1.0 : 0.6,
+          child: InkWell(
+            onTap: enabled ? () => _showMultiselectDialog(context) : null,
+            child: Container(
             padding: const EdgeInsets.symmetric(
               horizontal: AppConstants.spacingMd,
               vertical: 16,
@@ -149,6 +155,7 @@ class MultiselectFormFieldWidget extends StatelessWidget {
             ),
           ),
         ),
+        ),
         if (values.isNotEmpty) ...[
           const SizedBox(height: AppConstants.spacingSm),
           Wrap(
@@ -161,12 +168,12 @@ class MultiselectFormFieldWidget extends StatelessWidget {
               );
               return Chip(
                 label: Text(option.textLabel),
-                deleteIcon: const Icon(Icons.close, size: 16),
-                onDeleted: () {
+                deleteIcon: enabled ? const Icon(Icons.close, size: 16) : null,
+                onDeleted: enabled && onChanged != null ? () {
                   final newValues = List<String>.from(values);
                   newValues.remove(value);
-                  onChanged(newValues);
-                },
+                  onChanged!(newValues);
+                } : null,
                 backgroundColor: isDark
                     ? AppColors.darkPrimary.withValues(alpha: 0.2)
                     : AppColors.primary.withValues(alpha: 0.1),

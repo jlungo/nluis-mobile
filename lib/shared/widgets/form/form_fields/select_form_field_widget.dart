@@ -9,8 +9,9 @@ class SelectFormFieldWidget extends StatelessWidget {
   final bool required;
   final List<SelectOption> options;
   final String? value;
-  final void Function(String?) onChanged;
+  final void Function(String?)? onChanged;
   final String? Function(String?)? validator;
+  final bool enabled;
 
   const SelectFormFieldWidget({
     super.key,
@@ -21,6 +22,7 @@ class SelectFormFieldWidget extends StatelessWidget {
     this.value,
     required this.onChanged,
     this.validator,
+    this.enabled = true,
   });
 
   @override
@@ -63,7 +65,7 @@ class SelectFormFieldWidget extends StatelessWidget {
         const SizedBox(height: AppConstants.spacingSm),
         DropdownButtonFormField<String>(
           value: value,
-          onChanged: onChanged,
+          onChanged: enabled ? onChanged : null,
           validator: validator,
           decoration: InputDecoration(
             hintText: placeholder ?? 'Chagua...',

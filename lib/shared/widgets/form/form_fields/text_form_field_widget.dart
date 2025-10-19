@@ -9,6 +9,7 @@ class TextFormFieldWidget extends StatelessWidget {
   final TextEditingController controller;
   final String? Function(String?)? validator;
   final TextInputType keyboardType;
+  final bool enabled;
 
   const TextFormFieldWidget({
     super.key,
@@ -18,6 +19,7 @@ class TextFormFieldWidget extends StatelessWidget {
     required this.controller,
     this.validator,
     this.keyboardType = TextInputType.text,
+    this.enabled = true,
   });
 
   @override
@@ -62,6 +64,7 @@ class TextFormFieldWidget extends StatelessWidget {
           controller: controller,
           keyboardType: keyboardType,
           validator: validator,
+          enabled: enabled,
           decoration: InputDecoration(
             hintText: placeholder ?? label,
             hintStyle: TextStyle(

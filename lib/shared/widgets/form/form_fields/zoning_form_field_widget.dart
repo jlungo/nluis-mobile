@@ -6,7 +6,8 @@ class ZoningFormFieldWidget extends StatelessWidget {
   final String label;
   final bool required;
   final Map<String, dynamic>? value;
-  final void Function(Map<String, dynamic>) onChanged;
+  final void Function(Map<String, dynamic>)? onChanged;
+  final bool enabled;
 
   const ZoningFormFieldWidget({
     super.key,
@@ -14,6 +15,7 @@ class ZoningFormFieldWidget extends StatelessWidget {
     this.required = false,
     this.value,
     required this.onChanged,
+    this.enabled = true,
   });
 
   @override
@@ -48,22 +50,25 @@ class ZoningFormFieldWidget extends StatelessWidget {
           ],
         ),
         const SizedBox(height: AppConstants.spacingSm),
-        Container(
-          padding: const EdgeInsets.all(AppConstants.spacingMd),
-          decoration: BoxDecoration(
-            color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
-            borderRadius: BorderRadius.circular(AppConstants.radiusMd),
-            border: Border.all(
-              color: isDark ? AppColors.darkDivider : AppColors.divider,
-            ),
-          ),
-          child: Center(
-            child: Text(
-              'Zoning input - Custom widget for Zoning module',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+        Opacity(
+          opacity: enabled ? 1.0 : 0.6,
+          child: Container(
+            padding: const EdgeInsets.all(AppConstants.spacingMd),
+            decoration: BoxDecoration(
+              color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
+              borderRadius: BorderRadius.circular(AppConstants.radiusMd),
+              border: Border.all(
+                color: isDark ? AppColors.darkDivider : AppColors.divider,
               ),
-              textAlign: TextAlign.center,
+            ),
+            child: Center(
+              child: Text(
+                'Zoning input - Custom widget for Zoning module',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
           ),
         ),

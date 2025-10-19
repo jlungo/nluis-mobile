@@ -7,8 +7,9 @@ class FileFormFieldWidget extends StatelessWidget {
   final String label;
   final bool required;
   final File? value;
-  final void Function() onPickFile;
+  final void Function()? onPickFile;
   final void Function()? onRemove;
+  final bool enabled;
 
   const FileFormFieldWidget({
     super.key,
@@ -17,6 +18,7 @@ class FileFormFieldWidget extends StatelessWidget {
     this.value,
     required this.onPickFile,
     this.onRemove,
+    this.enabled = true,
   });
 
   @override
@@ -77,7 +79,7 @@ class FileFormFieldWidget extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                if (onRemove != null)
+                if (onRemove != null && enabled)
                   IconButton(
                     icon: Icon(
                       Icons.close,
@@ -91,7 +93,7 @@ class FileFormFieldWidget extends StatelessWidget {
           const SizedBox(height: AppConstants.spacingSm),
         ],
         OutlinedButton.icon(
-          onPressed: onPickFile,
+          onPressed: enabled ? onPickFile : null,
           icon: Icon(
             value != null ? Icons.change_circle : Icons.upload_file,
             color: isDark ? AppColors.darkPrimary : AppColors.primary,

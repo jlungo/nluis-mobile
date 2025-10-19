@@ -9,6 +9,7 @@ class TextareaFormFieldWidget extends StatelessWidget {
   final TextEditingController controller;
   final String? Function(String?)? validator;
   final int maxLines;
+  final bool enabled;
 
   const TextareaFormFieldWidget({
     super.key,
@@ -18,6 +19,7 @@ class TextareaFormFieldWidget extends StatelessWidget {
     required this.controller,
     this.validator,
     this.maxLines = 4,
+    this.enabled = true,
   });
 
   @override
@@ -59,6 +61,7 @@ class TextareaFormFieldWidget extends StatelessWidget {
           controller: controller,
           maxLines: maxLines,
           validator: validator,
+          enabled: enabled,
           decoration: InputDecoration(
             hintText: placeholder ?? label,
             hintStyle: TextStyle(

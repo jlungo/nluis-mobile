@@ -6,7 +6,8 @@ class CheckboxFormFieldWidget extends StatelessWidget {
   final String label;
   final bool required;
   final bool value;
-  final void Function(bool?) onChanged;
+  final void Function(bool?)? onChanged;
+  final bool enabled;
 
   const CheckboxFormFieldWidget({
     super.key,
@@ -14,6 +15,7 @@ class CheckboxFormFieldWidget extends StatelessWidget {
     this.required = false,
     required this.value,
     required this.onChanged,
+    this.enabled = true,
   });
 
   @override
@@ -53,8 +55,9 @@ class CheckboxFormFieldWidget extends StatelessWidget {
           ],
         ),
         value: value,
-        onChanged: onChanged,
+        onChanged: enabled ? onChanged : null,
         activeColor: isDark ? AppColors.darkPrimary : AppColors.primary,
+        enabled: enabled,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppConstants.spacingMd,
           vertical: 4,

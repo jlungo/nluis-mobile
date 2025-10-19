@@ -8,8 +8,9 @@ class DateFormFieldWidget extends StatelessWidget {
   final String? placeholder;
   final bool required;
   final DateTime? value;
-  final void Function(DateTime?) onChanged;
+  final void Function(DateTime?)? onChanged;
   final String? Function(DateTime?)? validator;
+  final bool enabled;
 
   const DateFormFieldWidget({
     super.key,
@@ -19,9 +20,12 @@ class DateFormFieldWidget extends StatelessWidget {
     this.value,
     required this.onChanged,
     this.validator,
+    this.enabled = true,
   });
 
   Future<void> _selectDate(BuildContext context) async {
+    if (!enabled || onChanged == null) return;
+
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: value ?? DateTime.now(),
@@ -30,7 +34,7 @@ class DateFormFieldWidget extends StatelessWidget {
     );
 
     if (picked != null) {
-      onChanged(picked);
+      onChanged!(picked);
     }
   }
 
@@ -66,39 +70,42 @@ class DateFormFieldWidget extends StatelessWidget {
           ],
         ),
         const SizedBox(height: AppConstants.spacingSm),
-        InkWell(
-          onTap: () => _selectDate(context),
-          child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppConstants.spacingMd,
-              vertical: 16,
-            ),
-            decoration: BoxDecoration(
-              color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
-              borderRadius: BorderRadius.circular(AppConstants.radiusMd),
-              border: Border.all(
-                color: isDark ? AppColors.darkDivider : AppColors.divider,
+        Opacity(
+          opacity: enabled ? 1.0 : 0.6,
+          child: InkWell(
+            onTap: enabled ? () => _selectDate(context) : null,
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppConstants.spacingMd,
+                vertical: 16,
               ),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.calendar_today,
-                  color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
-                  size: 20,
+              decoration: BoxDecoration(
+                color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
+                borderRadius: BorderRadius.circular(AppConstants.radiusMd),
+                border: Border.all(
+                  color: isDark ? AppColors.darkDivider : AppColors.divider,
                 ),
-                const SizedBox(width: AppConstants.spacingMd),
-                Text(
-                  value != null
-                      ? DateFormat('dd/MM/yyyy').format(value!)
-                      : placeholder ?? 'Chagua tarehe...',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: value != null
-                        ? (isDark ? AppColors.darkTextPrimary : AppColors.textPrimary)
-                        : (isDark ? AppColors.darkTextHint : AppColors.textHint),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.calendar_today,
+                    color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                    size: 20,
                   ),
-                ),
-              ],
+                  const SizedBox(width: AppConstants.spacingMd),
+                  Text(
+                    value != null
+                        ? DateFormat('dd/MM/yyyy').format(value!)
+                        : placeholder ?? 'Chagua tarehe...',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: value != null
+                          ? (isDark ? AppColors.darkTextPrimary : AppColors.textPrimary)
+                          : (isDark ? AppColors.darkTextHint : AppColors.textHint),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
