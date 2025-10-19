@@ -19,6 +19,7 @@ class DraftService {
   }) async {
     final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     final actualSurveyId = surveyId ?? const Uuid().v4();
+    final questionnaireId = await _resolveQuestionnaireId(questionnaireSlug);
 
     // Check if draft already exists for this survey and form
     final existing = await (_database.select(_database.surveyResponses)
@@ -36,6 +37,8 @@ class DraftService {
           .write(SurveyResponsesCompanion(
             answersJson: Value(answersJson),
             questionnaireSlug: Value(questionnaireSlug),
+            questionnaireId:
+                questionnaireId != null ? Value(questionnaireId) : const Value.absent(),
             updatedAt: Value(now),
             dirty: const Value(true),
           ));
@@ -48,7 +51,7 @@ class DraftService {
           id: responseId,
           surveyId: actualSurveyId,
           projectId: projectId,
-          questionnaireId: 0, // Will be set properly when submitting
+          questionnaireId: questionnaireId ?? 0,
           questionnaireSlug: Value(questionnaireSlug),
           formSlug: Value(formSlug),
           answersJson: answersJson,
@@ -76,6 +79,12 @@ class DraftService {
       return false;
     }
 
+    final questionnaireSlug = forms
+        .map((response) => response.questionnaireSlug)
+        .firstWhere((slug) => slug != null && slug.isNotEmpty, orElse: () => null);
+    final questionnaireId =
+        questionnaireSlug != null ? await _resolveQuestionnaireId(questionnaireSlug) : null;
+
     // Mark survey as saved (not draft = true, but dirty = true for upload)
     await (_database.update(_database.surveyResponses)
           ..where((tbl) => tbl.surveyId.equals(surveyId)))
@@ -83,6 +92,8 @@ class DraftService {
           isDraft: const Value(false),
           updatedAt: Value(now),
           dirty: const Value(true),
+          questionnaireId:
+              questionnaireId != null ? Value(questionnaireId) : const Value.absent(),
         ));
 
     return true;
@@ -189,7 +200,7 @@ class DraftService {
     return deleted > 0;
   }
 
-  /// Clear all data from database (for settings option)
+  /// Clear all data from database
   Future<void> clearAllData() async {
     await _database.transaction(() async {
       await _database.delete(_database.surveyResponses).go();
@@ -211,5 +222,14 @@ class DraftService {
     final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     final ageInSeconds = now - updatedAtTimestamp;
     return ageInSeconds ~/ (24 * 60 * 60);
+  }
+
+  Future<int?> _resolveQuestionnaireId(String questionnaireSlug) async {
+    if (questionnaireSlug.isEmpty) return null;
+    final record =
+        await (_database.select(_database.questionnaires)
+              ..where((tbl) => tbl.slug.equals(questionnaireSlug)))
+            .getSingleOrNull();
+    return record?.id;
   }
 }
