@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -9,6 +10,8 @@ import '../../../../shared/constants/app_constants.dart';
 import '../../../../shared/widgets/custom_app_bar.dart';
 import '../../../../shared/widgets/app_drawer.dart';
 import '../../../../data/local/draft_provider.dart';
+import '../../../../shared/utils/dialog_utils.dart';
+import '../../../../shared/utils/snackbar_utils.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -72,8 +75,9 @@ class SettingsPage extends ConsumerWidget {
                             : AppColors.textSecondary,
                   ),
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('This is feature coming soon.')),
+                    SnackBarUtils.showInfo(
+                      context,
+                      'This is feature coming soon.',
                     );
                   },
                 ),
@@ -96,8 +100,9 @@ class SettingsPage extends ConsumerWidget {
                             : AppColors.textSecondary,
                   ),
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('This is feature coming soon.')),
+                    SnackBarUtils.showInfo(
+                      context,
+                      'This is feature coming soon.',
                     );
                   },
                 ),
@@ -166,8 +171,9 @@ class SettingsPage extends ConsumerWidget {
                             : AppColors.textSecondary,
                   ),
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('This is feature coming soon.')),
+                    SnackBarUtils.showInfo(
+                      context,
+                      'This is feature coming soon.',
                     );
                   },
                 ),
@@ -196,10 +202,9 @@ class SettingsPage extends ConsumerWidget {
                             : AppColors.textSecondary,
                   ),
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('This is feature coming soon.'),
-                      ),
+                    SnackBarUtils.showInfo(
+                      context,
+                      'This is feature coming soon.',
                     );
                   },
                 ),
@@ -221,7 +226,7 @@ class SettingsPage extends ConsumerWidget {
                             ? AppColors.darkTextSecondary
                             : AppColors.textSecondary,
                   ),
-                  onTap: () => _showClearStorageDialog(context, ref),
+                  onTap: () => unawaited(_showClearStorageDialog(context, ref)),
                 ),
               ],
             ),
@@ -248,8 +253,9 @@ class SettingsPage extends ConsumerWidget {
                             : AppColors.textSecondary,
                   ),
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('This is feature coming soon.')),
+                    SnackBarUtils.showInfo(
+                      context,
+                      'This is feature coming soon.',
                     );
                   },
                 ),
@@ -314,7 +320,7 @@ class SettingsPage extends ConsumerWidget {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap: () => _showLogoutDialog(context, ref),
+                  onTap: () => unawaited(_showLogoutDialog(context, ref)),
                   borderRadius: BorderRadius.circular(AppConstants.radiusMd),
                   child: Container(
                     padding: const EdgeInsets.symmetric(
@@ -414,8 +420,9 @@ class SettingsPage extends ConsumerWidget {
                     isSelected: false,
                     onTap: () {
                       Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('This is feature coming soon.')),
+                      SnackBarUtils.showInfo(
+                        context,
+                        'This is feature coming soon.',
                       );
                     },
                   ),
@@ -445,13 +452,13 @@ class SettingsPage extends ConsumerWidget {
     );
   }
 
-  void _showClearStorageDialog(BuildContext context, WidgetRef ref) async {
+  Future<void> _showClearStorageDialog(BuildContext context, WidgetRef ref) async {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
+    final confirm = await DialogUtils.showCustomDialog<bool>(
+      context,
+      builder: (dialogContext) => AlertDialog(
         backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppConstants.radiusMd),
@@ -483,7 +490,7 @@ class SettingsPage extends ConsumerWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => Navigator.of(dialogContext).pop(false),
             child: Text(
               'Ghairi',
               style: TextStyle(
@@ -492,7 +499,7 @@ class SettingsPage extends ConsumerWidget {
             ),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => Navigator.of(dialogContext).pop(true),
             style: ElevatedButton.styleFrom(
               backgroundColor: isDark ? AppColors.errorDark : AppColors.error,
               foregroundColor: Colors.white,
@@ -512,33 +519,24 @@ class SettingsPage extends ConsumerWidget {
         await draftService.clearAllData();
 
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Data zote zimefutwa kamili'),
-              backgroundColor: Colors.green,
-              duration: Duration(seconds: 3),
-            ),
+          SnackBarUtils.showSuccess(
+            context,
+            'Data zote zimefutwa kamili',
           );
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Hitilafu: $e'),
-              backgroundColor: Colors.red,
-              duration: const Duration(seconds: 3),
-            ),
-          );
+          SnackBarUtils.showError(context, 'Hitilafu: $e');
         }
       }
     }
   }
 
-  void _showLogoutDialog(BuildContext context, WidgetRef ref) async {
-    final confirm = await showDialog<bool>(
-      context: context,
+  Future<void> _showLogoutDialog(BuildContext context, WidgetRef ref) async {
+    final confirm = await DialogUtils.showCustomDialog<bool>(
+      context,
       builder:
-          (context) => AlertDialog(
+          (dialogContext) => AlertDialog(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
@@ -552,11 +550,11 @@ class SettingsPage extends ConsumerWidget {
             content: const Text('Je, una uhakika unataka kutoka?'),
             actions: [
               TextButton(
-                onPressed: () => Navigator.pop(context, false),
+                onPressed: () => Navigator.of(dialogContext).pop(false),
                 child: const Text('Ghairi'),
               ),
               ElevatedButton(
-                onPressed: () => Navigator.pop(context, true),
+                onPressed: () => Navigator.of(dialogContext).pop(true),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.error,
                 ),
