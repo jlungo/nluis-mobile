@@ -37,3 +37,10 @@ NetworkInfo networkInfo(Ref ref) {
 Stream<bool> connectivityStream(Ref ref) {
   return ref.watch(networkInfoProvider).onConnectivityChanged;
 }
+
+final onlineStatusProvider = StreamProvider<bool>((ref) async* {
+  final network = ref.watch(networkInfoProvider);
+  final initial = await network.isConnected;
+  yield initial;
+  yield* network.onConnectivityChanged;
+});
