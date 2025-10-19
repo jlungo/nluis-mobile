@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../shared/utils/snackbar_utils.dart';
 import '../providers/auth_providers.dart';
 
 /// A widget that listens for automatic logout triggers
@@ -26,15 +27,9 @@ class AuthSessionListener extends ConsumerWidget {
 
           // Show a snackbar to inform the user
           if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                  'Kipindi chako kimeisha. Tafadhali ingia tena.',
-                  style: TextStyle(color: Colors.white),
-                ),
-                backgroundColor: Colors.orange,
-                duration: Duration(seconds: 4),
-              ),
+            SnackBarUtils.showWarning(
+              context,
+              'Kipindi chako kimeisha. Tafadhali ingia tena.',
             );
           }
 
