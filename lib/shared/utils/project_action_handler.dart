@@ -6,8 +6,7 @@ import '../models/project.dart';
 import 'dialog_utils.dart';
 import 'snackbar_utils.dart';
 
-/// Reusable handler for project actions (download, upload, etc.)
-/// Use this in any page that needs to handle project downloads
+/// Reusable handler for project actions 
 class ProjectActionHandler {
   final BuildContext context;
   final WidgetRef ref;
@@ -40,12 +39,10 @@ class ProjectActionHandler {
 
       if (!context.mounted) return;
 
-      // Hide loading dialog
       await DialogUtils.hideLoading(context);
 
       if (!context.mounted) return;
 
-      // Show result
       if (result.success) {
         SnackBarUtils.showSuccess(context, result.message);
         // Refresh the projects list to update UI
@@ -56,7 +53,6 @@ class ProjectActionHandler {
     } catch (e) {
       if (!context.mounted) return;
 
-      // Hide loading dialog
       await DialogUtils.hideLoading(context);
 
       if (!context.mounted) return;
