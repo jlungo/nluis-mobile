@@ -72,7 +72,7 @@ class ProjectDownloadService {
 
       return DownloadResult(
         success: true,
-        message: 'Dodoso $downloadedCount zimesafirishwa',
+        message: 'Dodoso $downloadedCount zimepakuliwa',
         downloadedCount: downloadedCount,
       );
     } on DioException catch (e) {
