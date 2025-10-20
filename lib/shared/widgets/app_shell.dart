@@ -1,8 +1,9 @@
+import 'package:awesome_bottom_bar/awesome_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nluis_app/features/madodoso/presentation/providers/madodoso_providers.dart';
 
+import '../../features/madodoso/presentation/providers/madodoso_providers.dart';
 import '../theme/app_colors.dart';
 
 class AppShell extends ConsumerStatefulWidget {
@@ -15,85 +16,135 @@ class AppShell extends ConsumerStatefulWidget {
 }
 
 class _AppShellState extends ConsumerState<AppShell> {
+  static const int _draftsIndex = 2;
+
+  static const List<_BottomNavDestination> _destinations = [
+    _BottomNavDestination(
+      icon: Icons.grid_view_outlined,
+      label: 'Dashibodi',
+      routeName: 'luDashboard',
+      locationMatchers: ['/dashboard'],
+    ),
+    _BottomNavDestination(
+      icon: Icons.folder_copy_outlined,
+      label: 'Miradi',
+      routeName: 'luProjects',
+      locationMatchers: ['/projects', '/survey', '/zoning'],
+    ),
+    _BottomNavDestination(
+      icon: Icons.library_books_outlined,
+      label: 'Madodoso',
+      routeName: 'drafts',
+      locationMatchers: ['/drafts'],
+    ),
+    _BottomNavDestination(
+      icon: Icons.person_outline_rounded,
+      label: 'Mipangilio',
+      routeName: 'settings',
+      locationMatchers: ['/settings'],
+    ),
+  ];
+
   int _getCurrentIndex(BuildContext context) {
     final location = GoRouterState.of(context).matchedLocation;
-    if (location.contains('/dashboard')) return 0;
-    if (location.contains('/projects') ||
-        location.contains('/survey') ||
-        location.contains('/zoning')) {
-      return 1;
-    }
-    if (location.contains('/drafts')) return 2;
-    if (location.contains('/settings')) return 3;
-    return 0;
+    final index = _destinations.indexWhere(
+      (destination) => destination.matches(location),
+    );
+    return index == -1 ? 0 : index;
+  }
+
+  void _onDestinationSelected(BuildContext context, int index) {
+    final destination = _destinations[index];
+    context.goNamed(destination.routeName);
+  }
+
+  List<TabItem> _buildTabItems(ThemeData theme, String? draftsBadge) {
+    final bool isDark = theme.brightness == Brightness.dark;
+    final Widget? badge = _buildDraftBadge(draftsBadge, isDark);
+
+    return List<TabItem>.generate(_destinations.length, (index) {
+      final destination = _destinations[index];
+      return TabItem(
+        icon: destination.icon,
+        title: destination.label,
+        count: index == _draftsIndex ? badge : null,
+      );
+    });
+  }
+
+  Widget? _buildDraftBadge(String? value, bool isDark) {
+    if (value == null) return null;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.successDark : AppColors.success,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        value,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 10,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.2,
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final currentIndex = _getCurrentIndex(context);
     final theme = Theme.of(context);
+    final currentIndex = _getCurrentIndex(context);
     final madodosoState = ref.watch(madodosoStateProvider);
-    final draftsBadge =
-        madodosoState.maybeWhen(
-          data:
-              (state) =>
-                  state.draftCount > 0 ? state.draftCount.toString() : null,
-          orElse: () => null,
-        );
+    final draftsBadge = madodosoState.maybeWhen(
+      data:
+          (state) => state.draftCount > 0 ? state.draftCount.toString() : null,
+      orElse: () => null,
+    );
+
+    final bool isDark = theme.brightness == Brightness.dark;
+    final Color backgroundColor =
+        isDark ? AppColors.darkSurface : theme.colorScheme.surface;
+    final Color selectedColor =
+        isDark ? AppColors.darkPrimary : AppColors.primary;
+    final Color unselectedColor =
+        isDark ? AppColors.darkTextSecondary : AppColors.textSecondary;
+    final Color shadowColor =
+        isDark ? AppColors.darkShadow : Colors.black.withValues(alpha: 0.08);
 
     return Scaffold(
       body: widget.child,
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surface,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08),
-              // theme.brightness == Brightness.dark
-              //     ? AppColors.darkShadow
-              //     : Colors.black.withValues(alpha: 0.08),
-              blurRadius: 20,
-              offset: const Offset(0, -4),
-            ),
-          ],
-        ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _NavItem(
-                  icon: Icons.dashboard_outlined,
-                  label: 'Dashibodi',
-                  isSelected: currentIndex == 0,
-                  onTap: () => context.goNamed('luDashboard'),
-                  theme: theme,
-                ),
-                _NavItem(
-                  icon: Icons.folder_outlined,
-                  label: 'Miradi',
-                  isSelected: currentIndex == 1,
-                  onTap: () => context.goNamed('luProjects'),
-                  theme: theme,
-                ),
-                _NavItem(
-                  icon: Icons.description_outlined,
-                  label: 'Madodoso',
-                  isSelected: currentIndex == 2,
-                  onTap: () => context.goNamed('drafts'),
-                  theme: theme,
-                  badge: draftsBadge,
-                ),
-                _NavItem(
-                  icon: Icons.person_outline,
-                  label: 'Account',
-                  isSelected: currentIndex == 3,
-                  onTap: () => context.goNamed('settings'),
-                  theme: theme,
-                ),
-              ],
+          top: false,
+          child: BottomBarDefault(
+            items: _buildTabItems(theme, draftsBadge),
+            indexSelected: currentIndex,
+            onTap: (index) => _onDestinationSelected(context, index),
+            backgroundColor: backgroundColor,
+            boxShadow: [
+              BoxShadow(
+                color: shadowColor,
+                blurRadius: 20,
+                offset: const Offset(0, -4),
+              ),
+            ],
+            borderRadius: BorderRadius.circular(20),
+            color: unselectedColor,
+            colorSelected: selectedColor,
+            iconSize: 26,
+            titleStyle: const TextStyle(
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
             ),
+            top: 16,
+            countStyle: const CountStyle(size: 16),
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeInOut,
+            enableShadow: false,
           ),
         ),
       ),
@@ -101,158 +152,19 @@ class _AppShellState extends ConsumerState<AppShell> {
   }
 }
 
-class _NavItem extends StatefulWidget {
+class _BottomNavDestination {
   final IconData icon;
   final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-  final ThemeData theme;
-  final String? badge;
+  final String routeName;
+  final List<String> locationMatchers;
 
-  const _NavItem({
+  const _BottomNavDestination({
     required this.icon,
     required this.label,
-    required this.isSelected,
-    required this.onTap,
-    required this.theme,
-    this.badge,
+    required this.routeName,
+    required this.locationMatchers,
   });
 
-  @override
-  State<_NavItem> createState() => _NavItemState();
-}
-
-class _NavItemState extends State<_NavItem>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 150),
-      vsync: this,
-    );
-    _scaleAnimation = Tween<double>(
-      begin: 1.0,
-      end: 0.9,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: GestureDetector(
-        onTapDown: (_) => _controller.forward(),
-        onTapUp: (_) {
-          _controller.reverse();
-          widget.onTap();
-        },
-        onTapCancel: () => _controller.reverse(),
-        child: ScaleTransition(
-          scale: _scaleAnimation,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeInOut,
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            decoration: BoxDecoration(
-              gradient:
-                  widget.isSelected
-                      ? LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors:
-                            widget.theme.brightness == Brightness.dark
-                                ? [
-                                  AppColors.darkPrimary,
-                                  AppColors.darkPrimaryDark,
-                                ]
-                                : [AppColors.primary, AppColors.primaryDark],
-                      )
-                      : null,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Icon(
-                      widget.icon,
-                      color:
-                          widget.isSelected
-                              ? (widget.theme.brightness == Brightness.dark
-                                  ? AppColors.darkTextInverse
-                                  : Colors.white)
-                              : (widget.theme.brightness == Brightness.dark
-                                  ? AppColors.darkTextSecondary
-                                  : AppColors.textSecondary),
-                      size: 26,
-                    ),
-                    if (widget.badge != null)
-                      Positioned(
-                        right: -8,
-                        top: -4,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors:
-                                  widget.theme.brightness == Brightness.dark
-                                      ? [
-                                        AppColors.successDark,
-                                        AppColors.successDark,
-                                      ]
-                                      : [AppColors.success, AppColors.success],
-                            ),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            widget.badge!,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  widget.label,
-                  style: TextStyle(
-                    color:
-                        widget.isSelected
-                            ? (widget.theme.brightness == Brightness.dark
-                                ? AppColors.darkTextInverse
-                                : Colors.white)
-                            : (widget.theme.brightness == Brightness.dark
-                                ? AppColors.darkTextSecondary
-                                : AppColors.textSecondary),
-                    fontSize: 11,
-                    fontWeight:
-                        widget.isSelected ? FontWeight.w700 : FontWeight.w500,
-                    letterSpacing: 0.3,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  bool matches(String location) =>
+      locationMatchers.any((matcher) => location.contains(matcher));
 }
