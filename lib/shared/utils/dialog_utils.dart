@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 
-/// Reusable dialog utilities for consistent UI across the app
 class DialogUtils {
   DialogUtils._(); // Private constructor to prevent instantiation
 
@@ -125,7 +124,7 @@ class DialogUtils {
     );
   }
 
-  /// Shows a custom dialog using the shared configuration
+  /// Shows a custom dialog
   static Future<T?> showCustomDialog<T>(
     BuildContext context, {
     required WidgetBuilder builder,
