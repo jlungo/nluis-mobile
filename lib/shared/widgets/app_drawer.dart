@@ -103,7 +103,7 @@ class AppDrawer extends ConsumerWidget {
                   },
                 ),
                 _DrawerMenuItem(
-                  icon: Icons.dashboard_outlined,
+                  icon: Icons.grid_view_outlined,
                   label: 'Dashboard',
                   isSelected: isOnDashboard,
                   onTap: () {
@@ -112,7 +112,7 @@ class AppDrawer extends ConsumerWidget {
                   },
                 ),
                 _DrawerMenuItem(
-                  icon: Icons.folder_outlined,
+                  icon: Icons.folder_copy_outlined,
                   label: 'My Projects',
                   isSelected: isOnProjects,
                   onTap: () {
@@ -121,7 +121,7 @@ class AppDrawer extends ConsumerWidget {
                   },
                 ),
                 _DrawerMenuItem(
-                  icon: Icons.description_outlined,
+                  icon: Icons.library_books_outlined,
                   label: 'Madodoso',
                   isSelected: isOnDrafts,
                   onTap: () {
