@@ -137,7 +137,7 @@ class _AppShellState extends ConsumerState<AppShell> {
             colorSelected: selectedColor,
             iconSize: 20,
             titleStyle: const TextStyle(
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
               letterSpacing: 0.5,
             ),
             top: 16,
