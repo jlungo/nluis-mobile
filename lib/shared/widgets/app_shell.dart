@@ -135,7 +135,7 @@ class _AppShellState extends ConsumerState<AppShell> {
             borderRadius: BorderRadius.circular(20),
             color: unselectedColor,
             colorSelected: selectedColor,
-            iconSize: 26,
+            iconSize: 20,
             titleStyle: const TextStyle(
               fontWeight: FontWeight.w600,
               letterSpacing: 0.5,
