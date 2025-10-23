@@ -14,6 +14,7 @@ class AppInputField extends StatelessWidget {
   final bool enabled;
   final int maxLines;
   final EdgeInsetsGeometry contentPadding;
+  final Color? hintColor;
   final Color? fillColor;
   final Color? borderColor;
   final double borderRadius;
@@ -37,6 +38,7 @@ class AppInputField extends StatelessWidget {
       horizontal: 16,
       vertical: 12,
     ),
+    this.hintColor,
     this.fillColor,
     this.borderColor,
     this.borderRadius = 12,
@@ -50,13 +52,13 @@ class AppInputField extends StatelessWidget {
     final inputDecoration = InputDecoration(
       hintText: hintText,
       hintStyle: TextStyle(
-        color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+        color: hintColor ?? theme.colorScheme.onSurface.withValues(alpha: 0.6),
       ),
       prefixIcon:
           prefixIcon != null
               ? Icon(
                 prefixIcon,
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                color: hintColor ?? theme.colorScheme.onSurface.withValues(alpha: 0.6),
               )
               : null,
       suffixIcon:
@@ -65,7 +67,7 @@ class AppInputField extends StatelessWidget {
                 onTap: onSuffixTap,
                 child: Icon(
                   suffixIcon,
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                  color: hintColor ?? theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               )
               : null,
