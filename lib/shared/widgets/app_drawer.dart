@@ -27,7 +27,7 @@ class AppDrawer extends ConsumerWidget {
         matchesLocation('/module/land-use/projects') ||
         matchesLocation('/module/land-use/survey') ||
         matchesLocation('/module/land-use/zoning');
-    final isOnDrafts = matchesLocation('/drafts');
+    final isOnDrafts = matchesLocation('/madodoso');
     final isOnSettings = matchesLocation('/settings');
     final isOnNotifications = matchesLocation('/notifications');
 
@@ -126,7 +126,7 @@ class AppDrawer extends ConsumerWidget {
                   isSelected: isOnDrafts,
                   onTap: () {
                     Navigator.pop(context);
-                    context.goNamed('drafts');
+                    context.goNamed('madodoso');
                   },
                 ),
                 _DrawerMenuItem(
