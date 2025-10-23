@@ -288,6 +288,14 @@ class _LoginPageState extends ConsumerState<LoginPage>
                                                 : Colors.white.withValues(
                                                   alpha: 0.3,
                                                 ),
+                                        hintColor:
+                                            theme.brightness == Brightness.dark
+                                                ? Colors.white.withValues(
+                                                  alpha: 0.5,
+                                                )
+                                                : Colors.white.withValues(
+                                                  alpha: 0.5,
+                                                ),
                                       ),
 
                                       const SizedBox(
@@ -334,6 +342,14 @@ class _LoginPageState extends ConsumerState<LoginPage>
                                                 ? AppColors.darkDivider
                                                 : Colors.white.withValues(
                                                   alpha: 0.3,
+                                                ),
+                                        hintColor:
+                                            theme.brightness == Brightness.dark
+                                                ? Colors.white.withValues(
+                                                  alpha: 0.5,
+                                                )
+                                                : Colors.white.withValues(
+                                                  alpha: 0.5,
                                                 ),
                                       ),
 
