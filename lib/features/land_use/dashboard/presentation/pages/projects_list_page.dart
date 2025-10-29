@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../../core/network/network_info.dart';
 import '../../../../../data/services/download_provider.dart';
 import '../../../../../shared/constants/app_constants.dart';
@@ -15,8 +16,6 @@ import '../../../../../shared/widgets/action_menu_item.dart';
 import '../../../../../shared/widgets/project_list_card.dart';
 import '../../../../../shared/models/project.dart';
 import '../providers/project_providers.dart';
-import '../../../survey/presentation/pages/survey_list_page.dart';
-import '../../../zoning/presentation/pages/zoning_page.dart';
 import '../../../../../shared/widgets/offline_banner.dart';
 
 class ProjectsListPage extends ConsumerStatefulWidget {
@@ -48,7 +47,7 @@ class _ProjectsListPageState extends ConsumerState<ProjectsListPage> {
   void _onScroll() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent * 0.9) {
-      // Kumbuka kuload more items/pagination
+      // TODO: Kumbuka kuload more items/pagination
     }
   }
 
@@ -263,15 +262,9 @@ class _ProjectsListPageState extends ConsumerState<ProjectsListPage> {
                       description: 'View and manage surveys',
                       onTap: () {
                         Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (_) => SurveyListPage(
-                                  projectId: project.id,
-                                  projectName: project.name,
-                                ),
-                          ),
+                        context.pushNamed(
+                          'luSurveyList',
+                          pathParameters: {'projectId': project.id},
                         );
                       },
                     ),
@@ -282,11 +275,9 @@ class _ProjectsListPageState extends ConsumerState<ProjectsListPage> {
                       description: 'View zoning information',
                       onTap: () {
                         Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => ZoningPage(projectId: project.id),
-                          ),
+                        context.pushNamed(
+                          'luZoning',
+                          pathParameters: {'projectId': project.id},
                         );
                       },
                     ),
