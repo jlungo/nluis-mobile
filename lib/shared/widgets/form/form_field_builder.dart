@@ -178,10 +178,34 @@ class _FormFieldBuilderState extends State<FormFieldBuilder> {
           required: widget.field.required,
           value: widget.value as File?,
           enabled: !widget.isReadOnly,
-          onPickFile: widget.isReadOnly ? null : () async {
-            // TODO: Implement file picker
-            // final file = await FilePicker.pickFile();
-            // widget.onChanged(file);
+          fileType: FileType.any,
+          onChanged: widget.isReadOnly ? null : (file) {
+            widget.onChanged?.call(file);
+          },
+        );
+
+      case 'document':
+        return FileFormFieldWidget(
+          label: widget.field.label,
+          required: widget.field.required,
+          value: widget.value as File?,
+          enabled: !widget.isReadOnly,
+          fileType: FileType.document,
+          allowedExtensions: ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt'],
+          onChanged: widget.isReadOnly ? null : (file) {
+            widget.onChanged?.call(file);
+          },
+        );
+
+      case 'image':
+        return FileFormFieldWidget(
+          label: widget.field.label,
+          required: widget.field.required,
+          value: widget.value as File?,
+          enabled: !widget.isReadOnly,
+          fileType: FileType.image,
+          onChanged: widget.isReadOnly ? null : (file) {
+            widget.onChanged?.call(file);
           },
           onRemove: widget.isReadOnly ? null : () {
             widget.onChanged?.call(null);
