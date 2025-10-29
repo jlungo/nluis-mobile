@@ -29,7 +29,7 @@ class AppDrawer extends ConsumerWidget {
         matchesLocation('/module/land-use/zoning');
     final isOnDrafts = matchesLocation('/madodoso');
     final isOnSettings = matchesLocation('/settings');
-    final isOnNotifications = matchesLocation('/notifications');
+    // final isOnNotifications = matchesLocation('/notifications');
 
     return Drawer(
       backgroundColor:
@@ -138,16 +138,16 @@ class AppDrawer extends ConsumerWidget {
                     context.goNamed('settings');
                   },
                 ),
-                _DrawerMenuItem(
-                  icon: Icons.notifications_outlined,
-                  label: 'Notifications',
-                  badge: '1',
-                  isSelected: isOnNotifications,
-                  onTap: () {
-                    Navigator.pop(context);
-                    context.goNamed('notifications');
-                  },
-                ),
+                // _DrawerMenuItem(
+                //   icon: Icons.notifications_outlined,
+                //   label: 'Notifications',
+                //   badge: '1',
+                //   isSelected: isOnNotifications,
+                //   onTap: () {
+                //     Navigator.pop(context);
+                //     context.goNamed('notifications');
+                //   },
+                // ),
               ],
             ),
           ),
