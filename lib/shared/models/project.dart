@@ -1,7 +1,8 @@
 import 'package:equatable/equatable.dart';
 
 class Project extends Equatable {
-  final String id; // locality id from the API
+  final String id; // id from the API
+  final String localityId; // locality__id from the API
   final String name; // locality__name - parent project name format
   final String localityName; // just the locality name
   final String parentProjectName; // parent project name
@@ -17,6 +18,7 @@ class Project extends Equatable {
   const Project({
     required this.id,
     required this.name,
+    required this.localityId,
     required this.localityName,
     required this.parentProjectName,
     required this.organization,
@@ -67,6 +69,7 @@ class ProjectModel extends Project {
   const ProjectModel({
     required super.id,
     required super.name,
+    required super.localityId,
     required super.localityName,
     required super.parentProjectName,
     required super.organization,
@@ -84,6 +87,7 @@ class ProjectModel extends Project {
     Map<String, dynamic> localityJson,
     Map<String, dynamic> parentProjectJson,
   ) {
+    final localityId = localityJson['locality__id']?.toString() ?? '';
     final localityName = localityJson['locality__name'] as String;
     final parentName = parentProjectJson['name'] as String;
 
@@ -91,6 +95,7 @@ class ProjectModel extends Project {
       id: localityJson['id'].toString(),
       name: '$localityName - $parentName',
       localityName: localityName,
+      localityId: localityId,
       parentProjectName: parentName,
       organization: parentProjectJson['organization'] as String? ?? '',
       authorizationDate: parentProjectJson['authorization_date'] as String? ?? '',
@@ -107,6 +112,7 @@ class ProjectModel extends Project {
     return {
       'id': id,
       'name': name,
+      'locality_id': localityId,
       'locality_name': localityName,
       'parent_project_name': parentProjectName,
       'organization': organization,
@@ -124,6 +130,7 @@ class ProjectModel extends Project {
     return ProjectModel(
       id: json['id']?.toString() ?? '',
       name: json['name'] as String? ?? '',
+      localityId: json['locality_id'] as String? ?? '',
       localityName:
           (json['locality_name'] ?? json['localityName'] ?? '') as String,
       parentProjectName:
