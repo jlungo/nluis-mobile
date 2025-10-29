@@ -124,6 +124,45 @@ class DialogUtils {
     );
   }
 
+  /// Shows an error dialog
+  static Future<void> showErrorDialog(
+    BuildContext context, {
+    required String title,
+    required String message,
+    String buttonText = 'Sawa',
+  }) {
+    if (!context.mounted) return Future.value();
+
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(
+              Icons.error_outline,
+              color: isDark ? AppColors.errorDark : AppColors.error,
+            ),
+            const SizedBox(width: 8),
+            Text(title),
+          ],
+        ),
+        content: Text(message),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(),
+            style: FilledButton.styleFrom(
+              backgroundColor: isDark ? AppColors.errorDark : AppColors.error,
+            ),
+            child: Text(buttonText),
+          ),
+        ],
+      ),
+    );
+  }
+
   /// Shows a custom dialog
   static Future<T?> showCustomDialog<T>(
     BuildContext context, {
