@@ -61,6 +61,9 @@ class AppColors {
   static const Color info = Color(0xFF2196F3);
   static const Color infoDark = Color(0xFF42A5F5);
 
+  static const Color accent = Color(0xFFFF9800);
+  static const Color accentDark = Color(0xFFFFB74D);
+
   // SPECIAL COLORS
 
   // Light mode
