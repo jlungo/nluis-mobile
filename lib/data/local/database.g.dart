@@ -4290,16 +4290,16 @@ class $BaseMapsTable extends BaseMaps with TableInfo<$BaseMapsTable, BaseMap> {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $BaseMapsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _projectIdMeta = const VerificationMeta(
-    'projectId',
+  static const VerificationMeta _localityIdMeta = const VerificationMeta(
+    'localityId',
   );
   @override
-  late final GeneratedColumn<String> projectId = GeneratedColumn<String>(
-    'project_id',
+  late final GeneratedColumn<int> localityId = GeneratedColumn<int>(
+    'locality_id',
     aliasedName,
     false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _geoJsonMeta = const VerificationMeta(
     'geoJson',
@@ -4310,6 +4310,48 @@ class $BaseMapsTable extends BaseMaps with TableInfo<$BaseMapsTable, BaseMap> {
     aliasedName,
     false,
     type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _centerLatMeta = const VerificationMeta(
+    'centerLat',
+  );
+  @override
+  late final GeneratedColumn<double> centerLat = GeneratedColumn<double>(
+    'center_lat',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _centerLngMeta = const VerificationMeta(
+    'centerLng',
+  );
+  @override
+  late final GeneratedColumn<double> centerLng = GeneratedColumn<double>(
+    'center_lng',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _zoomMeta = const VerificationMeta('zoom');
+  @override
+  late final GeneratedColumn<double> zoom = GeneratedColumn<double>(
+    'zoom',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _downloadedAtMeta = const VerificationMeta(
+    'downloadedAt',
+  );
+  @override
+  late final GeneratedColumn<int> downloadedAt = GeneratedColumn<int>(
+    'downloaded_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
@@ -4324,7 +4366,15 @@ class $BaseMapsTable extends BaseMaps with TableInfo<$BaseMapsTable, BaseMap> {
     requiredDuringInsert: true,
   );
   @override
-  List<GeneratedColumn> get $columns => [projectId, geoJson, updatedAt];
+  List<GeneratedColumn> get $columns => [
+    localityId,
+    geoJson,
+    centerLat,
+    centerLng,
+    zoom,
+    downloadedAt,
+    updatedAt,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -4337,13 +4387,11 @@ class $BaseMapsTable extends BaseMaps with TableInfo<$BaseMapsTable, BaseMap> {
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('project_id')) {
+    if (data.containsKey('locality_id')) {
       context.handle(
-        _projectIdMeta,
-        projectId.isAcceptableOrUnknown(data['project_id']!, _projectIdMeta),
+        _localityIdMeta,
+        localityId.isAcceptableOrUnknown(data['locality_id']!, _localityIdMeta),
       );
-    } else if (isInserting) {
-      context.missing(_projectIdMeta);
     }
     if (data.containsKey('geo_json')) {
       context.handle(
@@ -4352,6 +4400,35 @@ class $BaseMapsTable extends BaseMaps with TableInfo<$BaseMapsTable, BaseMap> {
       );
     } else if (isInserting) {
       context.missing(_geoJsonMeta);
+    }
+    if (data.containsKey('center_lat')) {
+      context.handle(
+        _centerLatMeta,
+        centerLat.isAcceptableOrUnknown(data['center_lat']!, _centerLatMeta),
+      );
+    }
+    if (data.containsKey('center_lng')) {
+      context.handle(
+        _centerLngMeta,
+        centerLng.isAcceptableOrUnknown(data['center_lng']!, _centerLngMeta),
+      );
+    }
+    if (data.containsKey('zoom')) {
+      context.handle(
+        _zoomMeta,
+        zoom.isAcceptableOrUnknown(data['zoom']!, _zoomMeta),
+      );
+    }
+    if (data.containsKey('downloaded_at')) {
+      context.handle(
+        _downloadedAtMeta,
+        downloadedAt.isAcceptableOrUnknown(
+          data['downloaded_at']!,
+          _downloadedAtMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_downloadedAtMeta);
     }
     if (data.containsKey('updated_at')) {
       context.handle(
@@ -4365,20 +4442,37 @@ class $BaseMapsTable extends BaseMaps with TableInfo<$BaseMapsTable, BaseMap> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {projectId};
+  Set<GeneratedColumn> get $primaryKey => {localityId};
   @override
   BaseMap map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return BaseMap(
-      projectId:
+      localityId:
           attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}project_id'],
+            DriftSqlType.int,
+            data['${effectivePrefix}locality_id'],
           )!,
       geoJson:
           attachedDatabase.typeMapping.read(
             DriftSqlType.string,
             data['${effectivePrefix}geo_json'],
+          )!,
+      centerLat: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}center_lat'],
+      ),
+      centerLng: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}center_lng'],
+      ),
+      zoom: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}zoom'],
+      ),
+      downloadedAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}downloaded_at'],
           )!,
       updatedAt:
           attachedDatabase.typeMapping.read(
@@ -4395,27 +4489,55 @@ class $BaseMapsTable extends BaseMaps with TableInfo<$BaseMapsTable, BaseMap> {
 }
 
 class BaseMap extends DataClass implements Insertable<BaseMap> {
-  final String projectId;
+  final int localityId;
   final String geoJson;
+  final double? centerLat;
+  final double? centerLng;
+  final double? zoom;
+  final int downloadedAt;
   final int updatedAt;
   const BaseMap({
-    required this.projectId,
+    required this.localityId,
     required this.geoJson,
+    this.centerLat,
+    this.centerLng,
+    this.zoom,
+    required this.downloadedAt,
     required this.updatedAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['project_id'] = Variable<String>(projectId);
+    map['locality_id'] = Variable<int>(localityId);
     map['geo_json'] = Variable<String>(geoJson);
+    if (!nullToAbsent || centerLat != null) {
+      map['center_lat'] = Variable<double>(centerLat);
+    }
+    if (!nullToAbsent || centerLng != null) {
+      map['center_lng'] = Variable<double>(centerLng);
+    }
+    if (!nullToAbsent || zoom != null) {
+      map['zoom'] = Variable<double>(zoom);
+    }
+    map['downloaded_at'] = Variable<int>(downloadedAt);
     map['updated_at'] = Variable<int>(updatedAt);
     return map;
   }
 
   BaseMapsCompanion toCompanion(bool nullToAbsent) {
     return BaseMapsCompanion(
-      projectId: Value(projectId),
+      localityId: Value(localityId),
       geoJson: Value(geoJson),
+      centerLat:
+          centerLat == null && nullToAbsent
+              ? const Value.absent()
+              : Value(centerLat),
+      centerLng:
+          centerLng == null && nullToAbsent
+              ? const Value.absent()
+              : Value(centerLng),
+      zoom: zoom == null && nullToAbsent ? const Value.absent() : Value(zoom),
+      downloadedAt: Value(downloadedAt),
       updatedAt: Value(updatedAt),
     );
   }
@@ -4426,8 +4548,12 @@ class BaseMap extends DataClass implements Insertable<BaseMap> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return BaseMap(
-      projectId: serializer.fromJson<String>(json['projectId']),
+      localityId: serializer.fromJson<int>(json['localityId']),
       geoJson: serializer.fromJson<String>(json['geoJson']),
+      centerLat: serializer.fromJson<double?>(json['centerLat']),
+      centerLng: serializer.fromJson<double?>(json['centerLng']),
+      zoom: serializer.fromJson<double?>(json['zoom']),
+      downloadedAt: serializer.fromJson<int>(json['downloadedAt']),
       updatedAt: serializer.fromJson<int>(json['updatedAt']),
     );
   }
@@ -4435,22 +4561,45 @@ class BaseMap extends DataClass implements Insertable<BaseMap> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'projectId': serializer.toJson<String>(projectId),
+      'localityId': serializer.toJson<int>(localityId),
       'geoJson': serializer.toJson<String>(geoJson),
+      'centerLat': serializer.toJson<double?>(centerLat),
+      'centerLng': serializer.toJson<double?>(centerLng),
+      'zoom': serializer.toJson<double?>(zoom),
+      'downloadedAt': serializer.toJson<int>(downloadedAt),
       'updatedAt': serializer.toJson<int>(updatedAt),
     };
   }
 
-  BaseMap copyWith({String? projectId, String? geoJson, int? updatedAt}) =>
-      BaseMap(
-        projectId: projectId ?? this.projectId,
-        geoJson: geoJson ?? this.geoJson,
-        updatedAt: updatedAt ?? this.updatedAt,
-      );
+  BaseMap copyWith({
+    int? localityId,
+    String? geoJson,
+    Value<double?> centerLat = const Value.absent(),
+    Value<double?> centerLng = const Value.absent(),
+    Value<double?> zoom = const Value.absent(),
+    int? downloadedAt,
+    int? updatedAt,
+  }) => BaseMap(
+    localityId: localityId ?? this.localityId,
+    geoJson: geoJson ?? this.geoJson,
+    centerLat: centerLat.present ? centerLat.value : this.centerLat,
+    centerLng: centerLng.present ? centerLng.value : this.centerLng,
+    zoom: zoom.present ? zoom.value : this.zoom,
+    downloadedAt: downloadedAt ?? this.downloadedAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
   BaseMap copyWithCompanion(BaseMapsCompanion data) {
     return BaseMap(
-      projectId: data.projectId.present ? data.projectId.value : this.projectId,
+      localityId:
+          data.localityId.present ? data.localityId.value : this.localityId,
       geoJson: data.geoJson.present ? data.geoJson.value : this.geoJson,
+      centerLat: data.centerLat.present ? data.centerLat.value : this.centerLat,
+      centerLng: data.centerLng.present ? data.centerLng.value : this.centerLng,
+      zoom: data.zoom.present ? data.zoom.value : this.zoom,
+      downloadedAt:
+          data.downloadedAt.present
+              ? data.downloadedAt.value
+              : this.downloadedAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
@@ -4458,85 +4607,131 @@ class BaseMap extends DataClass implements Insertable<BaseMap> {
   @override
   String toString() {
     return (StringBuffer('BaseMap(')
-          ..write('projectId: $projectId, ')
+          ..write('localityId: $localityId, ')
           ..write('geoJson: $geoJson, ')
+          ..write('centerLat: $centerLat, ')
+          ..write('centerLng: $centerLng, ')
+          ..write('zoom: $zoom, ')
+          ..write('downloadedAt: $downloadedAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(projectId, geoJson, updatedAt);
+  int get hashCode => Object.hash(
+    localityId,
+    geoJson,
+    centerLat,
+    centerLng,
+    zoom,
+    downloadedAt,
+    updatedAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is BaseMap &&
-          other.projectId == this.projectId &&
+          other.localityId == this.localityId &&
           other.geoJson == this.geoJson &&
+          other.centerLat == this.centerLat &&
+          other.centerLng == this.centerLng &&
+          other.zoom == this.zoom &&
+          other.downloadedAt == this.downloadedAt &&
           other.updatedAt == this.updatedAt);
 }
 
 class BaseMapsCompanion extends UpdateCompanion<BaseMap> {
-  final Value<String> projectId;
+  final Value<int> localityId;
   final Value<String> geoJson;
+  final Value<double?> centerLat;
+  final Value<double?> centerLng;
+  final Value<double?> zoom;
+  final Value<int> downloadedAt;
   final Value<int> updatedAt;
-  final Value<int> rowid;
   const BaseMapsCompanion({
-    this.projectId = const Value.absent(),
+    this.localityId = const Value.absent(),
     this.geoJson = const Value.absent(),
+    this.centerLat = const Value.absent(),
+    this.centerLng = const Value.absent(),
+    this.zoom = const Value.absent(),
+    this.downloadedAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
-    this.rowid = const Value.absent(),
   });
   BaseMapsCompanion.insert({
-    required String projectId,
+    this.localityId = const Value.absent(),
     required String geoJson,
+    this.centerLat = const Value.absent(),
+    this.centerLng = const Value.absent(),
+    this.zoom = const Value.absent(),
+    required int downloadedAt,
     required int updatedAt,
-    this.rowid = const Value.absent(),
-  }) : projectId = Value(projectId),
-       geoJson = Value(geoJson),
+  }) : geoJson = Value(geoJson),
+       downloadedAt = Value(downloadedAt),
        updatedAt = Value(updatedAt);
   static Insertable<BaseMap> custom({
-    Expression<String>? projectId,
+    Expression<int>? localityId,
     Expression<String>? geoJson,
+    Expression<double>? centerLat,
+    Expression<double>? centerLng,
+    Expression<double>? zoom,
+    Expression<int>? downloadedAt,
     Expression<int>? updatedAt,
-    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
-      if (projectId != null) 'project_id': projectId,
+      if (localityId != null) 'locality_id': localityId,
       if (geoJson != null) 'geo_json': geoJson,
+      if (centerLat != null) 'center_lat': centerLat,
+      if (centerLng != null) 'center_lng': centerLng,
+      if (zoom != null) 'zoom': zoom,
+      if (downloadedAt != null) 'downloaded_at': downloadedAt,
       if (updatedAt != null) 'updated_at': updatedAt,
-      if (rowid != null) 'rowid': rowid,
     });
   }
 
   BaseMapsCompanion copyWith({
-    Value<String>? projectId,
+    Value<int>? localityId,
     Value<String>? geoJson,
+    Value<double?>? centerLat,
+    Value<double?>? centerLng,
+    Value<double?>? zoom,
+    Value<int>? downloadedAt,
     Value<int>? updatedAt,
-    Value<int>? rowid,
   }) {
     return BaseMapsCompanion(
-      projectId: projectId ?? this.projectId,
+      localityId: localityId ?? this.localityId,
       geoJson: geoJson ?? this.geoJson,
+      centerLat: centerLat ?? this.centerLat,
+      centerLng: centerLng ?? this.centerLng,
+      zoom: zoom ?? this.zoom,
+      downloadedAt: downloadedAt ?? this.downloadedAt,
       updatedAt: updatedAt ?? this.updatedAt,
-      rowid: rowid ?? this.rowid,
     );
   }
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (projectId.present) {
-      map['project_id'] = Variable<String>(projectId.value);
+    if (localityId.present) {
+      map['locality_id'] = Variable<int>(localityId.value);
     }
     if (geoJson.present) {
       map['geo_json'] = Variable<String>(geoJson.value);
     }
+    if (centerLat.present) {
+      map['center_lat'] = Variable<double>(centerLat.value);
+    }
+    if (centerLng.present) {
+      map['center_lng'] = Variable<double>(centerLng.value);
+    }
+    if (zoom.present) {
+      map['zoom'] = Variable<double>(zoom.value);
+    }
+    if (downloadedAt.present) {
+      map['downloaded_at'] = Variable<int>(downloadedAt.value);
+    }
     if (updatedAt.present) {
       map['updated_at'] = Variable<int>(updatedAt.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
     }
     return map;
   }
@@ -4544,10 +4739,13 @@ class BaseMapsCompanion extends UpdateCompanion<BaseMap> {
   @override
   String toString() {
     return (StringBuffer('BaseMapsCompanion(')
-          ..write('projectId: $projectId, ')
+          ..write('localityId: $localityId, ')
           ..write('geoJson: $geoJson, ')
-          ..write('updatedAt: $updatedAt, ')
-          ..write('rowid: $rowid')
+          ..write('centerLat: $centerLat, ')
+          ..write('centerLng: $centerLng, ')
+          ..write('zoom: $zoom, ')
+          ..write('downloadedAt: $downloadedAt, ')
+          ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
@@ -4559,14 +4757,27 @@ class $ZoningFeaturesTable extends ZoningFeatures
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $ZoningFeaturesTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  static const VerificationMeta _clientUuidMeta = const VerificationMeta(
+    'clientUuid',
+  );
   @override
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-    'id',
+  late final GeneratedColumn<String> clientUuid = GeneratedColumn<String>(
+    'client_uuid',
     aliasedName,
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+  );
+  static const VerificationMeta _serverIdMeta = const VerificationMeta(
+    'serverId',
+  );
+  @override
+  late final GeneratedColumn<String> serverId = GeneratedColumn<String>(
+    'server_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _projectIdMeta = const VerificationMeta(
     'projectId',
@@ -4579,6 +4790,28 @@ class $ZoningFeaturesTable extends ZoningFeatures
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _localityIdMeta = const VerificationMeta(
+    'localityId',
+  );
+  @override
+  late final GeneratedColumn<int> localityId = GeneratedColumn<int>(
+    'locality_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _landUseIdMeta = const VerificationMeta(
+    'landUseId',
+  );
+  @override
+  late final GeneratedColumn<int> landUseId = GeneratedColumn<int>(
+    'land_use_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _geomTypeMeta = const VerificationMeta(
     'geomType',
   );
@@ -4590,6 +4823,16 @@ class $ZoningFeaturesTable extends ZoningFeatures
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _sridMeta = const VerificationMeta('srid');
+  @override
+  late final GeneratedColumn<int> srid = GeneratedColumn<int>(
+    'srid',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(4326),
+  );
   static const VerificationMeta _coordsJsonMeta = const VerificationMeta(
     'coordsJson',
   );
@@ -4600,6 +4843,28 @@ class $ZoningFeaturesTable extends ZoningFeatures
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+  );
+  static const VerificationMeta _areaSqmMeta = const VerificationMeta(
+    'areaSqm',
+  );
+  @override
+  late final GeneratedColumn<double> areaSqm = GeneratedColumn<double>(
+    'area_sqm',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lengthMMeta = const VerificationMeta(
+    'lengthM',
+  );
+  @override
+  late final GeneratedColumn<double> lengthM = GeneratedColumn<double>(
+    'length_m',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _propertiesJsonMeta = const VerificationMeta(
     'propertiesJson',
@@ -4627,6 +4892,90 @@ class $ZoningFeaturesTable extends ZoningFeatures
     ),
     defaultValue: const Constant(true),
   );
+  static const VerificationMeta _isProposedMeta = const VerificationMeta(
+    'isProposed',
+  );
+  @override
+  late final GeneratedColumn<bool> isProposed = GeneratedColumn<bool>(
+    'is_proposed',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_proposed" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('Draft'),
+  );
+  static const VerificationMeta _sourceMeta = const VerificationMeta('source');
+  @override
+  late final GeneratedColumn<String> source = GeneratedColumn<String>(
+    'source',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('field_survey'),
+  );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+    'version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _uploadedMeta = const VerificationMeta(
+    'uploaded',
+  );
+  @override
+  late final GeneratedColumn<bool> uploaded = GeneratedColumn<bool>(
+    'uploaded',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("uploaded" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _uploadedAtMeta = const VerificationMeta(
+    'uploadedAt',
+  );
+  @override
+  late final GeneratedColumn<int> uploadedAt = GeneratedColumn<int>(
+    'uploaded_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
   );
@@ -4637,6 +4986,17 @@ class $ZoningFeaturesTable extends ZoningFeatures
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+  );
+  static const VerificationMeta _metadataJsonMeta = const VerificationMeta(
+    'metadataJson',
+  );
+  @override
+  late final GeneratedColumn<String> metadataJson = GeneratedColumn<String>(
+    'metadata_json',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _dirtyMeta = const VerificationMeta('dirty');
   @override
@@ -4653,13 +5013,27 @@ class $ZoningFeaturesTable extends ZoningFeatures
   );
   @override
   List<GeneratedColumn> get $columns => [
-    id,
+    clientUuid,
+    serverId,
     projectId,
+    localityId,
+    landUseId,
     geomType,
+    srid,
     coordsJson,
+    areaSqm,
+    lengthM,
     propertiesJson,
     isDraft,
+    isProposed,
+    status,
+    source,
+    version,
+    uploaded,
+    uploadedAt,
+    createdAt,
     updatedAt,
+    metadataJson,
     dirty,
   ];
   @override
@@ -4674,10 +5048,19 @@ class $ZoningFeaturesTable extends ZoningFeatures
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    if (data.containsKey('client_uuid')) {
+      context.handle(
+        _clientUuidMeta,
+        clientUuid.isAcceptableOrUnknown(data['client_uuid']!, _clientUuidMeta),
+      );
     } else if (isInserting) {
-      context.missing(_idMeta);
+      context.missing(_clientUuidMeta);
+    }
+    if (data.containsKey('server_id')) {
+      context.handle(
+        _serverIdMeta,
+        serverId.isAcceptableOrUnknown(data['server_id']!, _serverIdMeta),
+      );
     }
     if (data.containsKey('project_id')) {
       context.handle(
@@ -4687,6 +5070,20 @@ class $ZoningFeaturesTable extends ZoningFeatures
     } else if (isInserting) {
       context.missing(_projectIdMeta);
     }
+    if (data.containsKey('locality_id')) {
+      context.handle(
+        _localityIdMeta,
+        localityId.isAcceptableOrUnknown(data['locality_id']!, _localityIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_localityIdMeta);
+    }
+    if (data.containsKey('land_use_id')) {
+      context.handle(
+        _landUseIdMeta,
+        landUseId.isAcceptableOrUnknown(data['land_use_id']!, _landUseIdMeta),
+      );
+    }
     if (data.containsKey('geom_type')) {
       context.handle(
         _geomTypeMeta,
@@ -4695,6 +5092,12 @@ class $ZoningFeaturesTable extends ZoningFeatures
     } else if (isInserting) {
       context.missing(_geomTypeMeta);
     }
+    if (data.containsKey('srid')) {
+      context.handle(
+        _sridMeta,
+        srid.isAcceptableOrUnknown(data['srid']!, _sridMeta),
+      );
+    }
     if (data.containsKey('coords_json')) {
       context.handle(
         _coordsJsonMeta,
@@ -4702,6 +5105,18 @@ class $ZoningFeaturesTable extends ZoningFeatures
       );
     } else if (isInserting) {
       context.missing(_coordsJsonMeta);
+    }
+    if (data.containsKey('area_sqm')) {
+      context.handle(
+        _areaSqmMeta,
+        areaSqm.isAcceptableOrUnknown(data['area_sqm']!, _areaSqmMeta),
+      );
+    }
+    if (data.containsKey('length_m')) {
+      context.handle(
+        _lengthMMeta,
+        lengthM.isAcceptableOrUnknown(data['length_m']!, _lengthMMeta),
+      );
     }
     if (data.containsKey('properties_json')) {
       context.handle(
@@ -4718,6 +5133,50 @@ class $ZoningFeaturesTable extends ZoningFeatures
         isDraft.isAcceptableOrUnknown(data['is_draft']!, _isDraftMeta),
       );
     }
+    if (data.containsKey('is_proposed')) {
+      context.handle(
+        _isProposedMeta,
+        isProposed.isAcceptableOrUnknown(data['is_proposed']!, _isProposedMeta),
+      );
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('source')) {
+      context.handle(
+        _sourceMeta,
+        source.isAcceptableOrUnknown(data['source']!, _sourceMeta),
+      );
+    }
+    if (data.containsKey('version')) {
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
+    }
+    if (data.containsKey('uploaded')) {
+      context.handle(
+        _uploadedMeta,
+        uploaded.isAcceptableOrUnknown(data['uploaded']!, _uploadedMeta),
+      );
+    }
+    if (data.containsKey('uploaded_at')) {
+      context.handle(
+        _uploadedAtMeta,
+        uploadedAt.isAcceptableOrUnknown(data['uploaded_at']!, _uploadedAtMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
     if (data.containsKey('updated_at')) {
       context.handle(
         _updatedAtMeta,
@@ -4725,6 +5184,15 @@ class $ZoningFeaturesTable extends ZoningFeatures
       );
     } else if (isInserting) {
       context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('metadata_json')) {
+      context.handle(
+        _metadataJsonMeta,
+        metadataJson.isAcceptableOrUnknown(
+          data['metadata_json']!,
+          _metadataJsonMeta,
+        ),
+      );
     }
     if (data.containsKey('dirty')) {
       context.handle(
@@ -4736,31 +5204,57 @@ class $ZoningFeaturesTable extends ZoningFeatures
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => {clientUuid};
   @override
   ZoningFeature map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return ZoningFeature(
-      id:
+      clientUuid:
           attachedDatabase.typeMapping.read(
             DriftSqlType.string,
-            data['${effectivePrefix}id'],
+            data['${effectivePrefix}client_uuid'],
           )!,
+      serverId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}server_id'],
+      ),
       projectId:
           attachedDatabase.typeMapping.read(
             DriftSqlType.string,
             data['${effectivePrefix}project_id'],
           )!,
+      localityId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}locality_id'],
+          )!,
+      landUseId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}land_use_id'],
+      ),
       geomType:
           attachedDatabase.typeMapping.read(
             DriftSqlType.string,
             data['${effectivePrefix}geom_type'],
+          )!,
+      srid:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}srid'],
           )!,
       coordsJson:
           attachedDatabase.typeMapping.read(
             DriftSqlType.string,
             data['${effectivePrefix}coords_json'],
           )!,
+      areaSqm: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}area_sqm'],
+      ),
+      lengthM: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}length_m'],
+      ),
       propertiesJson: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}properties_json'],
@@ -4770,11 +5264,49 @@ class $ZoningFeaturesTable extends ZoningFeatures
             DriftSqlType.bool,
             data['${effectivePrefix}is_draft'],
           )!,
+      isProposed:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}is_proposed'],
+          )!,
+      status:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}status'],
+          )!,
+      source:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}source'],
+          )!,
+      version:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}version'],
+          )!,
+      uploaded:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}uploaded'],
+          )!,
+      uploadedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}uploaded_at'],
+      ),
+      createdAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}created_at'],
+          )!,
       updatedAt:
           attachedDatabase.typeMapping.read(
             DriftSqlType.int,
             data['${effectivePrefix}updated_at'],
           )!,
+      metadataJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}metadata_json'],
+      ),
       dirty:
           attachedDatabase.typeMapping.read(
             DriftSqlType.bool,
@@ -4790,52 +5322,138 @@ class $ZoningFeaturesTable extends ZoningFeatures
 }
 
 class ZoningFeature extends DataClass implements Insertable<ZoningFeature> {
-  final String id;
+  final String clientUuid;
+  final String? serverId;
   final String projectId;
+  final int localityId;
+  final int? landUseId;
   final String geomType;
+  final int srid;
   final String coordsJson;
+  final double? areaSqm;
+  final double? lengthM;
   final String? propertiesJson;
   final bool isDraft;
+  final bool isProposed;
+  final String status;
+  final String source;
+  final int version;
+  final bool uploaded;
+  final int? uploadedAt;
+  final int createdAt;
   final int updatedAt;
+  final String? metadataJson;
   final bool dirty;
   const ZoningFeature({
-    required this.id,
+    required this.clientUuid,
+    this.serverId,
     required this.projectId,
+    required this.localityId,
+    this.landUseId,
     required this.geomType,
+    required this.srid,
     required this.coordsJson,
+    this.areaSqm,
+    this.lengthM,
     this.propertiesJson,
     required this.isDraft,
+    required this.isProposed,
+    required this.status,
+    required this.source,
+    required this.version,
+    required this.uploaded,
+    this.uploadedAt,
+    required this.createdAt,
     required this.updatedAt,
+    this.metadataJson,
     required this.dirty,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
+    map['client_uuid'] = Variable<String>(clientUuid);
+    if (!nullToAbsent || serverId != null) {
+      map['server_id'] = Variable<String>(serverId);
+    }
     map['project_id'] = Variable<String>(projectId);
+    map['locality_id'] = Variable<int>(localityId);
+    if (!nullToAbsent || landUseId != null) {
+      map['land_use_id'] = Variable<int>(landUseId);
+    }
     map['geom_type'] = Variable<String>(geomType);
+    map['srid'] = Variable<int>(srid);
     map['coords_json'] = Variable<String>(coordsJson);
+    if (!nullToAbsent || areaSqm != null) {
+      map['area_sqm'] = Variable<double>(areaSqm);
+    }
+    if (!nullToAbsent || lengthM != null) {
+      map['length_m'] = Variable<double>(lengthM);
+    }
     if (!nullToAbsent || propertiesJson != null) {
       map['properties_json'] = Variable<String>(propertiesJson);
     }
     map['is_draft'] = Variable<bool>(isDraft);
+    map['is_proposed'] = Variable<bool>(isProposed);
+    map['status'] = Variable<String>(status);
+    map['source'] = Variable<String>(source);
+    map['version'] = Variable<int>(version);
+    map['uploaded'] = Variable<bool>(uploaded);
+    if (!nullToAbsent || uploadedAt != null) {
+      map['uploaded_at'] = Variable<int>(uploadedAt);
+    }
+    map['created_at'] = Variable<int>(createdAt);
     map['updated_at'] = Variable<int>(updatedAt);
+    if (!nullToAbsent || metadataJson != null) {
+      map['metadata_json'] = Variable<String>(metadataJson);
+    }
     map['dirty'] = Variable<bool>(dirty);
     return map;
   }
 
   ZoningFeaturesCompanion toCompanion(bool nullToAbsent) {
     return ZoningFeaturesCompanion(
-      id: Value(id),
+      clientUuid: Value(clientUuid),
+      serverId:
+          serverId == null && nullToAbsent
+              ? const Value.absent()
+              : Value(serverId),
       projectId: Value(projectId),
+      localityId: Value(localityId),
+      landUseId:
+          landUseId == null && nullToAbsent
+              ? const Value.absent()
+              : Value(landUseId),
       geomType: Value(geomType),
+      srid: Value(srid),
       coordsJson: Value(coordsJson),
+      areaSqm:
+          areaSqm == null && nullToAbsent
+              ? const Value.absent()
+              : Value(areaSqm),
+      lengthM:
+          lengthM == null && nullToAbsent
+              ? const Value.absent()
+              : Value(lengthM),
       propertiesJson:
           propertiesJson == null && nullToAbsent
               ? const Value.absent()
               : Value(propertiesJson),
       isDraft: Value(isDraft),
+      isProposed: Value(isProposed),
+      status: Value(status),
+      source: Value(source),
+      version: Value(version),
+      uploaded: Value(uploaded),
+      uploadedAt:
+          uploadedAt == null && nullToAbsent
+              ? const Value.absent()
+              : Value(uploadedAt),
+      createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
+      metadataJson:
+          metadataJson == null && nullToAbsent
+              ? const Value.absent()
+              : Value(metadataJson),
       dirty: Value(dirty),
     );
   }
@@ -4846,13 +5464,27 @@ class ZoningFeature extends DataClass implements Insertable<ZoningFeature> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return ZoningFeature(
-      id: serializer.fromJson<String>(json['id']),
+      clientUuid: serializer.fromJson<String>(json['clientUuid']),
+      serverId: serializer.fromJson<String?>(json['serverId']),
       projectId: serializer.fromJson<String>(json['projectId']),
+      localityId: serializer.fromJson<int>(json['localityId']),
+      landUseId: serializer.fromJson<int?>(json['landUseId']),
       geomType: serializer.fromJson<String>(json['geomType']),
+      srid: serializer.fromJson<int>(json['srid']),
       coordsJson: serializer.fromJson<String>(json['coordsJson']),
+      areaSqm: serializer.fromJson<double?>(json['areaSqm']),
+      lengthM: serializer.fromJson<double?>(json['lengthM']),
       propertiesJson: serializer.fromJson<String?>(json['propertiesJson']),
       isDraft: serializer.fromJson<bool>(json['isDraft']),
+      isProposed: serializer.fromJson<bool>(json['isProposed']),
+      status: serializer.fromJson<String>(json['status']),
+      source: serializer.fromJson<String>(json['source']),
+      version: serializer.fromJson<int>(json['version']),
+      uploaded: serializer.fromJson<bool>(json['uploaded']),
+      uploadedAt: serializer.fromJson<int?>(json['uploadedAt']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
       updatedAt: serializer.fromJson<int>(json['updatedAt']),
+      metadataJson: serializer.fromJson<String?>(json['metadataJson']),
       dirty: serializer.fromJson<bool>(json['dirty']),
     );
   }
@@ -4860,50 +5492,113 @@ class ZoningFeature extends DataClass implements Insertable<ZoningFeature> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
+      'clientUuid': serializer.toJson<String>(clientUuid),
+      'serverId': serializer.toJson<String?>(serverId),
       'projectId': serializer.toJson<String>(projectId),
+      'localityId': serializer.toJson<int>(localityId),
+      'landUseId': serializer.toJson<int?>(landUseId),
       'geomType': serializer.toJson<String>(geomType),
+      'srid': serializer.toJson<int>(srid),
       'coordsJson': serializer.toJson<String>(coordsJson),
+      'areaSqm': serializer.toJson<double?>(areaSqm),
+      'lengthM': serializer.toJson<double?>(lengthM),
       'propertiesJson': serializer.toJson<String?>(propertiesJson),
       'isDraft': serializer.toJson<bool>(isDraft),
+      'isProposed': serializer.toJson<bool>(isProposed),
+      'status': serializer.toJson<String>(status),
+      'source': serializer.toJson<String>(source),
+      'version': serializer.toJson<int>(version),
+      'uploaded': serializer.toJson<bool>(uploaded),
+      'uploadedAt': serializer.toJson<int?>(uploadedAt),
+      'createdAt': serializer.toJson<int>(createdAt),
       'updatedAt': serializer.toJson<int>(updatedAt),
+      'metadataJson': serializer.toJson<String?>(metadataJson),
       'dirty': serializer.toJson<bool>(dirty),
     };
   }
 
   ZoningFeature copyWith({
-    String? id,
+    String? clientUuid,
+    Value<String?> serverId = const Value.absent(),
     String? projectId,
+    int? localityId,
+    Value<int?> landUseId = const Value.absent(),
     String? geomType,
+    int? srid,
     String? coordsJson,
+    Value<double?> areaSqm = const Value.absent(),
+    Value<double?> lengthM = const Value.absent(),
     Value<String?> propertiesJson = const Value.absent(),
     bool? isDraft,
+    bool? isProposed,
+    String? status,
+    String? source,
+    int? version,
+    bool? uploaded,
+    Value<int?> uploadedAt = const Value.absent(),
+    int? createdAt,
     int? updatedAt,
+    Value<String?> metadataJson = const Value.absent(),
     bool? dirty,
   }) => ZoningFeature(
-    id: id ?? this.id,
+    clientUuid: clientUuid ?? this.clientUuid,
+    serverId: serverId.present ? serverId.value : this.serverId,
     projectId: projectId ?? this.projectId,
+    localityId: localityId ?? this.localityId,
+    landUseId: landUseId.present ? landUseId.value : this.landUseId,
     geomType: geomType ?? this.geomType,
+    srid: srid ?? this.srid,
     coordsJson: coordsJson ?? this.coordsJson,
+    areaSqm: areaSqm.present ? areaSqm.value : this.areaSqm,
+    lengthM: lengthM.present ? lengthM.value : this.lengthM,
     propertiesJson:
         propertiesJson.present ? propertiesJson.value : this.propertiesJson,
     isDraft: isDraft ?? this.isDraft,
+    isProposed: isProposed ?? this.isProposed,
+    status: status ?? this.status,
+    source: source ?? this.source,
+    version: version ?? this.version,
+    uploaded: uploaded ?? this.uploaded,
+    uploadedAt: uploadedAt.present ? uploadedAt.value : this.uploadedAt,
+    createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
+    metadataJson: metadataJson.present ? metadataJson.value : this.metadataJson,
     dirty: dirty ?? this.dirty,
   );
   ZoningFeature copyWithCompanion(ZoningFeaturesCompanion data) {
     return ZoningFeature(
-      id: data.id.present ? data.id.value : this.id,
+      clientUuid:
+          data.clientUuid.present ? data.clientUuid.value : this.clientUuid,
+      serverId: data.serverId.present ? data.serverId.value : this.serverId,
       projectId: data.projectId.present ? data.projectId.value : this.projectId,
+      localityId:
+          data.localityId.present ? data.localityId.value : this.localityId,
+      landUseId: data.landUseId.present ? data.landUseId.value : this.landUseId,
       geomType: data.geomType.present ? data.geomType.value : this.geomType,
+      srid: data.srid.present ? data.srid.value : this.srid,
       coordsJson:
           data.coordsJson.present ? data.coordsJson.value : this.coordsJson,
+      areaSqm: data.areaSqm.present ? data.areaSqm.value : this.areaSqm,
+      lengthM: data.lengthM.present ? data.lengthM.value : this.lengthM,
       propertiesJson:
           data.propertiesJson.present
               ? data.propertiesJson.value
               : this.propertiesJson,
       isDraft: data.isDraft.present ? data.isDraft.value : this.isDraft,
+      isProposed:
+          data.isProposed.present ? data.isProposed.value : this.isProposed,
+      status: data.status.present ? data.status.value : this.status,
+      source: data.source.present ? data.source.value : this.source,
+      version: data.version.present ? data.version.value : this.version,
+      uploaded: data.uploaded.present ? data.uploaded.value : this.uploaded,
+      uploadedAt:
+          data.uploadedAt.present ? data.uploadedAt.value : this.uploadedAt,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      metadataJson:
+          data.metadataJson.present
+              ? data.metadataJson.value
+              : this.metadataJson,
       dirty: data.dirty.present ? data.dirty.value : this.dirty,
     );
   }
@@ -4911,122 +5606,264 @@ class ZoningFeature extends DataClass implements Insertable<ZoningFeature> {
   @override
   String toString() {
     return (StringBuffer('ZoningFeature(')
-          ..write('id: $id, ')
+          ..write('clientUuid: $clientUuid, ')
+          ..write('serverId: $serverId, ')
           ..write('projectId: $projectId, ')
+          ..write('localityId: $localityId, ')
+          ..write('landUseId: $landUseId, ')
           ..write('geomType: $geomType, ')
+          ..write('srid: $srid, ')
           ..write('coordsJson: $coordsJson, ')
+          ..write('areaSqm: $areaSqm, ')
+          ..write('lengthM: $lengthM, ')
           ..write('propertiesJson: $propertiesJson, ')
           ..write('isDraft: $isDraft, ')
+          ..write('isProposed: $isProposed, ')
+          ..write('status: $status, ')
+          ..write('source: $source, ')
+          ..write('version: $version, ')
+          ..write('uploaded: $uploaded, ')
+          ..write('uploadedAt: $uploadedAt, ')
+          ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('metadataJson: $metadataJson, ')
           ..write('dirty: $dirty')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
-    id,
+  int get hashCode => Object.hashAll([
+    clientUuid,
+    serverId,
     projectId,
+    localityId,
+    landUseId,
     geomType,
+    srid,
     coordsJson,
+    areaSqm,
+    lengthM,
     propertiesJson,
     isDraft,
+    isProposed,
+    status,
+    source,
+    version,
+    uploaded,
+    uploadedAt,
+    createdAt,
     updatedAt,
+    metadataJson,
     dirty,
-  );
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is ZoningFeature &&
-          other.id == this.id &&
+          other.clientUuid == this.clientUuid &&
+          other.serverId == this.serverId &&
           other.projectId == this.projectId &&
+          other.localityId == this.localityId &&
+          other.landUseId == this.landUseId &&
           other.geomType == this.geomType &&
+          other.srid == this.srid &&
           other.coordsJson == this.coordsJson &&
+          other.areaSqm == this.areaSqm &&
+          other.lengthM == this.lengthM &&
           other.propertiesJson == this.propertiesJson &&
           other.isDraft == this.isDraft &&
+          other.isProposed == this.isProposed &&
+          other.status == this.status &&
+          other.source == this.source &&
+          other.version == this.version &&
+          other.uploaded == this.uploaded &&
+          other.uploadedAt == this.uploadedAt &&
+          other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
+          other.metadataJson == this.metadataJson &&
           other.dirty == this.dirty);
 }
 
 class ZoningFeaturesCompanion extends UpdateCompanion<ZoningFeature> {
-  final Value<String> id;
+  final Value<String> clientUuid;
+  final Value<String?> serverId;
   final Value<String> projectId;
+  final Value<int> localityId;
+  final Value<int?> landUseId;
   final Value<String> geomType;
+  final Value<int> srid;
   final Value<String> coordsJson;
+  final Value<double?> areaSqm;
+  final Value<double?> lengthM;
   final Value<String?> propertiesJson;
   final Value<bool> isDraft;
+  final Value<bool> isProposed;
+  final Value<String> status;
+  final Value<String> source;
+  final Value<int> version;
+  final Value<bool> uploaded;
+  final Value<int?> uploadedAt;
+  final Value<int> createdAt;
   final Value<int> updatedAt;
+  final Value<String?> metadataJson;
   final Value<bool> dirty;
   final Value<int> rowid;
   const ZoningFeaturesCompanion({
-    this.id = const Value.absent(),
+    this.clientUuid = const Value.absent(),
+    this.serverId = const Value.absent(),
     this.projectId = const Value.absent(),
+    this.localityId = const Value.absent(),
+    this.landUseId = const Value.absent(),
     this.geomType = const Value.absent(),
+    this.srid = const Value.absent(),
     this.coordsJson = const Value.absent(),
+    this.areaSqm = const Value.absent(),
+    this.lengthM = const Value.absent(),
     this.propertiesJson = const Value.absent(),
     this.isDraft = const Value.absent(),
+    this.isProposed = const Value.absent(),
+    this.status = const Value.absent(),
+    this.source = const Value.absent(),
+    this.version = const Value.absent(),
+    this.uploaded = const Value.absent(),
+    this.uploadedAt = const Value.absent(),
+    this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.metadataJson = const Value.absent(),
     this.dirty = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ZoningFeaturesCompanion.insert({
-    required String id,
+    required String clientUuid,
+    this.serverId = const Value.absent(),
     required String projectId,
+    required int localityId,
+    this.landUseId = const Value.absent(),
     required String geomType,
+    this.srid = const Value.absent(),
     required String coordsJson,
+    this.areaSqm = const Value.absent(),
+    this.lengthM = const Value.absent(),
     this.propertiesJson = const Value.absent(),
     this.isDraft = const Value.absent(),
+    this.isProposed = const Value.absent(),
+    this.status = const Value.absent(),
+    this.source = const Value.absent(),
+    this.version = const Value.absent(),
+    this.uploaded = const Value.absent(),
+    this.uploadedAt = const Value.absent(),
+    required int createdAt,
     required int updatedAt,
+    this.metadataJson = const Value.absent(),
     this.dirty = const Value.absent(),
     this.rowid = const Value.absent(),
-  }) : id = Value(id),
+  }) : clientUuid = Value(clientUuid),
        projectId = Value(projectId),
+       localityId = Value(localityId),
        geomType = Value(geomType),
        coordsJson = Value(coordsJson),
+       createdAt = Value(createdAt),
        updatedAt = Value(updatedAt);
   static Insertable<ZoningFeature> custom({
-    Expression<String>? id,
+    Expression<String>? clientUuid,
+    Expression<String>? serverId,
     Expression<String>? projectId,
+    Expression<int>? localityId,
+    Expression<int>? landUseId,
     Expression<String>? geomType,
+    Expression<int>? srid,
     Expression<String>? coordsJson,
+    Expression<double>? areaSqm,
+    Expression<double>? lengthM,
     Expression<String>? propertiesJson,
     Expression<bool>? isDraft,
+    Expression<bool>? isProposed,
+    Expression<String>? status,
+    Expression<String>? source,
+    Expression<int>? version,
+    Expression<bool>? uploaded,
+    Expression<int>? uploadedAt,
+    Expression<int>? createdAt,
     Expression<int>? updatedAt,
+    Expression<String>? metadataJson,
     Expression<bool>? dirty,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
-      if (id != null) 'id': id,
+      if (clientUuid != null) 'client_uuid': clientUuid,
+      if (serverId != null) 'server_id': serverId,
       if (projectId != null) 'project_id': projectId,
+      if (localityId != null) 'locality_id': localityId,
+      if (landUseId != null) 'land_use_id': landUseId,
       if (geomType != null) 'geom_type': geomType,
+      if (srid != null) 'srid': srid,
       if (coordsJson != null) 'coords_json': coordsJson,
+      if (areaSqm != null) 'area_sqm': areaSqm,
+      if (lengthM != null) 'length_m': lengthM,
       if (propertiesJson != null) 'properties_json': propertiesJson,
       if (isDraft != null) 'is_draft': isDraft,
+      if (isProposed != null) 'is_proposed': isProposed,
+      if (status != null) 'status': status,
+      if (source != null) 'source': source,
+      if (version != null) 'version': version,
+      if (uploaded != null) 'uploaded': uploaded,
+      if (uploadedAt != null) 'uploaded_at': uploadedAt,
+      if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
+      if (metadataJson != null) 'metadata_json': metadataJson,
       if (dirty != null) 'dirty': dirty,
       if (rowid != null) 'rowid': rowid,
     });
   }
 
   ZoningFeaturesCompanion copyWith({
-    Value<String>? id,
+    Value<String>? clientUuid,
+    Value<String?>? serverId,
     Value<String>? projectId,
+    Value<int>? localityId,
+    Value<int?>? landUseId,
     Value<String>? geomType,
+    Value<int>? srid,
     Value<String>? coordsJson,
+    Value<double?>? areaSqm,
+    Value<double?>? lengthM,
     Value<String?>? propertiesJson,
     Value<bool>? isDraft,
+    Value<bool>? isProposed,
+    Value<String>? status,
+    Value<String>? source,
+    Value<int>? version,
+    Value<bool>? uploaded,
+    Value<int?>? uploadedAt,
+    Value<int>? createdAt,
     Value<int>? updatedAt,
+    Value<String?>? metadataJson,
     Value<bool>? dirty,
     Value<int>? rowid,
   }) {
     return ZoningFeaturesCompanion(
-      id: id ?? this.id,
+      clientUuid: clientUuid ?? this.clientUuid,
+      serverId: serverId ?? this.serverId,
       projectId: projectId ?? this.projectId,
+      localityId: localityId ?? this.localityId,
+      landUseId: landUseId ?? this.landUseId,
       geomType: geomType ?? this.geomType,
+      srid: srid ?? this.srid,
       coordsJson: coordsJson ?? this.coordsJson,
+      areaSqm: areaSqm ?? this.areaSqm,
+      lengthM: lengthM ?? this.lengthM,
       propertiesJson: propertiesJson ?? this.propertiesJson,
       isDraft: isDraft ?? this.isDraft,
+      isProposed: isProposed ?? this.isProposed,
+      status: status ?? this.status,
+      source: source ?? this.source,
+      version: version ?? this.version,
+      uploaded: uploaded ?? this.uploaded,
+      uploadedAt: uploadedAt ?? this.uploadedAt,
+      createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      metadataJson: metadataJson ?? this.metadataJson,
       dirty: dirty ?? this.dirty,
       rowid: rowid ?? this.rowid,
     );
@@ -5035,17 +5872,35 @@ class ZoningFeaturesCompanion extends UpdateCompanion<ZoningFeature> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<String>(id.value);
+    if (clientUuid.present) {
+      map['client_uuid'] = Variable<String>(clientUuid.value);
+    }
+    if (serverId.present) {
+      map['server_id'] = Variable<String>(serverId.value);
     }
     if (projectId.present) {
       map['project_id'] = Variable<String>(projectId.value);
     }
+    if (localityId.present) {
+      map['locality_id'] = Variable<int>(localityId.value);
+    }
+    if (landUseId.present) {
+      map['land_use_id'] = Variable<int>(landUseId.value);
+    }
     if (geomType.present) {
       map['geom_type'] = Variable<String>(geomType.value);
     }
+    if (srid.present) {
+      map['srid'] = Variable<int>(srid.value);
+    }
     if (coordsJson.present) {
       map['coords_json'] = Variable<String>(coordsJson.value);
+    }
+    if (areaSqm.present) {
+      map['area_sqm'] = Variable<double>(areaSqm.value);
+    }
+    if (lengthM.present) {
+      map['length_m'] = Variable<double>(lengthM.value);
     }
     if (propertiesJson.present) {
       map['properties_json'] = Variable<String>(propertiesJson.value);
@@ -5053,8 +5908,32 @@ class ZoningFeaturesCompanion extends UpdateCompanion<ZoningFeature> {
     if (isDraft.present) {
       map['is_draft'] = Variable<bool>(isDraft.value);
     }
+    if (isProposed.present) {
+      map['is_proposed'] = Variable<bool>(isProposed.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (source.present) {
+      map['source'] = Variable<String>(source.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
+    if (uploaded.present) {
+      map['uploaded'] = Variable<bool>(uploaded.value);
+    }
+    if (uploadedAt.present) {
+      map['uploaded_at'] = Variable<int>(uploadedAt.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
     if (updatedAt.present) {
       map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (metadataJson.present) {
+      map['metadata_json'] = Variable<String>(metadataJson.value);
     }
     if (dirty.present) {
       map['dirty'] = Variable<bool>(dirty.value);
@@ -5068,13 +5947,27 @@ class ZoningFeaturesCompanion extends UpdateCompanion<ZoningFeature> {
   @override
   String toString() {
     return (StringBuffer('ZoningFeaturesCompanion(')
-          ..write('id: $id, ')
+          ..write('clientUuid: $clientUuid, ')
+          ..write('serverId: $serverId, ')
           ..write('projectId: $projectId, ')
+          ..write('localityId: $localityId, ')
+          ..write('landUseId: $landUseId, ')
           ..write('geomType: $geomType, ')
+          ..write('srid: $srid, ')
           ..write('coordsJson: $coordsJson, ')
+          ..write('areaSqm: $areaSqm, ')
+          ..write('lengthM: $lengthM, ')
           ..write('propertiesJson: $propertiesJson, ')
           ..write('isDraft: $isDraft, ')
+          ..write('isProposed: $isProposed, ')
+          ..write('status: $status, ')
+          ..write('source: $source, ')
+          ..write('version: $version, ')
+          ..write('uploaded: $uploaded, ')
+          ..write('uploadedAt: $uploadedAt, ')
+          ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('metadataJson: $metadataJson, ')
           ..write('dirty: $dirty, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -7765,17 +8658,23 @@ typedef $$SurveyResponsesTableProcessedTableManager =
     >;
 typedef $$BaseMapsTableCreateCompanionBuilder =
     BaseMapsCompanion Function({
-      required String projectId,
+      Value<int> localityId,
       required String geoJson,
+      Value<double?> centerLat,
+      Value<double?> centerLng,
+      Value<double?> zoom,
+      required int downloadedAt,
       required int updatedAt,
-      Value<int> rowid,
     });
 typedef $$BaseMapsTableUpdateCompanionBuilder =
     BaseMapsCompanion Function({
-      Value<String> projectId,
+      Value<int> localityId,
       Value<String> geoJson,
+      Value<double?> centerLat,
+      Value<double?> centerLng,
+      Value<double?> zoom,
+      Value<int> downloadedAt,
       Value<int> updatedAt,
-      Value<int> rowid,
     });
 
 class $$BaseMapsTableFilterComposer
@@ -7787,13 +8686,33 @@ class $$BaseMapsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<String> get projectId => $composableBuilder(
-    column: $table.projectId,
+  ColumnFilters<int> get localityId => $composableBuilder(
+    column: $table.localityId,
     builder: (column) => ColumnFilters(column),
   );
 
   ColumnFilters<String> get geoJson => $composableBuilder(
     column: $table.geoJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get centerLat => $composableBuilder(
+    column: $table.centerLat,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get centerLng => $composableBuilder(
+    column: $table.centerLng,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get zoom => $composableBuilder(
+    column: $table.zoom,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get downloadedAt => $composableBuilder(
+    column: $table.downloadedAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -7812,13 +8731,33 @@ class $$BaseMapsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<String> get projectId => $composableBuilder(
-    column: $table.projectId,
+  ColumnOrderings<int> get localityId => $composableBuilder(
+    column: $table.localityId,
     builder: (column) => ColumnOrderings(column),
   );
 
   ColumnOrderings<String> get geoJson => $composableBuilder(
     column: $table.geoJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get centerLat => $composableBuilder(
+    column: $table.centerLat,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get centerLng => $composableBuilder(
+    column: $table.centerLng,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get zoom => $composableBuilder(
+    column: $table.zoom,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get downloadedAt => $composableBuilder(
+    column: $table.downloadedAt,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -7837,11 +8776,27 @@ class $$BaseMapsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<String> get projectId =>
-      $composableBuilder(column: $table.projectId, builder: (column) => column);
+  GeneratedColumn<int> get localityId => $composableBuilder(
+    column: $table.localityId,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get geoJson =>
       $composableBuilder(column: $table.geoJson, builder: (column) => column);
+
+  GeneratedColumn<double> get centerLat =>
+      $composableBuilder(column: $table.centerLat, builder: (column) => column);
+
+  GeneratedColumn<double> get centerLng =>
+      $composableBuilder(column: $table.centerLng, builder: (column) => column);
+
+  GeneratedColumn<double> get zoom =>
+      $composableBuilder(column: $table.zoom, builder: (column) => column);
+
+  GeneratedColumn<int> get downloadedAt => $composableBuilder(
+    column: $table.downloadedAt,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<int> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
@@ -7875,27 +8830,39 @@ class $$BaseMapsTableTableManager
               () => $$BaseMapsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
-                Value<String> projectId = const Value.absent(),
+                Value<int> localityId = const Value.absent(),
                 Value<String> geoJson = const Value.absent(),
+                Value<double?> centerLat = const Value.absent(),
+                Value<double?> centerLng = const Value.absent(),
+                Value<double?> zoom = const Value.absent(),
+                Value<int> downloadedAt = const Value.absent(),
                 Value<int> updatedAt = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
               }) => BaseMapsCompanion(
-                projectId: projectId,
+                localityId: localityId,
                 geoJson: geoJson,
+                centerLat: centerLat,
+                centerLng: centerLng,
+                zoom: zoom,
+                downloadedAt: downloadedAt,
                 updatedAt: updatedAt,
-                rowid: rowid,
               ),
           createCompanionCallback:
               ({
-                required String projectId,
+                Value<int> localityId = const Value.absent(),
                 required String geoJson,
+                Value<double?> centerLat = const Value.absent(),
+                Value<double?> centerLng = const Value.absent(),
+                Value<double?> zoom = const Value.absent(),
+                required int downloadedAt,
                 required int updatedAt,
-                Value<int> rowid = const Value.absent(),
               }) => BaseMapsCompanion.insert(
-                projectId: projectId,
+                localityId: localityId,
                 geoJson: geoJson,
+                centerLat: centerLat,
+                centerLng: centerLng,
+                zoom: zoom,
+                downloadedAt: downloadedAt,
                 updatedAt: updatedAt,
-                rowid: rowid,
               ),
           withReferenceMapper:
               (p0) =>
@@ -7928,25 +8895,53 @@ typedef $$BaseMapsTableProcessedTableManager =
     >;
 typedef $$ZoningFeaturesTableCreateCompanionBuilder =
     ZoningFeaturesCompanion Function({
-      required String id,
+      required String clientUuid,
+      Value<String?> serverId,
       required String projectId,
+      required int localityId,
+      Value<int?> landUseId,
       required String geomType,
+      Value<int> srid,
       required String coordsJson,
+      Value<double?> areaSqm,
+      Value<double?> lengthM,
       Value<String?> propertiesJson,
       Value<bool> isDraft,
+      Value<bool> isProposed,
+      Value<String> status,
+      Value<String> source,
+      Value<int> version,
+      Value<bool> uploaded,
+      Value<int?> uploadedAt,
+      required int createdAt,
       required int updatedAt,
+      Value<String?> metadataJson,
       Value<bool> dirty,
       Value<int> rowid,
     });
 typedef $$ZoningFeaturesTableUpdateCompanionBuilder =
     ZoningFeaturesCompanion Function({
-      Value<String> id,
+      Value<String> clientUuid,
+      Value<String?> serverId,
       Value<String> projectId,
+      Value<int> localityId,
+      Value<int?> landUseId,
       Value<String> geomType,
+      Value<int> srid,
       Value<String> coordsJson,
+      Value<double?> areaSqm,
+      Value<double?> lengthM,
       Value<String?> propertiesJson,
       Value<bool> isDraft,
+      Value<bool> isProposed,
+      Value<String> status,
+      Value<String> source,
+      Value<int> version,
+      Value<bool> uploaded,
+      Value<int?> uploadedAt,
+      Value<int> createdAt,
       Value<int> updatedAt,
+      Value<String?> metadataJson,
       Value<bool> dirty,
       Value<int> rowid,
     });
@@ -7960,8 +8955,13 @@ class $$ZoningFeaturesTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
+  ColumnFilters<String> get clientUuid => $composableBuilder(
+    column: $table.clientUuid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get serverId => $composableBuilder(
+    column: $table.serverId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -7970,13 +8970,38 @@ class $$ZoningFeaturesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<int> get localityId => $composableBuilder(
+    column: $table.localityId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get landUseId => $composableBuilder(
+    column: $table.landUseId,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get geomType => $composableBuilder(
     column: $table.geomType,
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<int> get srid => $composableBuilder(
+    column: $table.srid,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get coordsJson => $composableBuilder(
     column: $table.coordsJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get areaSqm => $composableBuilder(
+    column: $table.areaSqm,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get lengthM => $composableBuilder(
+    column: $table.lengthM,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -7990,8 +9015,48 @@ class $$ZoningFeaturesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<bool> get isProposed => $composableBuilder(
+    column: $table.isProposed,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get version => $composableBuilder(
+    column: $table.version,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get uploaded => $composableBuilder(
+    column: $table.uploaded,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get uploadedAt => $composableBuilder(
+    column: $table.uploadedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<int> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get metadataJson => $composableBuilder(
+    column: $table.metadataJson,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -8010,8 +9075,13 @@ class $$ZoningFeaturesTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
+  ColumnOrderings<String> get clientUuid => $composableBuilder(
+    column: $table.clientUuid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get serverId => $composableBuilder(
+    column: $table.serverId,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -8020,13 +9090,38 @@ class $$ZoningFeaturesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get localityId => $composableBuilder(
+    column: $table.localityId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get landUseId => $composableBuilder(
+    column: $table.landUseId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get geomType => $composableBuilder(
     column: $table.geomType,
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get srid => $composableBuilder(
+    column: $table.srid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get coordsJson => $composableBuilder(
     column: $table.coordsJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get areaSqm => $composableBuilder(
+    column: $table.areaSqm,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get lengthM => $composableBuilder(
+    column: $table.lengthM,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -8040,8 +9135,48 @@ class $$ZoningFeaturesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get isProposed => $composableBuilder(
+    column: $table.isProposed,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get version => $composableBuilder(
+    column: $table.version,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get uploaded => $composableBuilder(
+    column: $table.uploaded,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get uploadedAt => $composableBuilder(
+    column: $table.uploadedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get metadataJson => $composableBuilder(
+    column: $table.metadataJson,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -8060,19 +9195,41 @@ class $$ZoningFeaturesTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
+  GeneratedColumn<String> get clientUuid => $composableBuilder(
+    column: $table.clientUuid,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get serverId =>
+      $composableBuilder(column: $table.serverId, builder: (column) => column);
 
   GeneratedColumn<String> get projectId =>
       $composableBuilder(column: $table.projectId, builder: (column) => column);
 
+  GeneratedColumn<int> get localityId => $composableBuilder(
+    column: $table.localityId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get landUseId =>
+      $composableBuilder(column: $table.landUseId, builder: (column) => column);
+
   GeneratedColumn<String> get geomType =>
       $composableBuilder(column: $table.geomType, builder: (column) => column);
+
+  GeneratedColumn<int> get srid =>
+      $composableBuilder(column: $table.srid, builder: (column) => column);
 
   GeneratedColumn<String> get coordsJson => $composableBuilder(
     column: $table.coordsJson,
     builder: (column) => column,
   );
+
+  GeneratedColumn<double> get areaSqm =>
+      $composableBuilder(column: $table.areaSqm, builder: (column) => column);
+
+  GeneratedColumn<double> get lengthM =>
+      $composableBuilder(column: $table.lengthM, builder: (column) => column);
 
   GeneratedColumn<String> get propertiesJson => $composableBuilder(
     column: $table.propertiesJson,
@@ -8082,8 +9239,38 @@ class $$ZoningFeaturesTableAnnotationComposer
   GeneratedColumn<bool> get isDraft =>
       $composableBuilder(column: $table.isDraft, builder: (column) => column);
 
+  GeneratedColumn<bool> get isProposed => $composableBuilder(
+    column: $table.isProposed,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get source =>
+      $composableBuilder(column: $table.source, builder: (column) => column);
+
+  GeneratedColumn<int> get version =>
+      $composableBuilder(column: $table.version, builder: (column) => column);
+
+  GeneratedColumn<bool> get uploaded =>
+      $composableBuilder(column: $table.uploaded, builder: (column) => column);
+
+  GeneratedColumn<int> get uploadedAt => $composableBuilder(
+    column: $table.uploadedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
   GeneratedColumn<int> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get metadataJson => $composableBuilder(
+    column: $table.metadataJson,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<bool> get dirty =>
       $composableBuilder(column: $table.dirty, builder: (column) => column);
@@ -8126,45 +9313,101 @@ class $$ZoningFeaturesTableTableManager
               ),
           updateCompanionCallback:
               ({
-                Value<String> id = const Value.absent(),
+                Value<String> clientUuid = const Value.absent(),
+                Value<String?> serverId = const Value.absent(),
                 Value<String> projectId = const Value.absent(),
+                Value<int> localityId = const Value.absent(),
+                Value<int?> landUseId = const Value.absent(),
                 Value<String> geomType = const Value.absent(),
+                Value<int> srid = const Value.absent(),
                 Value<String> coordsJson = const Value.absent(),
+                Value<double?> areaSqm = const Value.absent(),
+                Value<double?> lengthM = const Value.absent(),
                 Value<String?> propertiesJson = const Value.absent(),
                 Value<bool> isDraft = const Value.absent(),
+                Value<bool> isProposed = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String> source = const Value.absent(),
+                Value<int> version = const Value.absent(),
+                Value<bool> uploaded = const Value.absent(),
+                Value<int?> uploadedAt = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
                 Value<int> updatedAt = const Value.absent(),
+                Value<String?> metadataJson = const Value.absent(),
                 Value<bool> dirty = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ZoningFeaturesCompanion(
-                id: id,
+                clientUuid: clientUuid,
+                serverId: serverId,
                 projectId: projectId,
+                localityId: localityId,
+                landUseId: landUseId,
                 geomType: geomType,
+                srid: srid,
                 coordsJson: coordsJson,
+                areaSqm: areaSqm,
+                lengthM: lengthM,
                 propertiesJson: propertiesJson,
                 isDraft: isDraft,
+                isProposed: isProposed,
+                status: status,
+                source: source,
+                version: version,
+                uploaded: uploaded,
+                uploadedAt: uploadedAt,
+                createdAt: createdAt,
                 updatedAt: updatedAt,
+                metadataJson: metadataJson,
                 dirty: dirty,
                 rowid: rowid,
               ),
           createCompanionCallback:
               ({
-                required String id,
+                required String clientUuid,
+                Value<String?> serverId = const Value.absent(),
                 required String projectId,
+                required int localityId,
+                Value<int?> landUseId = const Value.absent(),
                 required String geomType,
+                Value<int> srid = const Value.absent(),
                 required String coordsJson,
+                Value<double?> areaSqm = const Value.absent(),
+                Value<double?> lengthM = const Value.absent(),
                 Value<String?> propertiesJson = const Value.absent(),
                 Value<bool> isDraft = const Value.absent(),
+                Value<bool> isProposed = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String> source = const Value.absent(),
+                Value<int> version = const Value.absent(),
+                Value<bool> uploaded = const Value.absent(),
+                Value<int?> uploadedAt = const Value.absent(),
+                required int createdAt,
                 required int updatedAt,
+                Value<String?> metadataJson = const Value.absent(),
                 Value<bool> dirty = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ZoningFeaturesCompanion.insert(
-                id: id,
+                clientUuid: clientUuid,
+                serverId: serverId,
                 projectId: projectId,
+                localityId: localityId,
+                landUseId: landUseId,
                 geomType: geomType,
+                srid: srid,
                 coordsJson: coordsJson,
+                areaSqm: areaSqm,
+                lengthM: lengthM,
                 propertiesJson: propertiesJson,
                 isDraft: isDraft,
+                isProposed: isProposed,
+                status: status,
+                source: source,
+                version: version,
+                uploaded: uploaded,
+                uploadedAt: uploadedAt,
+                createdAt: createdAt,
                 updatedAt: updatedAt,
+                metadataJson: metadataJson,
                 dirty: dirty,
                 rowid: rowid,
               ),
