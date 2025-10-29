@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nluis_app/shared/widgets/form/form_completion_state.dart';
@@ -97,8 +98,9 @@ class _QuestionnaireFormPageState extends ConsumerState<QuestionnaireFormPage> {
         try {
           final formData = jsonDecode(response.answersJson);
           if (formData is Map<String, dynamic>) {
+            final deserializedData = _deserializeFormDataFromStorage(Map<String, dynamic>.from(formData));
             setState(() {
-              _formDataByFormSlug[response.formSlug ?? ''] = Map<String, dynamic>.from(formData);
+              _formDataByFormSlug[response.formSlug ?? ''] = deserializedData;
             });
           }
         } catch (e) {
@@ -132,6 +134,7 @@ class _QuestionnaireFormPageState extends ConsumerState<QuestionnaireFormPage> {
     if (value is String) return value.trim().isNotEmpty;
     if (value is num) return true;
     if (value is DateTime) return true;
+    if (value is File) return true; // File objects are always meaningful
     if (value is List) return value.any(_isMeaningfulValue);
     if (value is Map<String, dynamic>) {
       if (value.containsKey('rows') && value['rows'] is List) {
@@ -158,6 +161,7 @@ class _QuestionnaireFormPageState extends ConsumerState<QuestionnaireFormPage> {
   dynamic _serializeValueForStorage(dynamic value) {
     if (value == null) return null;
     if (value is DateTime) return value.toIso8601String();
+    if (value is File) return value.path; // Convert File to path string
     if (value is List) {
       return value.map(_serializeValueForStorage).toList();
     }
@@ -166,6 +170,55 @@ class _QuestionnaireFormPageState extends ConsumerState<QuestionnaireFormPage> {
         (key, item) => MapEntry(
           key,
           _serializeValueForStorage(item),
+        ),
+      );
+    }
+    return value;
+  }
+
+  Map<String, dynamic> _deserializeFormDataFromStorage(
+    Map<String, dynamic> formData,
+  ) {
+    return formData.map(
+      (key, value) => MapEntry(key, _deserializeValueFromStorage(value)),
+    );
+  }
+
+  dynamic _deserializeValueFromStorage(dynamic value) {
+    if (value == null) return null;
+    if (value is String) {
+      // Check if it's a DateTime string
+      if (value.contains('T') && value.contains('Z')) {
+        try {
+          return DateTime.parse(value);
+        } catch (e) {
+          // If parsing fails, check if it's a file path
+          if (value.startsWith('/') && !value.startsWith('http')) {
+            final file = File(value);
+            if (file.existsSync()) {
+              return file;
+            }
+          }
+          return value;
+        }
+      }
+      // Check if it's a file path
+      if (value.startsWith('/') && !value.startsWith('http')) {
+        final file = File(value);
+        if (file.existsSync()) {
+          return file;
+        }
+      }
+      return value;
+    }
+    if (value is List) {
+      return value.map(_deserializeValueFromStorage).toList();
+    }
+    if (value is Map) {
+      return value.map(
+        (key, item) => MapEntry(
+          key,
+          _deserializeValueFromStorage(item),
         ),
       );
     }
@@ -199,7 +252,13 @@ class _QuestionnaireFormPageState extends ConsumerState<QuestionnaireFormPage> {
         if (value is String) return value.trim().isNotEmpty;
         return false;
       case 'file':
-        return value != null;
+      case 'document':
+      case 'image':
+      case 'camera':
+      case 'photo':
+        if (value is File) return value.existsSync();
+        if (value is String) return value.trim().isNotEmpty && File(value).existsSync();
+        return false;
       case 'table':
         if (value is Map<String, dynamic>) {
           final rows = value['rows'];
