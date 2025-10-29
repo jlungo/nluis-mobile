@@ -171,7 +171,7 @@ class ProjectRepositoryImpl implements ProjectRepository {
               id: drift.Value(project.id),
               name: drift.Value(project.name),
               localityId: drift.Value(
-                int.tryParse(project.id) ?? (existingProject?.localityId ?? 0),
+                int.tryParse(project.localityId) ?? (existingProject?.localityId ?? 0),
               ),
               status: drift.Value(project.status),
               assignedOn: drift.Value(assignedTimestamp),
@@ -217,6 +217,7 @@ class ProjectRepositoryImpl implements ProjectRepository {
           (record) => ProjectModel(
             id: record.id,
             name: record.name,
+            localityId: record.localityId.toString(),
             localityName: record.name,
             parentProjectName: '',
             organization: '',
