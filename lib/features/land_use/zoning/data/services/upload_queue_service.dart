@@ -204,9 +204,7 @@ class UploadQueueService {
     while (attempts < maxRetries) {
       try {
         // Attempt upload
-        final response = feature.serverId != null
-            ? await _apiService.updateZone(feature)
-            : await _apiService.createZone(feature);
+        final response = await _apiService.createZone(feature);
 
         // Success
         _retryAttempts.remove(clientUuid);
