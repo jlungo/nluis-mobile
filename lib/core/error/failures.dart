@@ -27,3 +27,11 @@ class AuthFailure extends Failure {
 class ValidationFailure extends Failure {
   const ValidationFailure(super.message);
 }
+
+class CalculationFailure extends Failure {
+  const CalculationFailure(super.message);
+}
+
+class DeviceFailure extends Failure {
+  const DeviceFailure(super.message);
+}
