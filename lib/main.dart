@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
+import 'package:path_provider/path_provider.dart';
 import 'app/router/app_router.dart';
 import 'shared/theme/app_theme.dart';
 import 'shared/providers/theme_provider.dart';
@@ -11,6 +13,10 @@ import 'features/auth/presentation/widgets/auth_session_listener.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Initialize tile caching
+  final cacheDir = await getApplicationDocumentsDirectory();
+  await FMTCObjectBoxBackend().initialise(rootDirectory: cacheDir.path);
+  
   final sharedPreferences = await SharedPreferences.getInstance();
 
   runApp(
