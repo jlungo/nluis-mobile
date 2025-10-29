@@ -128,38 +128,40 @@ class _AppShellState extends ConsumerState<AppShell> {
 
     return Scaffold(
       body: widget.child,
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
-        child: SafeArea(
-          top: false,
-          child: BottomBarDefault(
-            items: _buildTabItems(theme, draftsBadge),
-            indexSelected: currentIndex,
-            onTap: (index) => _onDestinationSelected(context, index),
-            backgroundColor: backgroundColor,
-            boxShadow: [
-              BoxShadow(
-                color: shadowColor,
-                blurRadius: 20,
-                offset: const Offset(0, -4),
+      bottomNavigationBar: shouldShowBottomBar
+          ? Padding(
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+              child: SafeArea(
+                top: false,
+                child: BottomBarDefault(
+                  items: _buildTabItems(theme, draftsBadge),
+                  indexSelected: currentIndex,
+                  onTap: (index) => _onDestinationSelected(context, index),
+                  backgroundColor: backgroundColor,
+                  boxShadow: [
+                    BoxShadow(
+                      color: shadowColor,
+                      blurRadius: 20,
+                      offset: const Offset(0, -4),
+                    ),
+                  ],
+                  borderRadius: BorderRadius.circular(20),
+                  color: unselectedColor,
+                  colorSelected: selectedColor,
+                  iconSize: 20,
+                  titleStyle: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 0.5,
+                  ),
+                  top: 16,
+                  countStyle: const CountStyle(size: 16),
+                  duration: const Duration(milliseconds: 220),
+                  curve: Curves.easeInOut,
+                  enableShadow: false,
+                ),
               ),
-            ],
-            borderRadius: BorderRadius.circular(20),
-            color: unselectedColor,
-            colorSelected: selectedColor,
-            iconSize: 20,
-            titleStyle: const TextStyle(
-              fontWeight: FontWeight.w500,
-              letterSpacing: 0.5,
-            ),
-            top: 16,
-            countStyle: const CountStyle(size: 16),
-            duration: const Duration(milliseconds: 220),
-            curve: Curves.easeInOut,
-            enableShadow: false,
-          ),
-        ),
-      ),
+            )
+          : null,
     );
   }
 }
