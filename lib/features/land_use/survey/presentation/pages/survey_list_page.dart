@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
 
 import 'questionnaire_form_page.dart';
+import '../../../../../shared/widgets/page_empty_state.dart';
 import '../../../../auth/presentation/providers/auth_providers.dart';
 import '../../../../../core/network/network_info.dart';
 import '../../../../../data/local/draft_provider.dart';
@@ -19,6 +20,8 @@ import '../../../../../shared/widgets/app_drawer.dart';
 import '../../../../../shared/widgets/custom_app_bar.dart';
 import '../../../../../shared/widgets/questionnaire_list_bottom_sheet.dart';
 import '../../../../../shared/widgets/offline_banner.dart';
+import '../models/survey_item.dart';
+import '../widgets/survey_card.dart';
 
 class SurveyListPage extends ConsumerStatefulWidget {
   final String projectId;
@@ -30,10 +33,8 @@ class SurveyListPage extends ConsumerStatefulWidget {
   ConsumerState<SurveyListPage> createState() => _SurveyListPageState();
 }
 
-enum UploadStatus { idle, uploading, success, failure }
-
 class _SurveyListPageState extends ConsumerState<SurveyListPage> {
-  List<_SurveyItem> _surveys = [];
+  List<SurveyItem> _surveys = [];
   bool _isLoading = true;
   bool _isUploading = false;
   final Set<String> _selectedSurveyIds = {};
@@ -94,7 +95,7 @@ class _SurveyListPageState extends ConsumerState<SurveyListPage> {
       }
 
       final Map<String, String> questionnaireNameCache = {};
-      final List<_SurveyItem> surveys = [];
+      final List<SurveyItem> surveys = [];
 
       for (final entry in grouped.entries) {
         final surveyId = entry.key;
@@ -129,7 +130,7 @@ class _SurveyListPageState extends ConsumerState<SurveyListPage> {
             overrideStatus == null ? null : _statusErrors[surveyId];
 
         surveys.add(
-          _SurveyItem(
+          SurveyItem(
             surveyId: surveyId,
             projectId: firstResponse.projectId,
             questionnaireSlug: questionnaireSlug,
@@ -188,17 +189,19 @@ class _SurveyListPageState extends ConsumerState<SurveyListPage> {
       projectName: widget.projectName ?? 'Project',
       module: 'land-uses',
       onQuestionnaireSelected: (questionnaireSlug) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder:
-                (_) => QuestionnaireFormPage(
-                  questionnaireSlug: questionnaireSlug,
-                  projectId: widget.projectId,
-                  projectName: widget.projectName ?? 'Project',
-                ),
-          ),
-        ).then((_) => _loadSurveys()); // Refresh when returning
+        // TODO: Remove Using context.push since QuestionnaireFormPage and define goRoute 
+        Navigator.of(context)
+            .push(
+              MaterialPageRoute(
+                builder:
+                    (_) => QuestionnaireFormPage(
+                      questionnaireSlug: questionnaireSlug,
+                      projectId: widget.projectId,
+                      projectName: widget.projectName ?? 'Project',
+                    ),
+              ),
+            )
+            .then((_) => _loadSurveys()); // Refresh when returning
       },
     );
   }
@@ -284,13 +287,15 @@ class _SurveyListPageState extends ConsumerState<SurveyListPage> {
             );
 
             final formData = await _buildFormData(
-              surveyId: surveyId,
+              // surveyId: surveyId,
               questionnaireSlug: response.questionnaireSlug,
               formSlug: formSlug,
               projectLocalityId: projectLocalityId,
               answers: answers,
               fieldTypes: fieldTypes,
             );
+
+            // print("===formData: ${jsonEncode(formData)}");
 
             await dioClient.post(
               '/collect/questionnaire/submit-form-data/',
@@ -299,21 +304,20 @@ class _SurveyListPageState extends ConsumerState<SurveyListPage> {
             );
           }
 
-          final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-          await (database.update(database.surveyResponses)
-                ..where((tbl) => tbl.surveyId.equals(surveyId)))
-              .write(
-                SurveyResponsesCompanion(
-                  isDraft: const drift.Value(false),
-                  dirty: const drift.Value(false),
-                  updatedAt: drift.Value(now),
-                ),
-              );
+          // final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+          // await (database.update(database.surveyResponses)
+          //   ..where((tbl) => tbl.surveyId.equals(surveyId))).write(
+          //   SurveyResponsesCompanion(
+          //     isDraft: const drift.Value(false),
+          //     dirty: const drift.Value(false),
+          //     updatedAt: drift.Value(now),
+          //   ),
+          // );
 
-          successes.add(surveyId);
-          idsToUnselect.add(surveyId);
-          _statusOverrides.remove(surveyId);
-          _statusErrors.remove(surveyId);
+          // successes.add(surveyId);
+          // idsToUnselect.add(surveyId);
+          // _statusOverrides.remove(surveyId);
+          // _statusErrors.remove(surveyId);
         } catch (error) {
           final errorMessage = _mapUploadError(error);
           failures[surveyId] = errorMessage;
@@ -335,9 +339,7 @@ class _SurveyListPageState extends ConsumerState<SurveyListPage> {
     if (successes.isNotEmpty && mounted) {
       setState(() {
         _uploadedCount += successes.length;
-        _surveys.removeWhere(
-          (survey) => successes.contains(survey.surveyId),
-        );
+        _surveys.removeWhere((survey) => successes.contains(survey.surveyId));
       });
     }
 
@@ -402,7 +404,7 @@ class _SurveyListPageState extends ConsumerState<SurveyListPage> {
   }
 
   Future<FormData> _buildFormData({
-    required String surveyId,
+    // required String surveyId,
     required String? questionnaireSlug,
     required String formSlug,
     required String projectLocalityId,
@@ -413,7 +415,7 @@ class _SurveyListPageState extends ConsumerState<SurveyListPage> {
 
     formData.fields.add(MapEntry('project_locality_id', projectLocalityId));
     formData.fields.add(MapEntry('form_slug', formSlug));
-    formData.fields.add(MapEntry('survey_id', surveyId));
+    // formData.fields.add(MapEntry('survey_id', surveyId));
 
     if (questionnaireSlug != null && questionnaireSlug.isNotEmpty) {
       formData.fields.add(MapEntry('questionnaire_slug', questionnaireSlug));
@@ -534,8 +536,8 @@ class _SurveyListPageState extends ConsumerState<SurveyListPage> {
                           lastError: lastError,
                         )
                         : survey,
-          )
-          .toList();
+              )
+              .toList();
     });
   }
 
@@ -550,65 +552,6 @@ class _SurveyListPageState extends ConsumerState<SurveyListPage> {
     await _loadSurveys();
   }
 
-  Widget _buildEmptyState(bool isDark) {
-    return ListView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(AppConstants.spacingLg),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(32),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      AppColors.info.withValues(alpha: 0.1),
-                      AppColors.info.withValues(alpha: 0.05),
-                    ],
-                  ),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.info.withValues(alpha: 0.1),
-                      blurRadius: 20,
-                      spreadRadius: 5,
-                    ),
-                  ],
-                ),
-                child: Icon(
-                  Icons.assignment_late_outlined,
-                  size: 80,
-                  color: AppColors.info,
-                ),
-              ),
-              const SizedBox(height: 32),
-              Text(
-                'Hakuna Dodoso Lililojazwa',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Dodoso zitaonyeshwa hapa',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color:
-                          isDark
-                              ? AppColors.darkTextSecondary
-                              : AppColors.textSecondary,
-                    ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildSurveyList(bool isDark) {
     return ListView.builder(
       physics: const AlwaysScrollableScrollPhysics(),
@@ -618,7 +561,7 @@ class _SurveyListPageState extends ConsumerState<SurveyListPage> {
         final survey = _surveys[index];
         final isSelected = _selectedSurveyIds.contains(survey.surveyId);
 
-        return _SurveyCard(
+        return SurveyCard(
           survey: survey,
           projectName: widget.projectName ?? 'Project',
           isDark: isDark,
@@ -635,18 +578,19 @@ class _SurveyListPageState extends ConsumerState<SurveyListPage> {
             });
           },
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder:
-                    (_) => QuestionnaireFormPage(
-                      questionnaireSlug: survey.questionnaireSlug,
-                      projectId: widget.projectId,
-                      projectName: widget.projectName ?? 'Project',
-                      surveyId: survey.surveyId,
-                    ),
-              ),
-            ).then((_) => _loadSurveys());
+            Navigator.of(context)
+                .push(
+                  MaterialPageRoute(
+                    builder:
+                        (_) => QuestionnaireFormPage(
+                          questionnaireSlug: survey.questionnaireSlug,
+                          projectId: widget.projectId,
+                          projectName: widget.projectName ?? 'Project',
+                          surveyId: survey.surveyId,
+                        ),
+                  ),
+                )
+                .then((_) => _loadSurveys());
           },
           onRetry:
               survey.uploadStatus == UploadStatus.failure
@@ -702,117 +646,138 @@ class _SurveyListPageState extends ConsumerState<SurveyListPage> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final onlineStatus = ref.watch(onlineStatusProvider);
-    final isOnline =
-        onlineStatus.maybeWhen(data: (value) => value, orElse: () => true);
+    final isOnline = onlineStatus.maybeWhen(
+      data: (value) => value,
+      orElse: () => true,
+    );
 
     return Scaffold(
-      appBar: const CustomAppBar(hasNotification: true),
+      appBar: const CustomAppBar(
+        title: 'Dodoso Zilizojazwa',
+        showBackButton: true,
+        showNotifications: false,
+        showProfile: false,
+      ),
       drawer: const AppDrawer(),
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                if (!isOnline) const OfflineBanner(),
-                if (_surveys.isEmpty)
-                  Expanded(
-                    child: isOnline
-                        ? RefreshIndicator(
-                            onRefresh: () => _handleRefresh(isOnline),
-                            child: _buildEmptyState(isDark),
-                          )
-                        : _buildEmptyState(isDark),
-                  )
-                else ...[
-                  if (_surveys.any((s) => !s.isDraft))
-                    Container(
-                      padding: const EdgeInsets.all(AppConstants.spacingMd),
-                      decoration: BoxDecoration(
-                        color: isDark ? AppColors.darkSurface : Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.05),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              _selectedSurveyIds.isEmpty
-                                  ? 'Chagua dodoso za kupakia'
-                                  : '${_selectedSurveyIds.length} zilizochaguliwa',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color:
-                                    isDark
-                                        ? AppColors.darkTextSecondary
-                                        : AppColors.textSecondary,
-                              ),
-                            ),
-                          ),
-                          if (_uploadedCount > 0)
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                right: AppConstants.spacingSm,
-                              ),
-                              child: _StatusChip(
-                                label: 'Zimepakiwa: $_uploadedCount',
-                                color: AppColors.success,
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : Column(
+                children: [
+                  if (!isOnline) const OfflineBanner(),
+                  if (_surveys.isEmpty)
+                    Expanded(
+                      child:
+                          isOnline
+                              ? RefreshIndicator(
+                                onRefresh: () => _handleRefresh(isOnline),
+                                child: EmptyPageState(
+                                  context: context,
+                                  isDark: isDark,
+                                  heading: 'Hakuna Dodoso Lililojazwa',
+                                  description: 'Dodoso zitaonyeshwa hapa',
+                                ),
+                              )
+                              : EmptyPageState(
+                                context: context,
                                 isDark: isDark,
+                                heading: 'Hakuna Dodoso Lililojazwa',
+                                description: 'Dodoso zitaonyeshwa hapa',
+                              ),
+                    )
+                  else ...[
+                    if (_surveys.any((s) => !s.isDraft))
+                      Container(
+                        padding: const EdgeInsets.all(AppConstants.spacingMd),
+                        decoration: BoxDecoration(
+                          color: isDark ? AppColors.darkSurface : Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.05),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                _selectedSurveyIds.isEmpty
+                                    ? 'Chagua dodoso za kupakia'
+                                    : '${_selectedSurveyIds.length} zilizochaguliwa',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color:
+                                      isDark
+                                          ? AppColors.darkTextSecondary
+                                          : AppColors.textSecondary,
+                                ),
                               ),
                             ),
-                          ElevatedButton(
-                            onPressed:
-                                _isUploading ? null : _uploadSelectedSurveys,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primary,
-                              foregroundColor: Colors.white,
-                              elevation: 0,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: AppConstants.spacingMd,
-                                vertical: 8,
+                            if (_uploadedCount > 0)
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  right: AppConstants.spacingSm,
+                                ),
+                                child: StatusChip(
+                                  label: 'Zimepakiwa: $_uploadedCount',
+                                  color: AppColors.success,
+                                  isDark: isDark,
+                                ),
                               ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                if (_isUploading)
-                                  const SizedBox(
-                                    width: 16,
-                                    height: 16,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.white,
+                            ElevatedButton(
+                              onPressed:
+                                  _isUploading ? null : _uploadSelectedSurveys,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primary,
+                                foregroundColor: Colors.white,
+                                elevation: 0,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: AppConstants.spacingMd,
+                                  vertical: 8,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (_isUploading)
+                                    const SizedBox(
+                                      width: 16,
+                                      height: 16,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                              Colors.white,
+                                            ),
                                       ),
+                                    )
+                                  else
+                                    const Icon(
+                                      Icons.cloud_upload_outlined,
+                                      size: 20,
                                     ),
-                                  )
-                                else
-                                  const Icon(
-                                    Icons.cloud_upload_outlined,
-                                    size: 20,
-                                  ),
-                                const SizedBox(width: AppConstants.spacingXs),
-                                Text(_isUploading ? 'Inapakia...' : 'Pakia'),
-                              ],
+                                  const SizedBox(width: AppConstants.spacingXs),
+                                  Text(_isUploading ? 'Inapakia...' : 'Pakia'),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
+                    Expanded(
+                      child:
+                          isOnline
+                              ? RefreshIndicator(
+                                onRefresh: () => _handleRefresh(isOnline),
+                                child: _buildSurveyList(isDark),
+                              )
+                              : _buildSurveyList(isDark),
                     ),
-                  Expanded(
-                    child: isOnline
-                        ? RefreshIndicator(
-                            onRefresh: () => _handleRefresh(isOnline),
-                            child: _buildSurveyList(isDark),
-                          )
-                        : _buildSurveyList(isDark),
-                  ),
+                  ],
                 ],
-              ],
-            ),
+              ),
       floatingActionButton: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -851,364 +816,6 @@ class _SurveyListPageState extends ConsumerState<SurveyListPage> {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _SurveyItem {
-  final String surveyId;
-  final String projectId;
-  final String questionnaireSlug;
-  final String questionnaireName;
-  final bool isDraft;
-  final bool isDirty;
-  final int formsCount;
-  final String savedDate;
-  final int updatedAt;
-  final UploadStatus uploadStatus;
-  final String? lastError;
-
-  _SurveyItem({
-    required this.surveyId,
-    required this.projectId,
-    required this.questionnaireSlug,
-    required this.questionnaireName,
-    required this.isDraft,
-    required this.isDirty,
-    required this.formsCount,
-    required this.savedDate,
-    required this.updatedAt,
-    this.uploadStatus = UploadStatus.idle,
-    this.lastError,
-  });
-
-  _SurveyItem copyWith({
-    String? questionnaireName,
-    bool? isDraft,
-    bool? isDirty,
-    int? formsCount,
-    String? savedDate,
-    int? updatedAt,
-    UploadStatus? uploadStatus,
-    String? Function()? lastError,
-  }) {
-    return _SurveyItem(
-      surveyId: surveyId,
-      projectId: projectId,
-      questionnaireSlug: questionnaireSlug,
-      questionnaireName: questionnaireName ?? this.questionnaireName,
-      isDraft: isDraft ?? this.isDraft,
-      isDirty: isDirty ?? this.isDirty,
-      formsCount: formsCount ?? this.formsCount,
-      savedDate: savedDate ?? this.savedDate,
-      updatedAt: updatedAt ?? this.updatedAt,
-      uploadStatus: uploadStatus ?? this.uploadStatus,
-      lastError: lastError != null ? lastError() : this.lastError,
-    );
-  }
-}
-
-class _SurveyCard extends StatelessWidget {
-  final _SurveyItem survey;
-  final String projectName;
-  final bool isDark;
-  final bool isSelected;
-  final Function(bool) onSelectionChanged;
-  final VoidCallback onTap;
-  final VoidCallback? onRetry;
-
-  const _SurveyCard({
-    required this.survey,
-    required this.projectName,
-    required this.isDark,
-    required this.isSelected,
-    required this.onSelectionChanged,
-    required this.onTap,
-    this.onRetry,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isUploading = survey.uploadStatus == UploadStatus.uploading;
-    final canSelect = !survey.isDraft && !isUploading;
-
-    Color statusColor;
-    IconData statusIcon;
-
-    if (survey.isDraft) {
-      statusColor = AppColors.warning;
-      statusIcon = Icons.drafts;
-    } else {
-      switch (survey.uploadStatus) {
-        case UploadStatus.success:
-          statusColor = AppColors.success;
-          statusIcon = Icons.cloud_done;
-          break;
-        case UploadStatus.failure:
-          statusColor = AppColors.error;
-          statusIcon = Icons.error_outline;
-          break;
-        case UploadStatus.uploading:
-          statusColor = AppColors.info;
-          statusIcon = Icons.cloud_upload;
-          break;
-        case UploadStatus.idle:
-          statusColor = survey.isDirty ? AppColors.info : AppColors.success;
-          statusIcon =
-              survey.isDirty ? Icons.pending_outlined : Icons.check_circle;
-      }
-    }
-
-    Widget buildStatusIndicator() {
-      if (survey.isDraft) {
-        return _StatusChip(
-          label: 'Rasimu',
-          color: AppColors.warning,
-          isDark: isDark,
-        );
-      }
-
-      switch (survey.uploadStatus) {
-        case UploadStatus.uploading:
-          return const SizedBox(
-            width: 20,
-            height: 20,
-            child: CircularProgressIndicator(strokeWidth: 2),
-          );
-        case UploadStatus.success:
-          return _StatusChip(
-            label: 'Imepakiwa',
-            color: AppColors.success,
-            isDark: isDark,
-          );
-        case UploadStatus.failure:
-          return _StatusChip(
-            label: 'Imeshindikana',
-            color: AppColors.error,
-            isDark: isDark,
-          );
-        case UploadStatus.idle:
-          return _StatusChip(
-            label: survey.isDirty ? 'Haijapakiwa' : 'Imehifadhiwa',
-            color: survey.isDirty ? AppColors.info : AppColors.success,
-            isDark: isDark,
-          );
-      }
-    }
-
-    final statusIndicator = buildStatusIndicator();
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(AppConstants.radiusMd),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: AppConstants.spacingSm),
-        padding: const EdgeInsets.all(AppConstants.spacingMd),
-        decoration: BoxDecoration(
-          color: isDark ? AppColors.darkSurface : Colors.white,
-          borderRadius: BorderRadius.circular(AppConstants.radiusMd),
-          border:
-              isSelected
-                  ? Border.all(color: AppColors.primary, width: 1.6)
-                  : null,
-          boxShadow: [
-            BoxShadow(
-              color:
-                  isDark
-                      ? Colors.black.withValues(alpha: 0.18)
-                      : Colors.black.withValues(alpha: 0.04),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              width: 36,
-              child:
-                  survey.isDraft
-                      ? const SizedBox.shrink()
-                      : Checkbox(
-                          value: isSelected,
-                          onChanged:
-                              canSelect
-                                  ? (value) =>
-                                      onSelectionChanged(value ?? false)
-                                  : null,
-                          visualDensity: VisualDensity.compact,
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                          activeColor: AppColors.primary,
-                        ),
-            ),
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: statusColor.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(AppConstants.radiusSm),
-              ),
-              child: Icon(statusIcon, color: statusColor, size: 22),
-            ),
-            const SizedBox(width: AppConstants.spacingSm),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          survey.questionnaireName,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color:
-                                isDark
-                                    ? AppColors.darkTextPrimary
-                                    : AppColors.textPrimary,
-                          ),
-                        ),
-                      ),
-                      statusIndicator,
-                    ],
-                  ),
-                  const SizedBox(height: AppConstants.spacingXs),
-                  Wrap(
-                    spacing: AppConstants.spacingSm,
-                    runSpacing: AppConstants.spacingXs,
-                    children: [
-                      _MetaItem(
-                        icon: Icons.folder_outlined,
-                        label: projectName,
-                        isDark: isDark,
-                      ),
-                      _MetaItem(
-                        icon: Icons.assignment_outlined,
-                        label: '${survey.formsCount} fomu',
-                        isDark: isDark,
-                      ),
-                      _MetaItem(
-                        icon: Icons.schedule,
-                        label: survey.savedDate,
-                        isDark: isDark,
-                      ),
-                    ],
-                  ),
-                  if (survey.uploadStatus == UploadStatus.failure &&
-                      survey.lastError != null)
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        top: AppConstants.spacingXs,
-                      ),
-                      child: Text(
-                        survey.lastError!,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: AppColors.error,
-                        ),
-                      ),
-                    ),
-                  if (survey.uploadStatus == UploadStatus.failure &&
-                      onRetry != null)
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        top: AppConstants.spacingXs,
-                      ),
-                      child: TextButton(
-                        onPressed: onRetry,
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.zero,
-                          minimumSize: const Size(0, 0),
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        child: const Text('Jaribu tena'),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _StatusChip extends StatelessWidget {
-  final String label;
-  final Color color;
-  final bool isDark;
-
-  const _StatusChip({
-    required this.label,
-    required this.color,
-    required this.isDark,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppConstants.spacingSm,
-        vertical: AppConstants.spacingXs,
-      ),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: isDark ? 0.2 : 0.12),
-        borderRadius: BorderRadius.circular(AppConstants.radiusSm),
-      ),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: color,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-  }
-}
-
-class _MetaItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final bool isDark;
-
-  const _MetaItem({
-    required this.icon,
-    required this.label,
-    required this.isDark,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final color =
-        isDark ? AppColors.darkTextSecondary : AppColors.textSecondary;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppConstants.spacingSm,
-        vertical: 6,
-      ),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(AppConstants.radiusSm),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14, color: color),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
       ),
     );
   }
