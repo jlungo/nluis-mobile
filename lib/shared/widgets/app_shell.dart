@@ -34,8 +34,8 @@ class _AppShellState extends ConsumerState<AppShell> {
     _BottomNavDestination(
       icon: Icons.library_books_outlined,
       label: 'Madodoso',
-      routeName: 'drafts',
-      locationMatchers: ['/drafts'],
+      routeName: 'madodoso',
+      locationMatchers: ['/madodoso'],
     ),
     _BottomNavDestination(
       icon: Icons.person_outline_rounded,
