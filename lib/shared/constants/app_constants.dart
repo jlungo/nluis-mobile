@@ -51,6 +51,32 @@ class AppConstants {
   static const String syncStatusInProgress = 'in_progress';
   static const String syncStatusSuccess = 'success';
   static const String syncStatusFailed = 'failed';
+
+  // Map Configuration
+  static const double mapDefaultZoom = 15.0;
+  static const double mapMinZoom = 8.0;
+  static const double mapMaxZoom = 20.0;
+  static const double mapLocationZoom = 16.0;
+  static const double mapBoundaryFitPadding = 50.0;
+  static const int mapTileCacheDurationDays = 30;
+  static const int mapMaxTileCacheSize = 500; // MB
+  
+  // Map Tile URLs
+  static const String mapTileStandard = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+  static const String mapTileSatellite = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+  static const String mapTileDark = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png';
+  static const String mapTileLabels = 'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}';
+  
+  // Map UI
+  static const double mapControlSize = 48.0;
+  static const double mapLocationIndicatorSize = 56.0;
+  static const double mapMarkerSize = 20.0;
+  static const double mapMarkerBorderWidth = 2.0;
+  static const double mapPolylineWidth = 3.0;
+  static const double mapPolygonBorderWidth = 2.0;
+  static const double mapPolygonAlpha = 0.3;
+  static const int mapTypeBannerDuration = 1200; // milliseconds
+  static const int mapFadeDuration = 250; // milliseconds
 }
 
 class ModuleType {
