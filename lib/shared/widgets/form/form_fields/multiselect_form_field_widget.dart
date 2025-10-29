@@ -30,56 +30,144 @@ class MultiselectFormFieldWidget extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final selectedValues = List<String>.from(values);
+    String searchQuery = '';
 
     DialogUtils.showCustomDialog<void>(
       context,
       builder: (dialogContext) => StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
-          title: Text(label),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: options.map((option) {
-                final isSelected = selectedValues.contains(option.value);
-                return CheckboxListTile(
-                  title: Text(option.textLabel),
-                  value: isSelected,
-                  onChanged: (bool? checked) {
-                    setState(() {
-                      if (checked == true) {
-                        selectedValues.add(option.value);
-                      } else {
-                        selectedValues.remove(option.value);
-                      }
-                    });
-                  },
-                  activeColor: isDark ? AppColors.darkPrimary : AppColors.primary,
-                );
-              }).toList(),
+        builder: (context, setState) {
+          // Filter options based on search query
+          final filteredOptions = searchQuery.isEmpty
+              ? options
+              : options.where((option) =>
+                  option.textLabel.toLowerCase().contains(searchQuery.toLowerCase()) ||
+                  option.value.toLowerCase().contains(searchQuery.toLowerCase())
+                ).toList();
+
+          return AlertDialog(
+            title: Text(
+              label,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text(
-                'Ghairi',
-                style: TextStyle(
-                  color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+            content: SizedBox(
+              width: double.maxFinite,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                // Search functionality for large lists
+                if (options.length > 5) ...[
+                  TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Tafuta...',
+                      prefixIcon: const Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(AppConstants.radiusMd),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: AppConstants.spacingMd,
+                        vertical: AppConstants.spacingSm,
+                      ),
+                    ),
+                    onChanged: (query) {
+                      setState(() {
+                        searchQuery = query;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: AppConstants.spacingMd),
+                ],
+                // Select All / Deselect All buttons
+                Row(
+                  children: [
+                    TextButton.icon(
+                      onPressed: () {
+                        setState(() {
+                          selectedValues.clear();
+                          selectedValues.addAll(filteredOptions.map((o) => o.value));
+                        });
+                      },
+                      icon: const Icon(Icons.select_all, size: 16),
+                      label: const Text('Chagua vyote'),
+                      style: TextButton.styleFrom(
+                        foregroundColor: isDark ? AppColors.darkPrimary : AppColors.primary,
+                      ),
+                    ),
+                    const Spacer(),
+                    TextButton.icon(
+                      onPressed: () {
+                        setState(() {
+                          selectedValues.clear();
+                        });
+                      },
+                      icon: const Icon(Icons.clear_all, size: 16),
+                      label: const Text('Ondoa vyote'),
+                      style: TextButton.styleFrom(
+                        foregroundColor: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+                Divider(color: isDark ? AppColors.darkDivider : AppColors.divider),
+                // Options list
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: filteredOptions.map((option) {
+                        final isSelected = selectedValues.contains(option.value);
+                        return CheckboxListTile(
+                          title: Text(
+                            option.textLabel,
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                          value: isSelected,
+                          onChanged: (bool? checked) {
+                            setState(() {
+                              if (checked == true) {
+                                if (!selectedValues.contains(option.value)) {
+                                  selectedValues.add(option.value);
+                                }
+                              } else {
+                                selectedValues.remove(option.value);
+                              }
+                            });
+                          },
+                          activeColor: isDark ? AppColors.darkPrimary : AppColors.primary,
+                          controlAffinity: ListTileControlAffinity.leading,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
+              ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: Text(
+                  'Ghairi',
+                  style: TextStyle(
+                    color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                  ),
                 ),
               ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                onChanged!(selectedValues);
-                Navigator.of(dialogContext).pop();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: isDark ? AppColors.darkPrimary : AppColors.primary,
+              ElevatedButton(
+                onPressed: () {
+                  onChanged!(selectedValues);
+                  Navigator.of(dialogContext).pop();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isDark ? AppColors.darkPrimary : AppColors.primary,
+                  foregroundColor: Colors.white,
+                ),
+                child: Text('Hifadhi (${selectedValues.length})'),
               ),
-              child: const Text('Hifadhi'),
-            ),
           ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -90,7 +178,13 @@ class MultiselectFormFieldWidget extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     final selectedLabels = values
-        .map((v) => options.firstWhere((o) => o.value == v, orElse: () => SelectOption(textLabel: v, value: v, position: 0)).textLabel)
+        .map((v) {
+          final option = options.cast<SelectOption?>().firstWhere(
+            (o) => o?.value == v, 
+            orElse: () => null,
+          );
+          return option?.textLabel ?? v;
+        })
         .join(', ');
 
     return Column(
@@ -162,10 +256,10 @@ class MultiselectFormFieldWidget extends StatelessWidget {
             spacing: 8,
             runSpacing: 8,
             children: values.map((value) {
-              final option = options.firstWhere(
-                (o) => o.value == value,
-                orElse: () => SelectOption(textLabel: value, value: value, position: 0),
-              );
+              final option = options.cast<SelectOption?>().firstWhere(
+                (o) => o?.value == value,
+                orElse: () => null,
+              ) ?? SelectOption(textLabel: value, value: value, position: 0);
               return Chip(
                 label: Text(option.textLabel),
                 deleteIcon: enabled ? const Icon(Icons.close, size: 16) : null,
