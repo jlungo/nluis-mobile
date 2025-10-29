@@ -119,26 +119,44 @@ class SurveyResponses extends Table {
 }
 
 class BaseMaps extends Table {
-  TextColumn get projectId => text().named('project_id')();
+  IntColumn get localityId => integer().named('locality_id')();
   TextColumn get geoJson => text().named('geo_json')();
+  RealColumn get centerLat => real().named('center_lat').nullable()();
+  RealColumn get centerLng => real().named('center_lng').nullable()();
+  RealColumn get zoom => real().nullable()();
+  IntColumn get downloadedAt => integer().named('downloaded_at')();
   IntColumn get updatedAt => integer().named('updated_at')();
 
   @override
-  Set<Column> get primaryKey => {projectId};
+  Set<Column> get primaryKey => {localityId};
 }
 
 class ZoningFeatures extends Table {
-  TextColumn get id => text()();
+  TextColumn get clientUuid => text().named('client_uuid')();
+  TextColumn get serverId => text().named('server_id').nullable()();
   TextColumn get projectId => text().named('project_id')();
+  IntColumn get localityId => integer().named('locality_id')();
+  IntColumn get landUseId => integer().named('land_use_id').nullable()();
   TextColumn get geomType => text().named('geom_type')();
+  IntColumn get srid => integer().withDefault(const Constant(4326))();
   TextColumn get coordsJson => text().named('coords_json')();
+  RealColumn get areaSqm => real().named('area_sqm').nullable()();
+  RealColumn get lengthM => real().named('length_m').nullable()();
   TextColumn get propertiesJson => text().named('properties_json').nullable()();
   BoolColumn get isDraft => boolean().named('is_draft').withDefault(const Constant(true))();
+  BoolColumn get isProposed => boolean().named('is_proposed').withDefault(const Constant(false))();
+  TextColumn get status => text().withDefault(const Constant('Draft'))();
+  TextColumn get source => text().withDefault(const Constant('field_survey'))();
+  IntColumn get version => integer().withDefault(const Constant(1))();
+  BoolColumn get uploaded => boolean().withDefault(const Constant(false))();
+  IntColumn get uploadedAt => integer().named('uploaded_at').nullable()();
+  IntColumn get createdAt => integer().named('created_at')();
   IntColumn get updatedAt => integer().named('updated_at')();
+  TextColumn get metadataJson => text().named('metadata_json').nullable()();
   BoolColumn get dirty => boolean().withDefault(const Constant(false))();
 
   @override
-  Set<Column> get primaryKey => {id};
+  Set<Column> get primaryKey => {clientUuid};
 }
 
 class SyncLogs extends Table {
@@ -171,7 +189,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration {
@@ -201,6 +219,16 @@ class AppDatabase extends _$AppDatabase {
           await m.addColumn(forms, forms.sectionName);
           await m.addColumn(forms, forms.sectionPosition);
           await m.addColumn(forms, forms.sectionDescription);
+        }
+        if (from < 6) {
+          // Recreate BaseMaps table with new schema
+          await m.drop(baseMaps);
+          await m.createTable(baseMaps);
+        }
+        if (from < 7) {
+          // Recreate ZoningFeatures table with enhanced schema for upload tracking and SRID
+          await m.drop(zoningFeatures);
+          await m.createTable(zoningFeatures);
         }
       },
     );
