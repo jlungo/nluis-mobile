@@ -7,6 +7,7 @@ import 'form_fields/select_form_field_widget.dart';
 import 'form_fields/checkbox_form_field_widget.dart';
 import 'form_fields/date_form_field_widget.dart';
 import 'form_fields/file_form_field_widget.dart';
+import 'form_fields/camera_form_field_widget.dart';
 import 'form_fields/multiselect_form_field_widget.dart';
 import 'form_fields/table_form_field_widget.dart' as table;
 import 'form_fields/zoning_form_field_widget.dart';
