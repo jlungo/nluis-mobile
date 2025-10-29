@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../shared/constants/app_constants.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/app_drawer.dart';
 import '../../../../shared/widgets/custom_app_bar.dart';
-import '../../../land_use/survey/presentation/pages/questionnaire_form_page.dart';
 import '../providers/madodoso_providers.dart';
 
 class MadodosoPage extends ConsumerWidget {
@@ -294,18 +294,17 @@ class _MadodosoCard extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(AppConstants.radiusMd),
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder:
-                    (_) => QuestionnaireFormPage(
-                      questionnaireSlug: entry.questionnaireSlug,
-                      projectId: entry.projectId,
-                      projectName: entry.projectName,
-                      surveyId: entry.surveyId,
-                      isReadOnly: entry.isReadOnly,
-                    ),
-              ),
+            context.pushNamed(
+              'questionnaireForm',
+              pathParameters: {
+                'questionnaireSlug': entry.questionnaireSlug,
+                'projectId': entry.projectId,
+                'projectName': entry.projectName,
+              },
+              queryParameters: {
+                'surveyId': entry.surveyId,
+                'isReadOnly': entry.isReadOnly.toString(),
+              },
             );
           },
           child: Padding(
