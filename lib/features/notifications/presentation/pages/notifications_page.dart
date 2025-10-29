@@ -19,7 +19,8 @@ class NotificationsPage extends StatelessWidget {
         icon: Icons.info_outline,
         iconColor: AppColors.info,
         title: 'Taarifa za Mfumo',
-        message: 'Mfumo utaboreshwa saa 2:00 alfajiri. Huduma zitasimama kwa muda mfupi.',
+        message:
+            'Mfumo utaboreshwa saa 2:00 alfajiri. Huduma zitasimama kwa muda mfupi.',
         timestamp: 'Saa 2 zilizopita',
         isRead: false,
       ),
@@ -27,7 +28,8 @@ class NotificationsPage extends StatelessWidget {
         icon: Icons.check_circle_outline,
         iconColor: AppColors.success,
         title: 'Dodoso Limepokelewa',
-        message: 'Dodoso lako la Matumizi ya Ardhi ya Makazi limepokelewa kwa mafanikio.',
+        message:
+            'Dodoso lako la Matumizi ya Ardhi ya Makazi limepokelewa kwa mafanikio.',
         timestamp: 'Jana, 3:45 PM',
         isRead: false,
       ),
@@ -35,48 +37,27 @@ class NotificationsPage extends StatelessWidget {
         icon: Icons.warning_amber_outlined,
         iconColor: AppColors.warning,
         title: 'Kumbusho',
-        message: 'Una dodoso 3 zilizohifadhiwa kama rasimu. Zitatoweshwa baada ya siku 30.',
+        message:
+            'Una dodoso 3 zilizohifadhiwa kama rasimu. Zitatoweshwa baada ya siku 30.',
         timestamp: 'Wiki 1 iliyopita',
         isRead: true,
       ),
     ];
 
     return Scaffold(
-      appBar: const CustomAppBar(hasNotification: false),
+      appBar: const CustomAppBar(
+        title: 'Taarifa',
+        showBackButton: true,
+        showNotifications: false,
+        showProfile: false,
+      ),
       drawer: const AppDrawer(),
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(AppConstants.spacingLg),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Taarifa',
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-                    ),
-                  ),
-                  TextButton.icon(
-                    onPressed: () {
-                      SnackBarUtils.showInfo(
-                        context,
-                        'Taarifa zote zimesomwa',
-                      );
-                    },
-                    icon: const Icon(Icons.done_all, size: 18),
-                    label: const Text('Weka zote zimesomwa'),
-                    style: TextButton.styleFrom(
-                      foregroundColor: isDark ? AppColors.darkPrimary : AppColors.primary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            const SizedBox(height: AppConstants.spacingLg),
             Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.symmetric(
@@ -121,10 +102,7 @@ class _NotificationCard extends StatelessWidget {
   final _NotificationItem notification;
   final bool isDark;
 
-  const _NotificationCard({
-    required this.notification,
-    required this.isDark,
-  });
+  const _NotificationCard({required this.notification, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
@@ -133,25 +111,30 @@ class _NotificationCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: AppConstants.spacingMd),
       decoration: BoxDecoration(
-        color: isDark
-            ? (notification.isRead
-                ? AppColors.darkSurface
-                : AppColors.darkSurfaceVariant)
-            : (notification.isRead
-                ? Colors.white
-                : AppColors.surfaceVariant),
+        color:
+            isDark
+                ? (notification.isRead
+                    ? AppColors.darkSurface
+                    : AppColors.darkSurfaceVariant)
+                : (notification.isRead
+                    ? Colors.white
+                    : AppColors.surfaceVariant),
         borderRadius: BorderRadius.circular(AppConstants.radiusMd),
         border: Border.all(
-          color: notification.isRead
-              ? Colors.transparent
-              : (isDark ? AppColors.darkPrimary.withValues(alpha: 0.3) : AppColors.primary.withValues(alpha: 0.3)),
+          color:
+              notification.isRead
+                  ? Colors.transparent
+                  : (isDark
+                      ? AppColors.darkPrimary.withValues(alpha: 0.3)
+                      : AppColors.primary.withValues(alpha: 0.3)),
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: isDark
-                ? Colors.black.withValues(alpha: 0.2)
-                : Colors.black.withValues(alpha: 0.05),
+            color:
+                isDark
+                    ? Colors.black.withValues(alpha: 0.2)
+                    : Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -180,8 +163,12 @@ class _NotificationCard extends StatelessWidget {
               child: Text(
                 notification.title,
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: notification.isRead ? FontWeight.w500 : FontWeight.w700,
-                  color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                  fontWeight:
+                      notification.isRead ? FontWeight.w500 : FontWeight.w700,
+                  color:
+                      isDark
+                          ? AppColors.darkTextPrimary
+                          : AppColors.textPrimary,
                 ),
               ),
             ),
@@ -204,7 +191,10 @@ class _NotificationCard extends StatelessWidget {
             Text(
               notification.message,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                color:
+                    isDark
+                        ? AppColors.darkTextSecondary
+                        : AppColors.textSecondary,
               ),
             ),
             const SizedBox(height: AppConstants.spacingSm),
@@ -213,13 +203,19 @@ class _NotificationCard extends StatelessWidget {
                 Icon(
                   Icons.access_time,
                   size: 14,
-                  color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                  color:
+                      isDark
+                          ? AppColors.darkTextSecondary
+                          : AppColors.textSecondary,
                 ),
                 const SizedBox(width: 4),
                 Text(
                   notification.timestamp,
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                    color:
+                        isDark
+                            ? AppColors.darkTextSecondary
+                            : AppColors.textSecondary,
                   ),
                 ),
               ],
@@ -227,10 +223,7 @@ class _NotificationCard extends StatelessWidget {
           ],
         ),
         onTap: () {
-          SnackBarUtils.showInfo(
-            context,
-            'Taarifa: ${notification.title}',
-          );
+          SnackBarUtils.showInfo(context, 'Taarifa: ${notification.title}');
         },
       ),
     );
