@@ -207,8 +207,21 @@ class _FormFieldBuilderState extends State<FormFieldBuilder> {
           onChanged: widget.isReadOnly ? null : (file) {
             widget.onChanged?.call(file);
           },
-          onRemove: widget.isReadOnly ? null : () {
-            widget.onChanged?.call(null);
+        );
+
+      case 'camera':
+      case 'photo':
+        return CameraFormFieldWidget(
+          label: widget.field.label,
+          required: widget.field.required,
+          value: widget.value as File?,
+          enabled: !widget.isReadOnly,
+          allowGallery: true,
+          imageQuality: 85,
+          maxWidth: 1920,
+          maxHeight: 1080,
+          onChanged: widget.isReadOnly ? null : (file) {
+            widget.onChanged?.call(file);
           },
         );
 
