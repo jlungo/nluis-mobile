@@ -53,6 +53,16 @@ class _AppShellState extends ConsumerState<AppShell> {
     return index == -1 ? 0 : index;
   }
 
+  bool _shouldShowBottomBar(BuildContext context) {
+    final location = GoRouterState.of(context).matchedLocation;
+    
+    // Only show bottom bar on these specific routes
+    return location == '/module/land-use/dashboard' ||
+        location == '/module/land-use/projects' ||
+        location == '/madodoso' ||
+        location == '/settings';
+  }
+
   void _onDestinationSelected(BuildContext context, int index) {
     final destination = _destinations[index];
     context.goNamed(destination.routeName);
