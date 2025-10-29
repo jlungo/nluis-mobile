@@ -64,7 +64,7 @@ class SelectFormFieldWidget extends StatelessWidget {
         ),
         const SizedBox(height: AppConstants.spacingSm),
         DropdownButtonFormField<String>(
-          value: value,
+          initialValue: value,
           onChanged: enabled ? onChanged : null,
           validator: validator,
           decoration: InputDecoration(
