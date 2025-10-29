@@ -124,6 +124,8 @@ class _AppShellState extends ConsumerState<AppShell> {
     final Color shadowColor =
         isDark ? AppColors.darkShadow : Colors.black.withValues(alpha: 0.08);
 
+    final shouldShowBottomBar = _shouldShowBottomBar(context);
+
     return Scaffold(
       body: widget.child,
       bottomNavigationBar: Padding(
