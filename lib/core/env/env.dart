@@ -8,7 +8,7 @@ class Env {
   static const String baseUrl = String.fromEnvironment(
     'BASE_URL',
     defaultValue: 'http://144.91.125.106:8000/api/v1',
-    // defaultValue: 'http://192.168.1.146:8080/api/v1',
+    // defaultValue: 'http://192.168.0.15:8080/api/v1',
   );
 
   static const String apiVersion = 'v1';
