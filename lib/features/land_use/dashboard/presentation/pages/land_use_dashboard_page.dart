@@ -19,10 +19,7 @@ import '../../../../../shared/widgets/action_menu_item.dart';
 import '../../../../../shared/widgets/offline_banner.dart';
 import '../../../../../shared/utils/snackbar_utils.dart';
 import '../providers/project_providers.dart';
-import 'projects_list_page.dart';
 import '../../../../../shared/models/project.dart';
-import '../../../survey/presentation/pages/survey_list_page.dart';
-import '../../../zoning/presentation/pages/zoning_page.dart';
 
 class LandUseDashboardPage extends ConsumerWidget {
   const LandUseDashboardPage({super.key});
@@ -100,15 +97,9 @@ class LandUseDashboardPage extends ConsumerWidget {
                       description: 'View and manage surveys',
                       onTap: () {
                         Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (_) => SurveyListPage(
-                                  projectId: project.id,
-                                  projectName: project.name,
-                                ),
-                          ),
+                        context.pushNamed(
+                          'luSurveyList',
+                          pathParameters: {'projectId': project.id},
                         );
                       },
                     ),
@@ -119,11 +110,9 @@ class LandUseDashboardPage extends ConsumerWidget {
                       description: 'View zoning information',
                       onTap: () {
                         Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => ZoningPage(projectId: project.id),
-                          ),
+                        context.pushNamed(
+                          'luZoning',
+                          pathParameters: {'projectId': project.id},
                         );
                       },
                     ),
@@ -225,12 +214,7 @@ class LandUseDashboardPage extends ConsumerWidget {
                       theme: theme,
                       userName: user?.firstName ?? 'User',
                       onShowAllProjects: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const ProjectsListPage(),
-                          ),
-                        );
+                        context.goNamed('luProjects');
                       },
                       onRefresh: refreshProjects,
                       onProjectActions: openProject,
