@@ -304,20 +304,21 @@ class _SurveyListPageState extends ConsumerState<SurveyListPage> {
             );
           }
 
-          // final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-          // await (database.update(database.surveyResponses)
-          //   ..where((tbl) => tbl.surveyId.equals(surveyId))).write(
-          //   SurveyResponsesCompanion(
-          //     isDraft: const drift.Value(false),
-          //     dirty: const drift.Value(false),
-          //     updatedAt: drift.Value(now),
-          //   ),
-          // );
+          // Remove from draft & dirty surveys
+          final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+          await (database.update(database.surveyResponses)
+            ..where((tbl) => tbl.surveyId.equals(surveyId))).write(
+            SurveyResponsesCompanion(
+              isDraft: const drift.Value(false),
+              dirty: const drift.Value(false),
+              updatedAt: drift.Value(now),
+            ),
+          );
 
-          // successes.add(surveyId);
-          // idsToUnselect.add(surveyId);
-          // _statusOverrides.remove(surveyId);
-          // _statusErrors.remove(surveyId);
+          successes.add(surveyId);
+          idsToUnselect.add(surveyId);
+          _statusOverrides.remove(surveyId);
+          _statusErrors.remove(surveyId);
         } catch (error) {
           final errorMessage = _mapUploadError(error);
           failures[surveyId] = errorMessage;
