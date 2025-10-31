@@ -7,7 +7,6 @@ import '../../features/auth/presentation/pages/module_switchboard_page.dart';
 import '../../features/land_use/dashboard/presentation/pages/land_use_dashboard_page.dart';
 import '../../features/land_use/dashboard/presentation/pages/projects_list_page.dart';
 import '../../features/land_use/survey/presentation/pages/survey_list_page.dart';
-import '../../features/land_use/survey/presentation/pages/survey_edit_page.dart';
 import '../../features/land_use/zoning/presentation/pages/zoning_page.dart';
 import '../../features/settings/presentation/pages/settings_page.dart';
 import '../../features/notifications/presentation/pages/notifications_page.dart';
@@ -182,18 +181,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final projectId = state.pathParameters['projectId']!;
           return SurveyListPage(projectId: projectId);
-        },
-      ),
-      GoRoute(
-        path: '/module/land-use/survey/:projectId/edit/:responseId',
-        name: 'luSurveyEdit',
-        builder: (context, state) {
-          final projectId = state.pathParameters['projectId']!;
-          final responseId = state.pathParameters['responseId']!;
-          return SurveyEditPage(
-            projectId: projectId,
-            responseId: responseId,
-          );
         },
       ),
       GoRoute(
