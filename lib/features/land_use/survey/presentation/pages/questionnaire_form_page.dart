@@ -134,7 +134,7 @@ class _QuestionnaireFormPageState extends ConsumerState<QuestionnaireFormPage> {
     if (value is String) return value.trim().isNotEmpty;
     if (value is num) return true;
     if (value is DateTime) return true;
-    if (value is File) return true; // File objects are always meaningful
+    if (value is File) return true;
     if (value is List) return value.any(_isMeaningfulValue);
     if (value is Map<String, dynamic>) {
       if (value.containsKey('rows') && value['rows'] is List) {
