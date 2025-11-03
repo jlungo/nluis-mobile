@@ -109,7 +109,7 @@ class _FeatureMetadataSheetState extends ConsumerState<FeatureMetadataSheet> {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: landUses.length,
-                      separatorBuilder: (_, __) => const Divider(height: 1),
+                      separatorBuilder: (_, _) => const Divider(height: 1),
                       itemBuilder: (context, index) {
                         final lu = landUses[index];
                         final color = colors[lu.id] ?? Colors.grey;
