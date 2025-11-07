@@ -32,4 +32,14 @@ abstract class ZoningRepository {
   // Export operations
   Future<Either<Failure, bool>> exportFeatures(String projectId, String filePath);
   Future<Either<Failure, List<ZoningFeature>>> getUnsyncedFeatures(String projectId);
+  
+  // Locality-based operations for ZoningManagerPage
+  Future<Either<Failure, List<ZoningFeature>>> getAllFeatures();
+  Future<Either<Failure, List<ZoningFeature>>> getFeaturesByStatus({
+    bool? isDraft,
+    bool? uploaded,
+  });
+  Future<Either<Failure, Map<String, List<ZoningFeature>>>> getFeaturesByLocality();
+  
+  // Note: Upload operations are now handled by UploadQueueService with ZoningApiService
 }
