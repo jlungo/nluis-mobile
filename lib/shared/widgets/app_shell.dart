@@ -29,13 +29,19 @@ class _AppShellState extends ConsumerState<AppShell> {
       icon: Icons.folder_copy_outlined,
       label: 'Miradi',
       routeName: 'luProjects',
-      locationMatchers: ['/projects', '/survey', '/zoning'],
+      locationMatchers: ['/projects', '/survey'],
     ),
     _BottomNavDestination(
       icon: Icons.library_books_outlined,
       label: 'Madodoso',
       routeName: 'madodoso',
       locationMatchers: ['/madodoso'],
+    ),
+    _BottomNavDestination(
+      icon: Icons.map_outlined,
+      label: 'Zoning',
+      routeName: 'zoningManager',
+      locationMatchers: ['/zoning-manager', '/zoning'],
     ),
     _BottomNavDestination(
       icon: Icons.person_outline_rounded,
@@ -60,6 +66,7 @@ class _AppShellState extends ConsumerState<AppShell> {
     return location == '/module/land-use/dashboard' ||
         location == '/module/land-use/projects' ||
         location == '/madodoso' ||
+        location == '/zoning-manager' ||
         location == '/settings';
   }
 
