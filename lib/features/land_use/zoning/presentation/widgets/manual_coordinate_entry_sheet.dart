@@ -228,7 +228,7 @@ class _ManualCoordinateEntrySheetState
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Ingiza Kuratibu - ${_getFeatureTypeName()}',
+                            'Ingiza Coordinate - ${_getFeatureTypeName()}',
                             style: theme.textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: isDark
@@ -237,7 +237,7 @@ class _ManualCoordinateEntrySheetState
                             ),
                           ),
                           Text(
-                            'Kuratibu: ${_coordinates.length} / $_minPointsRequired ${_hasMinPoints ? "✓" : ""}',
+                            'Cooordinates: ${_coordinates.length} / $_minPointsRequired ${_hasMinPoints ? "✓" : ""}',
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: _hasMinPoints
                                   ? Colors.green
@@ -287,7 +287,7 @@ class _ManualCoordinateEntrySheetState
                   child: OutlinedButton.icon(
                     onPressed: _addCoordinate,
                     icon: const Icon(Icons.add_location),
-                    label: const Text('Ongeza Uhakiki'),
+                    label: const Text('Ingiza Coordinates'),
                   ),
                 ),
                 const SizedBox(width: AppConstants.spacingSm),
@@ -390,7 +390,7 @@ class _ManualCoordinateEntrySheetState
                       }
                     }
                   : null,
-              hint: const Text('Chagua mfumo wa kuratibu'),
+              hint: const Text('Chagua mfumo wa coordinate'),
             ),
             if (_coordinates.isNotEmpty)
               Padding(
@@ -404,7 +404,7 @@ class _ManualCoordinateEntrySheetState
                     const SizedBox(width: AppConstants.spacingXs),
                     Expanded(
                       child: Text(
-                        'Hauwezi kubadilisha mfumo wa kuratibu baada ya kuongeza kuratibu',
+                        'Hauwezi kubadilisha mfumo wa coordinate baada ya kuingiza coordinates',
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: Colors.orange,
                           fontStyle: FontStyle.italic,
@@ -418,7 +418,7 @@ class _ManualCoordinateEntrySheetState
 
             // Coordinates List
             Text(
-              'Kuratibu',
+              'Coordinates',
               style: theme.textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w600,
                 color:
@@ -441,7 +441,7 @@ class _ManualCoordinateEntrySheetState
                       ),
                       const SizedBox(height: AppConstants.spacingSm),
                       Text(
-                        'Hakuna kuratibu',
+                        'Hakuna coordinates zilizoongezwa',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: isDark
                               ? AppColors.darkTextSecondary
@@ -449,7 +449,7 @@ class _ManualCoordinateEntrySheetState
                         ),
                       ),
                       Text(
-                        'Bonyeza "Ongeza Uhakiki" kuanza',
+                        'Bonyeza "Ingiza Coordinates" kuanza',
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: isDark
                               ? AppColors.darkTextSecondary
@@ -538,7 +538,7 @@ class _ManualCoordinateEntrySheetState
                   isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
             ),
             const SizedBox(height: AppConstants.spacingMd),
-            const Text('Ongeza kuratibu kuona kwenye ramani'),
+            const Text('Ongeza coordinates kuona kwenye ramani'),
           ],
         ),
       );
@@ -773,7 +773,7 @@ class _CoordinateInputDialogState extends State<_CoordinateInputDialog> {
                     const SizedBox(width: AppConstants.spacingSm),
                     const Expanded(
                       child: Text(
-                        'Kuratibu sio sahihi',
+                        'Coordinates sio sahihi',
                         style: TextStyle(color: Colors.red),
                       ),
                     ),
