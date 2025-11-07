@@ -6430,6 +6430,1787 @@ class SyncLogsCompanion extends UpdateCompanion<SyncLog> {
   }
 }
 
+class $ZoningFeatureHistoryTable extends ZoningFeatureHistory
+    with TableInfo<$ZoningFeatureHistoryTable, ZoningFeatureHistoryData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ZoningFeatureHistoryTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _featureIdMeta = const VerificationMeta(
+    'featureId',
+  );
+  @override
+  late final GeneratedColumn<String> featureId = GeneratedColumn<String>(
+    'feature_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _actionMeta = const VerificationMeta('action');
+  @override
+  late final GeneratedColumn<String> action = GeneratedColumn<String>(
+    'action',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _oldDataJsonMeta = const VerificationMeta(
+    'oldDataJson',
+  );
+  @override
+  late final GeneratedColumn<String> oldDataJson = GeneratedColumn<String>(
+    'old_data_json',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _newDataJsonMeta = const VerificationMeta(
+    'newDataJson',
+  );
+  @override
+  late final GeneratedColumn<String> newDataJson = GeneratedColumn<String>(
+    'new_data_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _changesJsonMeta = const VerificationMeta(
+    'changesJson',
+  );
+  @override
+  late final GeneratedColumn<String> changesJson = GeneratedColumn<String>(
+    'changes_json',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _timestampMeta = const VerificationMeta(
+    'timestamp',
+  );
+  @override
+  late final GeneratedColumn<int> timestamp = GeneratedColumn<int>(
+    'timestamp',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    featureId,
+    action,
+    userId,
+    oldDataJson,
+    newDataJson,
+    changesJson,
+    timestamp,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'zoning_feature_history';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ZoningFeatureHistoryData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('feature_id')) {
+      context.handle(
+        _featureIdMeta,
+        featureId.isAcceptableOrUnknown(data['feature_id']!, _featureIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_featureIdMeta);
+    }
+    if (data.containsKey('action')) {
+      context.handle(
+        _actionMeta,
+        action.isAcceptableOrUnknown(data['action']!, _actionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_actionMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    }
+    if (data.containsKey('old_data_json')) {
+      context.handle(
+        _oldDataJsonMeta,
+        oldDataJson.isAcceptableOrUnknown(
+          data['old_data_json']!,
+          _oldDataJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('new_data_json')) {
+      context.handle(
+        _newDataJsonMeta,
+        newDataJson.isAcceptableOrUnknown(
+          data['new_data_json']!,
+          _newDataJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_newDataJsonMeta);
+    }
+    if (data.containsKey('changes_json')) {
+      context.handle(
+        _changesJsonMeta,
+        changesJson.isAcceptableOrUnknown(
+          data['changes_json']!,
+          _changesJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('timestamp')) {
+      context.handle(
+        _timestampMeta,
+        timestamp.isAcceptableOrUnknown(data['timestamp']!, _timestampMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_timestampMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ZoningFeatureHistoryData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ZoningFeatureHistoryData(
+      id:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}id'],
+          )!,
+      featureId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}feature_id'],
+          )!,
+      action:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}action'],
+          )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_id'],
+      ),
+      oldDataJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}old_data_json'],
+      ),
+      newDataJson:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}new_data_json'],
+          )!,
+      changesJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}changes_json'],
+      ),
+      timestamp:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}timestamp'],
+          )!,
+    );
+  }
+
+  @override
+  $ZoningFeatureHistoryTable createAlias(String alias) {
+    return $ZoningFeatureHistoryTable(attachedDatabase, alias);
+  }
+}
+
+class ZoningFeatureHistoryData extends DataClass
+    implements Insertable<ZoningFeatureHistoryData> {
+  final String id;
+  final String featureId;
+  final String action;
+  final String? userId;
+  final String? oldDataJson;
+  final String newDataJson;
+  final String? changesJson;
+  final int timestamp;
+  const ZoningFeatureHistoryData({
+    required this.id,
+    required this.featureId,
+    required this.action,
+    this.userId,
+    this.oldDataJson,
+    required this.newDataJson,
+    this.changesJson,
+    required this.timestamp,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['feature_id'] = Variable<String>(featureId);
+    map['action'] = Variable<String>(action);
+    if (!nullToAbsent || userId != null) {
+      map['user_id'] = Variable<String>(userId);
+    }
+    if (!nullToAbsent || oldDataJson != null) {
+      map['old_data_json'] = Variable<String>(oldDataJson);
+    }
+    map['new_data_json'] = Variable<String>(newDataJson);
+    if (!nullToAbsent || changesJson != null) {
+      map['changes_json'] = Variable<String>(changesJson);
+    }
+    map['timestamp'] = Variable<int>(timestamp);
+    return map;
+  }
+
+  ZoningFeatureHistoryCompanion toCompanion(bool nullToAbsent) {
+    return ZoningFeatureHistoryCompanion(
+      id: Value(id),
+      featureId: Value(featureId),
+      action: Value(action),
+      userId:
+          userId == null && nullToAbsent ? const Value.absent() : Value(userId),
+      oldDataJson:
+          oldDataJson == null && nullToAbsent
+              ? const Value.absent()
+              : Value(oldDataJson),
+      newDataJson: Value(newDataJson),
+      changesJson:
+          changesJson == null && nullToAbsent
+              ? const Value.absent()
+              : Value(changesJson),
+      timestamp: Value(timestamp),
+    );
+  }
+
+  factory ZoningFeatureHistoryData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ZoningFeatureHistoryData(
+      id: serializer.fromJson<String>(json['id']),
+      featureId: serializer.fromJson<String>(json['featureId']),
+      action: serializer.fromJson<String>(json['action']),
+      userId: serializer.fromJson<String?>(json['userId']),
+      oldDataJson: serializer.fromJson<String?>(json['oldDataJson']),
+      newDataJson: serializer.fromJson<String>(json['newDataJson']),
+      changesJson: serializer.fromJson<String?>(json['changesJson']),
+      timestamp: serializer.fromJson<int>(json['timestamp']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'featureId': serializer.toJson<String>(featureId),
+      'action': serializer.toJson<String>(action),
+      'userId': serializer.toJson<String?>(userId),
+      'oldDataJson': serializer.toJson<String?>(oldDataJson),
+      'newDataJson': serializer.toJson<String>(newDataJson),
+      'changesJson': serializer.toJson<String?>(changesJson),
+      'timestamp': serializer.toJson<int>(timestamp),
+    };
+  }
+
+  ZoningFeatureHistoryData copyWith({
+    String? id,
+    String? featureId,
+    String? action,
+    Value<String?> userId = const Value.absent(),
+    Value<String?> oldDataJson = const Value.absent(),
+    String? newDataJson,
+    Value<String?> changesJson = const Value.absent(),
+    int? timestamp,
+  }) => ZoningFeatureHistoryData(
+    id: id ?? this.id,
+    featureId: featureId ?? this.featureId,
+    action: action ?? this.action,
+    userId: userId.present ? userId.value : this.userId,
+    oldDataJson: oldDataJson.present ? oldDataJson.value : this.oldDataJson,
+    newDataJson: newDataJson ?? this.newDataJson,
+    changesJson: changesJson.present ? changesJson.value : this.changesJson,
+    timestamp: timestamp ?? this.timestamp,
+  );
+  ZoningFeatureHistoryData copyWithCompanion(
+    ZoningFeatureHistoryCompanion data,
+  ) {
+    return ZoningFeatureHistoryData(
+      id: data.id.present ? data.id.value : this.id,
+      featureId: data.featureId.present ? data.featureId.value : this.featureId,
+      action: data.action.present ? data.action.value : this.action,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      oldDataJson:
+          data.oldDataJson.present ? data.oldDataJson.value : this.oldDataJson,
+      newDataJson:
+          data.newDataJson.present ? data.newDataJson.value : this.newDataJson,
+      changesJson:
+          data.changesJson.present ? data.changesJson.value : this.changesJson,
+      timestamp: data.timestamp.present ? data.timestamp.value : this.timestamp,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ZoningFeatureHistoryData(')
+          ..write('id: $id, ')
+          ..write('featureId: $featureId, ')
+          ..write('action: $action, ')
+          ..write('userId: $userId, ')
+          ..write('oldDataJson: $oldDataJson, ')
+          ..write('newDataJson: $newDataJson, ')
+          ..write('changesJson: $changesJson, ')
+          ..write('timestamp: $timestamp')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    featureId,
+    action,
+    userId,
+    oldDataJson,
+    newDataJson,
+    changesJson,
+    timestamp,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ZoningFeatureHistoryData &&
+          other.id == this.id &&
+          other.featureId == this.featureId &&
+          other.action == this.action &&
+          other.userId == this.userId &&
+          other.oldDataJson == this.oldDataJson &&
+          other.newDataJson == this.newDataJson &&
+          other.changesJson == this.changesJson &&
+          other.timestamp == this.timestamp);
+}
+
+class ZoningFeatureHistoryCompanion
+    extends UpdateCompanion<ZoningFeatureHistoryData> {
+  final Value<String> id;
+  final Value<String> featureId;
+  final Value<String> action;
+  final Value<String?> userId;
+  final Value<String?> oldDataJson;
+  final Value<String> newDataJson;
+  final Value<String?> changesJson;
+  final Value<int> timestamp;
+  final Value<int> rowid;
+  const ZoningFeatureHistoryCompanion({
+    this.id = const Value.absent(),
+    this.featureId = const Value.absent(),
+    this.action = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.oldDataJson = const Value.absent(),
+    this.newDataJson = const Value.absent(),
+    this.changesJson = const Value.absent(),
+    this.timestamp = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ZoningFeatureHistoryCompanion.insert({
+    required String id,
+    required String featureId,
+    required String action,
+    this.userId = const Value.absent(),
+    this.oldDataJson = const Value.absent(),
+    required String newDataJson,
+    this.changesJson = const Value.absent(),
+    required int timestamp,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       featureId = Value(featureId),
+       action = Value(action),
+       newDataJson = Value(newDataJson),
+       timestamp = Value(timestamp);
+  static Insertable<ZoningFeatureHistoryData> custom({
+    Expression<String>? id,
+    Expression<String>? featureId,
+    Expression<String>? action,
+    Expression<String>? userId,
+    Expression<String>? oldDataJson,
+    Expression<String>? newDataJson,
+    Expression<String>? changesJson,
+    Expression<int>? timestamp,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (featureId != null) 'feature_id': featureId,
+      if (action != null) 'action': action,
+      if (userId != null) 'user_id': userId,
+      if (oldDataJson != null) 'old_data_json': oldDataJson,
+      if (newDataJson != null) 'new_data_json': newDataJson,
+      if (changesJson != null) 'changes_json': changesJson,
+      if (timestamp != null) 'timestamp': timestamp,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ZoningFeatureHistoryCompanion copyWith({
+    Value<String>? id,
+    Value<String>? featureId,
+    Value<String>? action,
+    Value<String?>? userId,
+    Value<String?>? oldDataJson,
+    Value<String>? newDataJson,
+    Value<String?>? changesJson,
+    Value<int>? timestamp,
+    Value<int>? rowid,
+  }) {
+    return ZoningFeatureHistoryCompanion(
+      id: id ?? this.id,
+      featureId: featureId ?? this.featureId,
+      action: action ?? this.action,
+      userId: userId ?? this.userId,
+      oldDataJson: oldDataJson ?? this.oldDataJson,
+      newDataJson: newDataJson ?? this.newDataJson,
+      changesJson: changesJson ?? this.changesJson,
+      timestamp: timestamp ?? this.timestamp,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (featureId.present) {
+      map['feature_id'] = Variable<String>(featureId.value);
+    }
+    if (action.present) {
+      map['action'] = Variable<String>(action.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (oldDataJson.present) {
+      map['old_data_json'] = Variable<String>(oldDataJson.value);
+    }
+    if (newDataJson.present) {
+      map['new_data_json'] = Variable<String>(newDataJson.value);
+    }
+    if (changesJson.present) {
+      map['changes_json'] = Variable<String>(changesJson.value);
+    }
+    if (timestamp.present) {
+      map['timestamp'] = Variable<int>(timestamp.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ZoningFeatureHistoryCompanion(')
+          ..write('id: $id, ')
+          ..write('featureId: $featureId, ')
+          ..write('action: $action, ')
+          ..write('userId: $userId, ')
+          ..write('oldDataJson: $oldDataJson, ')
+          ..write('newDataJson: $newDataJson, ')
+          ..write('changesJson: $changesJson, ')
+          ..write('timestamp: $timestamp, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $FeatureUploadQueueTable extends FeatureUploadQueue
+    with TableInfo<$FeatureUploadQueueTable, FeatureUploadQueueData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FeatureUploadQueueTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _featureIdMeta = const VerificationMeta(
+    'featureId',
+  );
+  @override
+  late final GeneratedColumn<String> featureId = GeneratedColumn<String>(
+    'feature_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _projectIdMeta = const VerificationMeta(
+    'projectId',
+  );
+  @override
+  late final GeneratedColumn<String> projectId = GeneratedColumn<String>(
+    'project_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _retryCountMeta = const VerificationMeta(
+    'retryCount',
+  );
+  @override
+  late final GeneratedColumn<int> retryCount = GeneratedColumn<int>(
+    'retry_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _maxRetriesMeta = const VerificationMeta(
+    'maxRetries',
+  );
+  @override
+  late final GeneratedColumn<int> maxRetries = GeneratedColumn<int>(
+    'max_retries',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(5),
+  );
+  static const VerificationMeta _nextRetryAtMeta = const VerificationMeta(
+    'nextRetryAt',
+  );
+  @override
+  late final GeneratedColumn<int> nextRetryAt = GeneratedColumn<int>(
+    'next_retry_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastErrorMeta = const VerificationMeta(
+    'lastError',
+  );
+  @override
+  late final GeneratedColumn<String> lastError = GeneratedColumn<String>(
+    'last_error',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('pending'),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    featureId,
+    projectId,
+    retryCount,
+    maxRetries,
+    nextRetryAt,
+    lastError,
+    status,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'feature_upload_queue';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<FeatureUploadQueueData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('feature_id')) {
+      context.handle(
+        _featureIdMeta,
+        featureId.isAcceptableOrUnknown(data['feature_id']!, _featureIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_featureIdMeta);
+    }
+    if (data.containsKey('project_id')) {
+      context.handle(
+        _projectIdMeta,
+        projectId.isAcceptableOrUnknown(data['project_id']!, _projectIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_projectIdMeta);
+    }
+    if (data.containsKey('retry_count')) {
+      context.handle(
+        _retryCountMeta,
+        retryCount.isAcceptableOrUnknown(data['retry_count']!, _retryCountMeta),
+      );
+    }
+    if (data.containsKey('max_retries')) {
+      context.handle(
+        _maxRetriesMeta,
+        maxRetries.isAcceptableOrUnknown(data['max_retries']!, _maxRetriesMeta),
+      );
+    }
+    if (data.containsKey('next_retry_at')) {
+      context.handle(
+        _nextRetryAtMeta,
+        nextRetryAt.isAcceptableOrUnknown(
+          data['next_retry_at']!,
+          _nextRetryAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_error')) {
+      context.handle(
+        _lastErrorMeta,
+        lastError.isAcceptableOrUnknown(data['last_error']!, _lastErrorMeta),
+      );
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  FeatureUploadQueueData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FeatureUploadQueueData(
+      id:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}id'],
+          )!,
+      featureId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}feature_id'],
+          )!,
+      projectId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}project_id'],
+          )!,
+      retryCount:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}retry_count'],
+          )!,
+      maxRetries:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}max_retries'],
+          )!,
+      nextRetryAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}next_retry_at'],
+      ),
+      lastError: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_error'],
+      ),
+      status:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}status'],
+          )!,
+      createdAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}created_at'],
+          )!,
+      updatedAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}updated_at'],
+          )!,
+    );
+  }
+
+  @override
+  $FeatureUploadQueueTable createAlias(String alias) {
+    return $FeatureUploadQueueTable(attachedDatabase, alias);
+  }
+}
+
+class FeatureUploadQueueData extends DataClass
+    implements Insertable<FeatureUploadQueueData> {
+  final String id;
+  final String featureId;
+  final String projectId;
+  final int retryCount;
+  final int maxRetries;
+  final int? nextRetryAt;
+  final String? lastError;
+  final String status;
+  final int createdAt;
+  final int updatedAt;
+  const FeatureUploadQueueData({
+    required this.id,
+    required this.featureId,
+    required this.projectId,
+    required this.retryCount,
+    required this.maxRetries,
+    this.nextRetryAt,
+    this.lastError,
+    required this.status,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['feature_id'] = Variable<String>(featureId);
+    map['project_id'] = Variable<String>(projectId);
+    map['retry_count'] = Variable<int>(retryCount);
+    map['max_retries'] = Variable<int>(maxRetries);
+    if (!nullToAbsent || nextRetryAt != null) {
+      map['next_retry_at'] = Variable<int>(nextRetryAt);
+    }
+    if (!nullToAbsent || lastError != null) {
+      map['last_error'] = Variable<String>(lastError);
+    }
+    map['status'] = Variable<String>(status);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
+    return map;
+  }
+
+  FeatureUploadQueueCompanion toCompanion(bool nullToAbsent) {
+    return FeatureUploadQueueCompanion(
+      id: Value(id),
+      featureId: Value(featureId),
+      projectId: Value(projectId),
+      retryCount: Value(retryCount),
+      maxRetries: Value(maxRetries),
+      nextRetryAt:
+          nextRetryAt == null && nullToAbsent
+              ? const Value.absent()
+              : Value(nextRetryAt),
+      lastError:
+          lastError == null && nullToAbsent
+              ? const Value.absent()
+              : Value(lastError),
+      status: Value(status),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory FeatureUploadQueueData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FeatureUploadQueueData(
+      id: serializer.fromJson<String>(json['id']),
+      featureId: serializer.fromJson<String>(json['featureId']),
+      projectId: serializer.fromJson<String>(json['projectId']),
+      retryCount: serializer.fromJson<int>(json['retryCount']),
+      maxRetries: serializer.fromJson<int>(json['maxRetries']),
+      nextRetryAt: serializer.fromJson<int?>(json['nextRetryAt']),
+      lastError: serializer.fromJson<String?>(json['lastError']),
+      status: serializer.fromJson<String>(json['status']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'featureId': serializer.toJson<String>(featureId),
+      'projectId': serializer.toJson<String>(projectId),
+      'retryCount': serializer.toJson<int>(retryCount),
+      'maxRetries': serializer.toJson<int>(maxRetries),
+      'nextRetryAt': serializer.toJson<int?>(nextRetryAt),
+      'lastError': serializer.toJson<String?>(lastError),
+      'status': serializer.toJson<String>(status),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+    };
+  }
+
+  FeatureUploadQueueData copyWith({
+    String? id,
+    String? featureId,
+    String? projectId,
+    int? retryCount,
+    int? maxRetries,
+    Value<int?> nextRetryAt = const Value.absent(),
+    Value<String?> lastError = const Value.absent(),
+    String? status,
+    int? createdAt,
+    int? updatedAt,
+  }) => FeatureUploadQueueData(
+    id: id ?? this.id,
+    featureId: featureId ?? this.featureId,
+    projectId: projectId ?? this.projectId,
+    retryCount: retryCount ?? this.retryCount,
+    maxRetries: maxRetries ?? this.maxRetries,
+    nextRetryAt: nextRetryAt.present ? nextRetryAt.value : this.nextRetryAt,
+    lastError: lastError.present ? lastError.value : this.lastError,
+    status: status ?? this.status,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  FeatureUploadQueueData copyWithCompanion(FeatureUploadQueueCompanion data) {
+    return FeatureUploadQueueData(
+      id: data.id.present ? data.id.value : this.id,
+      featureId: data.featureId.present ? data.featureId.value : this.featureId,
+      projectId: data.projectId.present ? data.projectId.value : this.projectId,
+      retryCount:
+          data.retryCount.present ? data.retryCount.value : this.retryCount,
+      maxRetries:
+          data.maxRetries.present ? data.maxRetries.value : this.maxRetries,
+      nextRetryAt:
+          data.nextRetryAt.present ? data.nextRetryAt.value : this.nextRetryAt,
+      lastError: data.lastError.present ? data.lastError.value : this.lastError,
+      status: data.status.present ? data.status.value : this.status,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FeatureUploadQueueData(')
+          ..write('id: $id, ')
+          ..write('featureId: $featureId, ')
+          ..write('projectId: $projectId, ')
+          ..write('retryCount: $retryCount, ')
+          ..write('maxRetries: $maxRetries, ')
+          ..write('nextRetryAt: $nextRetryAt, ')
+          ..write('lastError: $lastError, ')
+          ..write('status: $status, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    featureId,
+    projectId,
+    retryCount,
+    maxRetries,
+    nextRetryAt,
+    lastError,
+    status,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FeatureUploadQueueData &&
+          other.id == this.id &&
+          other.featureId == this.featureId &&
+          other.projectId == this.projectId &&
+          other.retryCount == this.retryCount &&
+          other.maxRetries == this.maxRetries &&
+          other.nextRetryAt == this.nextRetryAt &&
+          other.lastError == this.lastError &&
+          other.status == this.status &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class FeatureUploadQueueCompanion
+    extends UpdateCompanion<FeatureUploadQueueData> {
+  final Value<String> id;
+  final Value<String> featureId;
+  final Value<String> projectId;
+  final Value<int> retryCount;
+  final Value<int> maxRetries;
+  final Value<int?> nextRetryAt;
+  final Value<String?> lastError;
+  final Value<String> status;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int> rowid;
+  const FeatureUploadQueueCompanion({
+    this.id = const Value.absent(),
+    this.featureId = const Value.absent(),
+    this.projectId = const Value.absent(),
+    this.retryCount = const Value.absent(),
+    this.maxRetries = const Value.absent(),
+    this.nextRetryAt = const Value.absent(),
+    this.lastError = const Value.absent(),
+    this.status = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  FeatureUploadQueueCompanion.insert({
+    required String id,
+    required String featureId,
+    required String projectId,
+    this.retryCount = const Value.absent(),
+    this.maxRetries = const Value.absent(),
+    this.nextRetryAt = const Value.absent(),
+    this.lastError = const Value.absent(),
+    this.status = const Value.absent(),
+    required int createdAt,
+    required int updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       featureId = Value(featureId),
+       projectId = Value(projectId),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<FeatureUploadQueueData> custom({
+    Expression<String>? id,
+    Expression<String>? featureId,
+    Expression<String>? projectId,
+    Expression<int>? retryCount,
+    Expression<int>? maxRetries,
+    Expression<int>? nextRetryAt,
+    Expression<String>? lastError,
+    Expression<String>? status,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (featureId != null) 'feature_id': featureId,
+      if (projectId != null) 'project_id': projectId,
+      if (retryCount != null) 'retry_count': retryCount,
+      if (maxRetries != null) 'max_retries': maxRetries,
+      if (nextRetryAt != null) 'next_retry_at': nextRetryAt,
+      if (lastError != null) 'last_error': lastError,
+      if (status != null) 'status': status,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  FeatureUploadQueueCompanion copyWith({
+    Value<String>? id,
+    Value<String>? featureId,
+    Value<String>? projectId,
+    Value<int>? retryCount,
+    Value<int>? maxRetries,
+    Value<int?>? nextRetryAt,
+    Value<String?>? lastError,
+    Value<String>? status,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return FeatureUploadQueueCompanion(
+      id: id ?? this.id,
+      featureId: featureId ?? this.featureId,
+      projectId: projectId ?? this.projectId,
+      retryCount: retryCount ?? this.retryCount,
+      maxRetries: maxRetries ?? this.maxRetries,
+      nextRetryAt: nextRetryAt ?? this.nextRetryAt,
+      lastError: lastError ?? this.lastError,
+      status: status ?? this.status,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (featureId.present) {
+      map['feature_id'] = Variable<String>(featureId.value);
+    }
+    if (projectId.present) {
+      map['project_id'] = Variable<String>(projectId.value);
+    }
+    if (retryCount.present) {
+      map['retry_count'] = Variable<int>(retryCount.value);
+    }
+    if (maxRetries.present) {
+      map['max_retries'] = Variable<int>(maxRetries.value);
+    }
+    if (nextRetryAt.present) {
+      map['next_retry_at'] = Variable<int>(nextRetryAt.value);
+    }
+    if (lastError.present) {
+      map['last_error'] = Variable<String>(lastError.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FeatureUploadQueueCompanion(')
+          ..write('id: $id, ')
+          ..write('featureId: $featureId, ')
+          ..write('projectId: $projectId, ')
+          ..write('retryCount: $retryCount, ')
+          ..write('maxRetries: $maxRetries, ')
+          ..write('nextRetryAt: $nextRetryAt, ')
+          ..write('lastError: $lastError, ')
+          ..write('status: $status, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ManualZoneDraftsTable extends ManualZoneDrafts
+    with TableInfo<$ManualZoneDraftsTable, ManualZoneDraft> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ManualZoneDraftsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _projectIdMeta = const VerificationMeta(
+    'projectId',
+  );
+  @override
+  late final GeneratedColumn<String> projectId = GeneratedColumn<String>(
+    'project_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _zoneNameMeta = const VerificationMeta(
+    'zoneName',
+  );
+  @override
+  late final GeneratedColumn<String> zoneName = GeneratedColumn<String>(
+    'zone_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _sridMeta = const VerificationMeta('srid');
+  @override
+  late final GeneratedColumn<int> srid = GeneratedColumn<int>(
+    'srid',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _featureTypeMeta = const VerificationMeta(
+    'featureType',
+  );
+  @override
+  late final GeneratedColumn<String> featureType = GeneratedColumn<String>(
+    'feature_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _pointsJsonMeta = const VerificationMeta(
+    'pointsJson',
+  );
+  @override
+  late final GeneratedColumn<String> pointsJson = GeneratedColumn<String>(
+    'points_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _pointCountMeta = const VerificationMeta(
+    'pointCount',
+  );
+  @override
+  late final GeneratedColumn<int> pointCount = GeneratedColumn<int>(
+    'point_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    projectId,
+    zoneName,
+    description,
+    srid,
+    featureType,
+    pointsJson,
+    pointCount,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'manual_zone_drafts';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ManualZoneDraft> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('project_id')) {
+      context.handle(
+        _projectIdMeta,
+        projectId.isAcceptableOrUnknown(data['project_id']!, _projectIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_projectIdMeta);
+    }
+    if (data.containsKey('zone_name')) {
+      context.handle(
+        _zoneNameMeta,
+        zoneName.isAcceptableOrUnknown(data['zone_name']!, _zoneNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_zoneNameMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('srid')) {
+      context.handle(
+        _sridMeta,
+        srid.isAcceptableOrUnknown(data['srid']!, _sridMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sridMeta);
+    }
+    if (data.containsKey('feature_type')) {
+      context.handle(
+        _featureTypeMeta,
+        featureType.isAcceptableOrUnknown(
+          data['feature_type']!,
+          _featureTypeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_featureTypeMeta);
+    }
+    if (data.containsKey('points_json')) {
+      context.handle(
+        _pointsJsonMeta,
+        pointsJson.isAcceptableOrUnknown(data['points_json']!, _pointsJsonMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_pointsJsonMeta);
+    }
+    if (data.containsKey('point_count')) {
+      context.handle(
+        _pointCountMeta,
+        pointCount.isAcceptableOrUnknown(data['point_count']!, _pointCountMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ManualZoneDraft map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ManualZoneDraft(
+      id:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}id'],
+          )!,
+      projectId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}project_id'],
+          )!,
+      zoneName:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}zone_name'],
+          )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      ),
+      srid:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}srid'],
+          )!,
+      featureType:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}feature_type'],
+          )!,
+      pointsJson:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}points_json'],
+          )!,
+      pointCount:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}point_count'],
+          )!,
+      createdAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}created_at'],
+          )!,
+      updatedAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}updated_at'],
+          )!,
+    );
+  }
+
+  @override
+  $ManualZoneDraftsTable createAlias(String alias) {
+    return $ManualZoneDraftsTable(attachedDatabase, alias);
+  }
+}
+
+class ManualZoneDraft extends DataClass implements Insertable<ManualZoneDraft> {
+  final String id;
+  final String projectId;
+  final String zoneName;
+  final String? description;
+  final int srid;
+  final String featureType;
+  final String pointsJson;
+  final int pointCount;
+  final int createdAt;
+  final int updatedAt;
+  const ManualZoneDraft({
+    required this.id,
+    required this.projectId,
+    required this.zoneName,
+    this.description,
+    required this.srid,
+    required this.featureType,
+    required this.pointsJson,
+    required this.pointCount,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['project_id'] = Variable<String>(projectId);
+    map['zone_name'] = Variable<String>(zoneName);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    map['srid'] = Variable<int>(srid);
+    map['feature_type'] = Variable<String>(featureType);
+    map['points_json'] = Variable<String>(pointsJson);
+    map['point_count'] = Variable<int>(pointCount);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
+    return map;
+  }
+
+  ManualZoneDraftsCompanion toCompanion(bool nullToAbsent) {
+    return ManualZoneDraftsCompanion(
+      id: Value(id),
+      projectId: Value(projectId),
+      zoneName: Value(zoneName),
+      description:
+          description == null && nullToAbsent
+              ? const Value.absent()
+              : Value(description),
+      srid: Value(srid),
+      featureType: Value(featureType),
+      pointsJson: Value(pointsJson),
+      pointCount: Value(pointCount),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory ManualZoneDraft.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ManualZoneDraft(
+      id: serializer.fromJson<String>(json['id']),
+      projectId: serializer.fromJson<String>(json['projectId']),
+      zoneName: serializer.fromJson<String>(json['zoneName']),
+      description: serializer.fromJson<String?>(json['description']),
+      srid: serializer.fromJson<int>(json['srid']),
+      featureType: serializer.fromJson<String>(json['featureType']),
+      pointsJson: serializer.fromJson<String>(json['pointsJson']),
+      pointCount: serializer.fromJson<int>(json['pointCount']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'projectId': serializer.toJson<String>(projectId),
+      'zoneName': serializer.toJson<String>(zoneName),
+      'description': serializer.toJson<String?>(description),
+      'srid': serializer.toJson<int>(srid),
+      'featureType': serializer.toJson<String>(featureType),
+      'pointsJson': serializer.toJson<String>(pointsJson),
+      'pointCount': serializer.toJson<int>(pointCount),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+    };
+  }
+
+  ManualZoneDraft copyWith({
+    String? id,
+    String? projectId,
+    String? zoneName,
+    Value<String?> description = const Value.absent(),
+    int? srid,
+    String? featureType,
+    String? pointsJson,
+    int? pointCount,
+    int? createdAt,
+    int? updatedAt,
+  }) => ManualZoneDraft(
+    id: id ?? this.id,
+    projectId: projectId ?? this.projectId,
+    zoneName: zoneName ?? this.zoneName,
+    description: description.present ? description.value : this.description,
+    srid: srid ?? this.srid,
+    featureType: featureType ?? this.featureType,
+    pointsJson: pointsJson ?? this.pointsJson,
+    pointCount: pointCount ?? this.pointCount,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  ManualZoneDraft copyWithCompanion(ManualZoneDraftsCompanion data) {
+    return ManualZoneDraft(
+      id: data.id.present ? data.id.value : this.id,
+      projectId: data.projectId.present ? data.projectId.value : this.projectId,
+      zoneName: data.zoneName.present ? data.zoneName.value : this.zoneName,
+      description:
+          data.description.present ? data.description.value : this.description,
+      srid: data.srid.present ? data.srid.value : this.srid,
+      featureType:
+          data.featureType.present ? data.featureType.value : this.featureType,
+      pointsJson:
+          data.pointsJson.present ? data.pointsJson.value : this.pointsJson,
+      pointCount:
+          data.pointCount.present ? data.pointCount.value : this.pointCount,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ManualZoneDraft(')
+          ..write('id: $id, ')
+          ..write('projectId: $projectId, ')
+          ..write('zoneName: $zoneName, ')
+          ..write('description: $description, ')
+          ..write('srid: $srid, ')
+          ..write('featureType: $featureType, ')
+          ..write('pointsJson: $pointsJson, ')
+          ..write('pointCount: $pointCount, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    projectId,
+    zoneName,
+    description,
+    srid,
+    featureType,
+    pointsJson,
+    pointCount,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ManualZoneDraft &&
+          other.id == this.id &&
+          other.projectId == this.projectId &&
+          other.zoneName == this.zoneName &&
+          other.description == this.description &&
+          other.srid == this.srid &&
+          other.featureType == this.featureType &&
+          other.pointsJson == this.pointsJson &&
+          other.pointCount == this.pointCount &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class ManualZoneDraftsCompanion extends UpdateCompanion<ManualZoneDraft> {
+  final Value<String> id;
+  final Value<String> projectId;
+  final Value<String> zoneName;
+  final Value<String?> description;
+  final Value<int> srid;
+  final Value<String> featureType;
+  final Value<String> pointsJson;
+  final Value<int> pointCount;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int> rowid;
+  const ManualZoneDraftsCompanion({
+    this.id = const Value.absent(),
+    this.projectId = const Value.absent(),
+    this.zoneName = const Value.absent(),
+    this.description = const Value.absent(),
+    this.srid = const Value.absent(),
+    this.featureType = const Value.absent(),
+    this.pointsJson = const Value.absent(),
+    this.pointCount = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ManualZoneDraftsCompanion.insert({
+    required String id,
+    required String projectId,
+    required String zoneName,
+    this.description = const Value.absent(),
+    required int srid,
+    required String featureType,
+    required String pointsJson,
+    this.pointCount = const Value.absent(),
+    required int createdAt,
+    required int updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       projectId = Value(projectId),
+       zoneName = Value(zoneName),
+       srid = Value(srid),
+       featureType = Value(featureType),
+       pointsJson = Value(pointsJson),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<ManualZoneDraft> custom({
+    Expression<String>? id,
+    Expression<String>? projectId,
+    Expression<String>? zoneName,
+    Expression<String>? description,
+    Expression<int>? srid,
+    Expression<String>? featureType,
+    Expression<String>? pointsJson,
+    Expression<int>? pointCount,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (projectId != null) 'project_id': projectId,
+      if (zoneName != null) 'zone_name': zoneName,
+      if (description != null) 'description': description,
+      if (srid != null) 'srid': srid,
+      if (featureType != null) 'feature_type': featureType,
+      if (pointsJson != null) 'points_json': pointsJson,
+      if (pointCount != null) 'point_count': pointCount,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ManualZoneDraftsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? projectId,
+    Value<String>? zoneName,
+    Value<String?>? description,
+    Value<int>? srid,
+    Value<String>? featureType,
+    Value<String>? pointsJson,
+    Value<int>? pointCount,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return ManualZoneDraftsCompanion(
+      id: id ?? this.id,
+      projectId: projectId ?? this.projectId,
+      zoneName: zoneName ?? this.zoneName,
+      description: description ?? this.description,
+      srid: srid ?? this.srid,
+      featureType: featureType ?? this.featureType,
+      pointsJson: pointsJson ?? this.pointsJson,
+      pointCount: pointCount ?? this.pointCount,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (projectId.present) {
+      map['project_id'] = Variable<String>(projectId.value);
+    }
+    if (zoneName.present) {
+      map['zone_name'] = Variable<String>(zoneName.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (srid.present) {
+      map['srid'] = Variable<int>(srid.value);
+    }
+    if (featureType.present) {
+      map['feature_type'] = Variable<String>(featureType.value);
+    }
+    if (pointsJson.present) {
+      map['points_json'] = Variable<String>(pointsJson.value);
+    }
+    if (pointCount.present) {
+      map['point_count'] = Variable<int>(pointCount.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ManualZoneDraftsCompanion(')
+          ..write('id: $id, ')
+          ..write('projectId: $projectId, ')
+          ..write('zoneName: $zoneName, ')
+          ..write('description: $description, ')
+          ..write('srid: $srid, ')
+          ..write('featureType: $featureType, ')
+          ..write('pointsJson: $pointsJson, ')
+          ..write('pointCount: $pointCount, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -6447,6 +8228,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $BaseMapsTable baseMaps = $BaseMapsTable(this);
   late final $ZoningFeaturesTable zoningFeatures = $ZoningFeaturesTable(this);
   late final $SyncLogsTable syncLogs = $SyncLogsTable(this);
+  late final $ZoningFeatureHistoryTable zoningFeatureHistory =
+      $ZoningFeatureHistoryTable(this);
+  late final $FeatureUploadQueueTable featureUploadQueue =
+      $FeatureUploadQueueTable(this);
+  late final $ManualZoneDraftsTable manualZoneDrafts = $ManualZoneDraftsTable(
+    this,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -6463,6 +8251,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     baseMaps,
     zoningFeatures,
     syncLogs,
+    zoningFeatureHistory,
+    featureUploadQueue,
+    manualZoneDrafts,
   ];
 }
 
@@ -9682,6 +11473,945 @@ typedef $$SyncLogsTableProcessedTableManager =
       SyncLog,
       PrefetchHooks Function()
     >;
+typedef $$ZoningFeatureHistoryTableCreateCompanionBuilder =
+    ZoningFeatureHistoryCompanion Function({
+      required String id,
+      required String featureId,
+      required String action,
+      Value<String?> userId,
+      Value<String?> oldDataJson,
+      required String newDataJson,
+      Value<String?> changesJson,
+      required int timestamp,
+      Value<int> rowid,
+    });
+typedef $$ZoningFeatureHistoryTableUpdateCompanionBuilder =
+    ZoningFeatureHistoryCompanion Function({
+      Value<String> id,
+      Value<String> featureId,
+      Value<String> action,
+      Value<String?> userId,
+      Value<String?> oldDataJson,
+      Value<String> newDataJson,
+      Value<String?> changesJson,
+      Value<int> timestamp,
+      Value<int> rowid,
+    });
+
+class $$ZoningFeatureHistoryTableFilterComposer
+    extends Composer<_$AppDatabase, $ZoningFeatureHistoryTable> {
+  $$ZoningFeatureHistoryTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get featureId => $composableBuilder(
+    column: $table.featureId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get action => $composableBuilder(
+    column: $table.action,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get oldDataJson => $composableBuilder(
+    column: $table.oldDataJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get newDataJson => $composableBuilder(
+    column: $table.newDataJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get changesJson => $composableBuilder(
+    column: $table.changesJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get timestamp => $composableBuilder(
+    column: $table.timestamp,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ZoningFeatureHistoryTableOrderingComposer
+    extends Composer<_$AppDatabase, $ZoningFeatureHistoryTable> {
+  $$ZoningFeatureHistoryTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get featureId => $composableBuilder(
+    column: $table.featureId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get action => $composableBuilder(
+    column: $table.action,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get oldDataJson => $composableBuilder(
+    column: $table.oldDataJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get newDataJson => $composableBuilder(
+    column: $table.newDataJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get changesJson => $composableBuilder(
+    column: $table.changesJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get timestamp => $composableBuilder(
+    column: $table.timestamp,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ZoningFeatureHistoryTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ZoningFeatureHistoryTable> {
+  $$ZoningFeatureHistoryTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get featureId =>
+      $composableBuilder(column: $table.featureId, builder: (column) => column);
+
+  GeneratedColumn<String> get action =>
+      $composableBuilder(column: $table.action, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get oldDataJson => $composableBuilder(
+    column: $table.oldDataJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get newDataJson => $composableBuilder(
+    column: $table.newDataJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get changesJson => $composableBuilder(
+    column: $table.changesJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get timestamp =>
+      $composableBuilder(column: $table.timestamp, builder: (column) => column);
+}
+
+class $$ZoningFeatureHistoryTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ZoningFeatureHistoryTable,
+          ZoningFeatureHistoryData,
+          $$ZoningFeatureHistoryTableFilterComposer,
+          $$ZoningFeatureHistoryTableOrderingComposer,
+          $$ZoningFeatureHistoryTableAnnotationComposer,
+          $$ZoningFeatureHistoryTableCreateCompanionBuilder,
+          $$ZoningFeatureHistoryTableUpdateCompanionBuilder,
+          (
+            ZoningFeatureHistoryData,
+            BaseReferences<
+              _$AppDatabase,
+              $ZoningFeatureHistoryTable,
+              ZoningFeatureHistoryData
+            >,
+          ),
+          ZoningFeatureHistoryData,
+          PrefetchHooks Function()
+        > {
+  $$ZoningFeatureHistoryTableTableManager(
+    _$AppDatabase db,
+    $ZoningFeatureHistoryTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer:
+              () => $$ZoningFeatureHistoryTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer:
+              () => $$ZoningFeatureHistoryTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer:
+              () => $$ZoningFeatureHistoryTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> featureId = const Value.absent(),
+                Value<String> action = const Value.absent(),
+                Value<String?> userId = const Value.absent(),
+                Value<String?> oldDataJson = const Value.absent(),
+                Value<String> newDataJson = const Value.absent(),
+                Value<String?> changesJson = const Value.absent(),
+                Value<int> timestamp = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ZoningFeatureHistoryCompanion(
+                id: id,
+                featureId: featureId,
+                action: action,
+                userId: userId,
+                oldDataJson: oldDataJson,
+                newDataJson: newDataJson,
+                changesJson: changesJson,
+                timestamp: timestamp,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String featureId,
+                required String action,
+                Value<String?> userId = const Value.absent(),
+                Value<String?> oldDataJson = const Value.absent(),
+                required String newDataJson,
+                Value<String?> changesJson = const Value.absent(),
+                required int timestamp,
+                Value<int> rowid = const Value.absent(),
+              }) => ZoningFeatureHistoryCompanion.insert(
+                id: id,
+                featureId: featureId,
+                action: action,
+                userId: userId,
+                oldDataJson: oldDataJson,
+                newDataJson: newDataJson,
+                changesJson: changesJson,
+                timestamp: timestamp,
+                rowid: rowid,
+              ),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          BaseReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ZoningFeatureHistoryTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ZoningFeatureHistoryTable,
+      ZoningFeatureHistoryData,
+      $$ZoningFeatureHistoryTableFilterComposer,
+      $$ZoningFeatureHistoryTableOrderingComposer,
+      $$ZoningFeatureHistoryTableAnnotationComposer,
+      $$ZoningFeatureHistoryTableCreateCompanionBuilder,
+      $$ZoningFeatureHistoryTableUpdateCompanionBuilder,
+      (
+        ZoningFeatureHistoryData,
+        BaseReferences<
+          _$AppDatabase,
+          $ZoningFeatureHistoryTable,
+          ZoningFeatureHistoryData
+        >,
+      ),
+      ZoningFeatureHistoryData,
+      PrefetchHooks Function()
+    >;
+typedef $$FeatureUploadQueueTableCreateCompanionBuilder =
+    FeatureUploadQueueCompanion Function({
+      required String id,
+      required String featureId,
+      required String projectId,
+      Value<int> retryCount,
+      Value<int> maxRetries,
+      Value<int?> nextRetryAt,
+      Value<String?> lastError,
+      Value<String> status,
+      required int createdAt,
+      required int updatedAt,
+      Value<int> rowid,
+    });
+typedef $$FeatureUploadQueueTableUpdateCompanionBuilder =
+    FeatureUploadQueueCompanion Function({
+      Value<String> id,
+      Value<String> featureId,
+      Value<String> projectId,
+      Value<int> retryCount,
+      Value<int> maxRetries,
+      Value<int?> nextRetryAt,
+      Value<String?> lastError,
+      Value<String> status,
+      Value<int> createdAt,
+      Value<int> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$FeatureUploadQueueTableFilterComposer
+    extends Composer<_$AppDatabase, $FeatureUploadQueueTable> {
+  $$FeatureUploadQueueTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get featureId => $composableBuilder(
+    column: $table.featureId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get projectId => $composableBuilder(
+    column: $table.projectId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get retryCount => $composableBuilder(
+    column: $table.retryCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get maxRetries => $composableBuilder(
+    column: $table.maxRetries,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get nextRetryAt => $composableBuilder(
+    column: $table.nextRetryAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastError => $composableBuilder(
+    column: $table.lastError,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$FeatureUploadQueueTableOrderingComposer
+    extends Composer<_$AppDatabase, $FeatureUploadQueueTable> {
+  $$FeatureUploadQueueTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get featureId => $composableBuilder(
+    column: $table.featureId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get projectId => $composableBuilder(
+    column: $table.projectId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get retryCount => $composableBuilder(
+    column: $table.retryCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get maxRetries => $composableBuilder(
+    column: $table.maxRetries,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get nextRetryAt => $composableBuilder(
+    column: $table.nextRetryAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastError => $composableBuilder(
+    column: $table.lastError,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$FeatureUploadQueueTableAnnotationComposer
+    extends Composer<_$AppDatabase, $FeatureUploadQueueTable> {
+  $$FeatureUploadQueueTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get featureId =>
+      $composableBuilder(column: $table.featureId, builder: (column) => column);
+
+  GeneratedColumn<String> get projectId =>
+      $composableBuilder(column: $table.projectId, builder: (column) => column);
+
+  GeneratedColumn<int> get retryCount => $composableBuilder(
+    column: $table.retryCount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get maxRetries => $composableBuilder(
+    column: $table.maxRetries,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get nextRetryAt => $composableBuilder(
+    column: $table.nextRetryAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastError =>
+      $composableBuilder(column: $table.lastError, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$FeatureUploadQueueTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $FeatureUploadQueueTable,
+          FeatureUploadQueueData,
+          $$FeatureUploadQueueTableFilterComposer,
+          $$FeatureUploadQueueTableOrderingComposer,
+          $$FeatureUploadQueueTableAnnotationComposer,
+          $$FeatureUploadQueueTableCreateCompanionBuilder,
+          $$FeatureUploadQueueTableUpdateCompanionBuilder,
+          (
+            FeatureUploadQueueData,
+            BaseReferences<
+              _$AppDatabase,
+              $FeatureUploadQueueTable,
+              FeatureUploadQueueData
+            >,
+          ),
+          FeatureUploadQueueData,
+          PrefetchHooks Function()
+        > {
+  $$FeatureUploadQueueTableTableManager(
+    _$AppDatabase db,
+    $FeatureUploadQueueTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer:
+              () => $$FeatureUploadQueueTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer:
+              () => $$FeatureUploadQueueTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer:
+              () => $$FeatureUploadQueueTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> featureId = const Value.absent(),
+                Value<String> projectId = const Value.absent(),
+                Value<int> retryCount = const Value.absent(),
+                Value<int> maxRetries = const Value.absent(),
+                Value<int?> nextRetryAt = const Value.absent(),
+                Value<String?> lastError = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => FeatureUploadQueueCompanion(
+                id: id,
+                featureId: featureId,
+                projectId: projectId,
+                retryCount: retryCount,
+                maxRetries: maxRetries,
+                nextRetryAt: nextRetryAt,
+                lastError: lastError,
+                status: status,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String featureId,
+                required String projectId,
+                Value<int> retryCount = const Value.absent(),
+                Value<int> maxRetries = const Value.absent(),
+                Value<int?> nextRetryAt = const Value.absent(),
+                Value<String?> lastError = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                required int createdAt,
+                required int updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => FeatureUploadQueueCompanion.insert(
+                id: id,
+                featureId: featureId,
+                projectId: projectId,
+                retryCount: retryCount,
+                maxRetries: maxRetries,
+                nextRetryAt: nextRetryAt,
+                lastError: lastError,
+                status: status,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          BaseReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$FeatureUploadQueueTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $FeatureUploadQueueTable,
+      FeatureUploadQueueData,
+      $$FeatureUploadQueueTableFilterComposer,
+      $$FeatureUploadQueueTableOrderingComposer,
+      $$FeatureUploadQueueTableAnnotationComposer,
+      $$FeatureUploadQueueTableCreateCompanionBuilder,
+      $$FeatureUploadQueueTableUpdateCompanionBuilder,
+      (
+        FeatureUploadQueueData,
+        BaseReferences<
+          _$AppDatabase,
+          $FeatureUploadQueueTable,
+          FeatureUploadQueueData
+        >,
+      ),
+      FeatureUploadQueueData,
+      PrefetchHooks Function()
+    >;
+typedef $$ManualZoneDraftsTableCreateCompanionBuilder =
+    ManualZoneDraftsCompanion Function({
+      required String id,
+      required String projectId,
+      required String zoneName,
+      Value<String?> description,
+      required int srid,
+      required String featureType,
+      required String pointsJson,
+      Value<int> pointCount,
+      required int createdAt,
+      required int updatedAt,
+      Value<int> rowid,
+    });
+typedef $$ManualZoneDraftsTableUpdateCompanionBuilder =
+    ManualZoneDraftsCompanion Function({
+      Value<String> id,
+      Value<String> projectId,
+      Value<String> zoneName,
+      Value<String?> description,
+      Value<int> srid,
+      Value<String> featureType,
+      Value<String> pointsJson,
+      Value<int> pointCount,
+      Value<int> createdAt,
+      Value<int> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$ManualZoneDraftsTableFilterComposer
+    extends Composer<_$AppDatabase, $ManualZoneDraftsTable> {
+  $$ManualZoneDraftsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get projectId => $composableBuilder(
+    column: $table.projectId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get zoneName => $composableBuilder(
+    column: $table.zoneName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get srid => $composableBuilder(
+    column: $table.srid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get featureType => $composableBuilder(
+    column: $table.featureType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get pointsJson => $composableBuilder(
+    column: $table.pointsJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get pointCount => $composableBuilder(
+    column: $table.pointCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ManualZoneDraftsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ManualZoneDraftsTable> {
+  $$ManualZoneDraftsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get projectId => $composableBuilder(
+    column: $table.projectId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get zoneName => $composableBuilder(
+    column: $table.zoneName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get srid => $composableBuilder(
+    column: $table.srid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get featureType => $composableBuilder(
+    column: $table.featureType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get pointsJson => $composableBuilder(
+    column: $table.pointsJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get pointCount => $composableBuilder(
+    column: $table.pointCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ManualZoneDraftsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ManualZoneDraftsTable> {
+  $$ManualZoneDraftsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get projectId =>
+      $composableBuilder(column: $table.projectId, builder: (column) => column);
+
+  GeneratedColumn<String> get zoneName =>
+      $composableBuilder(column: $table.zoneName, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get srid =>
+      $composableBuilder(column: $table.srid, builder: (column) => column);
+
+  GeneratedColumn<String> get featureType => $composableBuilder(
+    column: $table.featureType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get pointsJson => $composableBuilder(
+    column: $table.pointsJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get pointCount => $composableBuilder(
+    column: $table.pointCount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$ManualZoneDraftsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ManualZoneDraftsTable,
+          ManualZoneDraft,
+          $$ManualZoneDraftsTableFilterComposer,
+          $$ManualZoneDraftsTableOrderingComposer,
+          $$ManualZoneDraftsTableAnnotationComposer,
+          $$ManualZoneDraftsTableCreateCompanionBuilder,
+          $$ManualZoneDraftsTableUpdateCompanionBuilder,
+          (
+            ManualZoneDraft,
+            BaseReferences<
+              _$AppDatabase,
+              $ManualZoneDraftsTable,
+              ManualZoneDraft
+            >,
+          ),
+          ManualZoneDraft,
+          PrefetchHooks Function()
+        > {
+  $$ManualZoneDraftsTableTableManager(
+    _$AppDatabase db,
+    $ManualZoneDraftsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer:
+              () =>
+                  $$ManualZoneDraftsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer:
+              () => $$ManualZoneDraftsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer:
+              () => $$ManualZoneDraftsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> projectId = const Value.absent(),
+                Value<String> zoneName = const Value.absent(),
+                Value<String?> description = const Value.absent(),
+                Value<int> srid = const Value.absent(),
+                Value<String> featureType = const Value.absent(),
+                Value<String> pointsJson = const Value.absent(),
+                Value<int> pointCount = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ManualZoneDraftsCompanion(
+                id: id,
+                projectId: projectId,
+                zoneName: zoneName,
+                description: description,
+                srid: srid,
+                featureType: featureType,
+                pointsJson: pointsJson,
+                pointCount: pointCount,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String projectId,
+                required String zoneName,
+                Value<String?> description = const Value.absent(),
+                required int srid,
+                required String featureType,
+                required String pointsJson,
+                Value<int> pointCount = const Value.absent(),
+                required int createdAt,
+                required int updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => ManualZoneDraftsCompanion.insert(
+                id: id,
+                projectId: projectId,
+                zoneName: zoneName,
+                description: description,
+                srid: srid,
+                featureType: featureType,
+                pointsJson: pointsJson,
+                pointCount: pointCount,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          BaseReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ManualZoneDraftsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ManualZoneDraftsTable,
+      ManualZoneDraft,
+      $$ManualZoneDraftsTableFilterComposer,
+      $$ManualZoneDraftsTableOrderingComposer,
+      $$ManualZoneDraftsTableAnnotationComposer,
+      $$ManualZoneDraftsTableCreateCompanionBuilder,
+      $$ManualZoneDraftsTableUpdateCompanionBuilder,
+      (
+        ManualZoneDraft,
+        BaseReferences<_$AppDatabase, $ManualZoneDraftsTable, ManualZoneDraft>,
+      ),
+      ManualZoneDraft,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -9708,4 +12438,10 @@ class $AppDatabaseManager {
       $$ZoningFeaturesTableTableManager(_db, _db.zoningFeatures);
   $$SyncLogsTableTableManager get syncLogs =>
       $$SyncLogsTableTableManager(_db, _db.syncLogs);
+  $$ZoningFeatureHistoryTableTableManager get zoningFeatureHistory =>
+      $$ZoningFeatureHistoryTableTableManager(_db, _db.zoningFeatureHistory);
+  $$FeatureUploadQueueTableTableManager get featureUploadQueue =>
+      $$FeatureUploadQueueTableTableManager(_db, _db.featureUploadQueue);
+  $$ManualZoneDraftsTableTableManager get manualZoneDrafts =>
+      $$ManualZoneDraftsTableTableManager(_db, _db.manualZoneDrafts);
 }
