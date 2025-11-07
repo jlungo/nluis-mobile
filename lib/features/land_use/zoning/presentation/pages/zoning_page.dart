@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/zoning_map.dart';
 import '../widgets/map_features_sheet.dart';
 import '../widgets/feature_details_sheet.dart';
+import '../widgets/feature_edit_sheet.dart';
 import '../providers/zoning_providers.dart';
 import '../widgets/basemap_download_dialog.dart';
+import '../widgets/input_method_selection_sheet.dart';
 import '../widgets/location_permission_dialog.dart';
 import '../../../../../shared/widgets/page_empty_state.dart';
 import '../../../../../core/network/network_info.dart';
@@ -33,6 +35,7 @@ class _ZoningPageState extends ConsumerState<ZoningPage> {
   double _sheetSize = 0.3;
   bool _fabExpanded = false;
   ZoningFeatureType? _activeFeatureType;
+  InputMethod? _selectedInputMethod;
 
   @override
   void initState() {
@@ -171,11 +174,13 @@ class _ZoningPageState extends ConsumerState<ZoningPage> {
                               projectId: widget.projectId,
                               basemap: basemap,
                               startFeatureCreation: _activeFeatureType,
+                              inputMethod: _selectedInputMethod?.name,
                               onCreatingFeatureChanged: (isCreating) {
                                 setState(() {
                                   _isCreatingFeature = isCreating;
                                   if (!isCreating) {
                                     _activeFeatureType = null;
+                                    _selectedInputMethod = null;
                                   }
                                 });
                               },
@@ -227,10 +232,27 @@ class _ZoningPageState extends ConsumerState<ZoningPage> {
                                   );
                                 },
                                 onFeatureEdit: (feature) {
-                                  // TODO: Implement edit feature dialog
-                                  SnackBarUtils.showInfo(
-                                    context,
-                                    'Edit feature: ${feature.plotName ?? feature.plotId}',
+                                  showModalBottomSheet(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    builder: (context) => FeatureEditSheet(
+                                      feature: feature,
+                                      onSave: (updatedFeature) {
+                                        ref
+                                            .read(zoningStateProvider.notifier)
+                                            .updateFeature(updatedFeature);
+                                        ref.invalidate(
+                                          zoningFeaturesProvider(
+                                            widget.projectId,
+                                          ),
+                                        );
+                                        Navigator.of(context).pop();
+                                        SnackBarUtils.showSuccess(
+                                          context,
+                                          'Feature updated successfully',
+                                        );
+                                      },
+                                    ),
                                   );
                                 },
                                 onFeatureDelete: (feature) {
@@ -349,7 +371,7 @@ class _ZoningPageState extends ConsumerState<ZoningPage> {
             label: 'Point',
             onTap: () {
               setState(() => _fabExpanded = false);
-              _startFeatureCreation(ZoningFeatureType.point);
+              _showInputMethodSelection(ZoningFeatureType.point);
             },
           ),
           const SizedBox(height: AppConstants.spacingSm),
@@ -358,7 +380,7 @@ class _ZoningPageState extends ConsumerState<ZoningPage> {
             label: 'Line',
             onTap: () {
               setState(() => _fabExpanded = false);
-              _startFeatureCreation(ZoningFeatureType.lineString);
+              _showInputMethodSelection(ZoningFeatureType.lineString);
             },
           ),
           const SizedBox(height: AppConstants.spacingSm),
@@ -367,7 +389,7 @@ class _ZoningPageState extends ConsumerState<ZoningPage> {
             label: 'Polygon',
             onTap: () {
               setState(() => _fabExpanded = false);
-              _startFeatureCreation(ZoningFeatureType.polygon);
+              _showInputMethodSelection(ZoningFeatureType.polygon);
             },
           ),
           const SizedBox(height: 12),
@@ -407,9 +429,19 @@ class _ZoningPageState extends ConsumerState<ZoningPage> {
     );
   }
 
-  void _startFeatureCreation(ZoningFeatureType featureType) {
-    setState(() {
-      _activeFeatureType = featureType;
-    });
+  void _showInputMethodSelection(ZoningFeatureType featureType) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => InputMethodSelectionSheet(
+        featureType: featureType,
+        onMethodSelected: (inputMethod) {
+          setState(() {
+            _selectedInputMethod = inputMethod;
+            _activeFeatureType = featureType;
+          });
+        },
+      ),
+    );
   }
 }
