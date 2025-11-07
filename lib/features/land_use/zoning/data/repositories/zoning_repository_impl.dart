@@ -148,7 +148,6 @@ class ZoningRepositoryImpl implements ZoningRepository {
           'plotId': feature.plotId,
           'plotName': feature.plotName,
           'notes': feature.notes,
-          'ownershipDetails': feature.ownershipDetails,
         })),
         isDraft: drift.Value(feature.isDraft),
         isProposed: drift.Value(feature.isProposed),
@@ -191,7 +190,6 @@ class ZoningRepositoryImpl implements ZoningRepository {
           'plotId': feature.plotId,
           'plotName': feature.plotName,
           'notes': feature.notes,
-          'ownershipDetails': feature.ownershipDetails,
         })),
         isDraft: drift.Value(feature.isDraft),
         isProposed: drift.Value(feature.isProposed),
@@ -262,6 +260,63 @@ class ZoningRepositoryImpl implements ZoningRepository {
     }
   }
 
+  // Locality-based operations for ZoningManagerPage
+  @override
+  Future<Either<Failure, List<domain.ZoningFeature>>> getAllFeatures() async {
+    try {
+      final features = await _database.select(_database.zoningFeatures).get();
+      final zoningFeatures = features.map(_mapToZoningFeature).toList();
+      return Right(zoningFeatures);
+    } catch (e) {
+      return Left(CacheFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<domain.ZoningFeature>>> getFeaturesByStatus({
+    bool? isDraft,
+    bool? uploaded,
+  }) async {
+    try {
+      var query = _database.select(_database.zoningFeatures);
+      
+      if (isDraft != null) {
+        query = query..where((tbl) => tbl.isDraft.equals(isDraft));
+      }
+      
+      if (uploaded != null) {
+        query = query..where((tbl) => tbl.uploaded.equals(uploaded));
+      }
+      
+      final features = await query.get();
+      final zoningFeatures = features.map(_mapToZoningFeature).toList();
+      return Right(zoningFeatures);
+    } catch (e) {
+      return Left(CacheFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Map<String, List<domain.ZoningFeature>>>> getFeaturesByLocality() async {
+    try {
+      final features = await _database.select(_database.zoningFeatures).get();
+      final zoningFeatures = features.map(_mapToZoningFeature).toList();
+      
+      // Group features by localityId
+      final Map<String, List<domain.ZoningFeature>> groupedFeatures = {};
+      for (final feature in zoningFeatures) {
+        if (!groupedFeatures.containsKey(feature.localityId)) {
+          groupedFeatures[feature.localityId] = [];
+        }
+        groupedFeatures[feature.localityId]!.add(feature);
+      }
+      
+      return Right(groupedFeatures);
+    } catch (e) {
+      return Left(CacheFailure(e.toString()));
+    }
+  }
+
   // Helper methods
   domain.ZoningFeature _mapToZoningFeature(ZoningFeature dbFeature) {
     final coordinates = (jsonDecode(dbFeature.coordsJson) as List)
@@ -292,7 +347,6 @@ class ZoningRepositoryImpl implements ZoningRepository {
       plotId: properties['plotId'],
       plotName: properties['plotName'],
       notes: properties['notes'],
-      ownershipDetails: properties['ownershipDetails'],
       area: dbFeature.areaSqm,
       length: dbFeature.lengthM,
       isProposed: dbFeature.isProposed,
@@ -330,7 +384,6 @@ class ZoningRepositoryImpl implements ZoningRepository {
             'plotId': feature.plotId,
             'plotName': feature.plotName,
             'notes': feature.notes,
-            'ownershipDetails': feature.ownershipDetails,
             'area': feature.area,
             'length': feature.length,
             'isProposed': feature.isProposed,
