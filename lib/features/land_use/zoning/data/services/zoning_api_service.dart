@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import '../../../../../core/network/dio_client.dart';
 import '../../domain/entities/zoning_feature.dart';
 
@@ -6,42 +8,6 @@ class ZoningApiService {
   final DioClient _dioClient;
 
   ZoningApiService({required DioClient dioClient}) : _dioClient = dioClient;
-
-  /// TODO: Create a single zone with SRID-embedded geometry
-  /// 
-  /// Request format:
-  /// ```json
-  /// {
-  ///   "land_use": 2,
-  ///   "locality": 5,
-  ///   "geom": {
-  ///     "type": "Polygon",
-  ///     "coordinates": [[[lng, lat], ...]],
-  ///     "srid": 4326
-  ///   },
-  ///   "status": "Draft",
-  ///   "is_proposed": false,
-  ///   "source": "field_survey",
-  ///   "version": 1
-  /// }
-  /// ```
-  Future<Map<String, dynamic>> createZone(ZoningFeature feature) async {
-    try {
-      final payload = _buildZonePayload(feature);
-      final response = await _dioClient.post<Map<String, dynamic>>(
-        '/api/zoning/zones/',
-        data: payload,
-      );
-
-      if (response.statusCode == 201 || response.statusCode == 200) {
-        return response.data ?? {};
-      }
-
-      throw Exception('Failed to create zone: ${response.statusCode}');
-    } catch (e) {
-      rethrow;
-    }
-  }
 
   /// Bulk upload zones using GeoJSON FeatureCollection format
   /// 
@@ -59,10 +25,10 @@ class ZoningApiService {
   ///         "coordinates": [[[lng, lat], ...]]
   ///       },
   ///       "properties": {
+  ///         "plan": null,
   ///         "land_use": 3,
   ///         "locality": 55,
-  ///         "source": "QField",
-  ///         "version": 1
+  ///         "source": "MobileApp"
   ///       }
   ///     }
   ///   ]
@@ -83,7 +49,7 @@ class ZoningApiService {
       };
 
       final response = await _dioClient.post<Map<String, dynamic>>(
-        '/api/v1/zoning/zones/bulk/',
+        '/zoning/zones/bulk/',
         data: featureCollection,
       );
 
@@ -101,7 +67,7 @@ class ZoningApiService {
   Future<List<Map<String, dynamic>>> getLocalityZones(String localityId) async {
     try {
       final response = await _dioClient.get<Map<String, dynamic>>(
-        '/api/zoning/locality/$localityId/zones/',
+        '/zoning/locality/$localityId/zones/',
       );
 
       if (response.statusCode == 200) {
@@ -126,33 +92,11 @@ class ZoningApiService {
         'coordinates': coordinates,
       },
       'properties': {
-        if (planId != null) 'plan': planId,
-        if (feature.serverId != null) 'id': int.tryParse(feature.serverId!) ?? feature.serverId,
+        'plan': planId,
         if (feature.landUseId != null) 'land_use': feature.landUseId,
         'locality': int.parse(feature.localityId),
-        'source': feature.source,
-        'version': feature.version,
+        'source': 'MobileApp',
       },
-    };
-  }
-
-  /// Build zone payload with SRID-embedded geometry (for single upload if needed)
-  Map<String, dynamic> _buildZonePayload(ZoningFeature feature) {
-    final coordinates = _buildCoordinates(feature);
-    
-    return {
-      'client_uuid': feature.clientUuid,
-      if (feature.landUseId != null) 'land_use': feature.landUseId,
-      'locality': int.parse(feature.localityId),
-      'geom': {
-        'type': _getGeometryType(feature.featureType),
-        'coordinates': coordinates,
-        'srid': feature.srid,
-      },
-      'status': feature.status,
-      'is_proposed': feature.isProposed,
-      'source': feature.source,
-      'version': feature.version,
     };
   }
 
@@ -168,11 +112,12 @@ class ZoningApiService {
   }
 
   dynamic _buildCoordinates(ZoningFeature feature) {
-    // Limit precision to 6 decimal places for lat/lon (~ 0.1 meter accuracy)
+    // Limit precision to 15 decimal places for maximum double precision
+    // (~0.01 millimeter accuracy for lat/lon coordinates)
     final coords = feature.coordinates
         .map((coord) => [
-              _limitPrecision(coord.longitude, 6),
-              _limitPrecision(coord.latitude, 6),
+              _limitPrecision(coord.longitude, 15),
+              _limitPrecision(coord.latitude, 15),
             ])
         .toList();
 
@@ -191,7 +136,7 @@ class ZoningApiService {
   }
 
   double _limitPrecision(double value, int decimalPlaces) {
-    final mod = (10.0 * decimalPlaces).toDouble();
+    final mod = pow(10, decimalPlaces).toDouble();
     return (value * mod).round() / mod;
   }
 }
