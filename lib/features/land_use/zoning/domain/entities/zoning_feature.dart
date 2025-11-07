@@ -31,7 +31,6 @@ class ZoningFeature extends Equatable {
   final String? plotId;
   final String? plotName;
   final String? notes;
-  final String? ownershipDetails;
   final double? area; // For polygons (in square meters)
   final double? length; // For lines (in meters)
   final bool isProposed; // false = existing, true = proposed
@@ -53,13 +52,12 @@ class ZoningFeature extends Equatable {
     required this.localityId,
     this.landUseId,
     required this.featureType,
-    this.srid = 4326,
+    required this.srid,
     required this.coordinates,
     required this.zoningType,
     this.plotId,
     this.plotName,
     this.notes,
-    this.ownershipDetails,
     this.area,
     this.length,
     this.isProposed = false,
@@ -88,7 +86,6 @@ class ZoningFeature extends Equatable {
     String? plotId,
     String? plotName,
     String? notes,
-    String? ownershipDetails,
     double? area,
     double? length,
     bool? isProposed,
@@ -116,7 +113,6 @@ class ZoningFeature extends Equatable {
       plotId: plotId ?? this.plotId,
       plotName: plotName ?? this.plotName,
       notes: notes ?? this.notes,
-      ownershipDetails: ownershipDetails ?? this.ownershipDetails,
       area: area ?? this.area,
       length: length ?? this.length,
       isProposed: isProposed ?? this.isProposed,
@@ -176,7 +172,6 @@ class ZoningFeature extends Equatable {
         'plotId': plotId,
         'plotName': plotName,
         'notes': notes,
-        'ownershipDetails': ownershipDetails,
         'area': area,
         'length': length,
         'isProposed': isProposed,
@@ -208,7 +203,6 @@ class ZoningFeature extends Equatable {
         plotId,
         plotName,
         notes,
-        ownershipDetails,
         area,
         length,
         isProposed,
