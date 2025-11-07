@@ -7,6 +7,7 @@ import '../../data/repositories/zoning_repository_impl.dart';
 import '../../data/services/basemap_storage_service.dart';
 import '../../data/services/location_service.dart';
 import '../../data/services/land_use_api_service.dart';
+import '../../data/services/zoning_api_service.dart';
 import '../../domain/entities/basemap.dart';
 import '../../domain/entities/user_location.dart';
 import '../../domain/entities/zoning_feature.dart';
@@ -17,10 +18,7 @@ import '../../domain/repositories/zoning_repository.dart';
 final basemapStorageServiceProvider = Provider<BasemapStorageService>((ref) {
   final dioClient = ref.watch(dioClientProvider);
   final database = ref.watch(databaseProvider);
-  return BasemapStorageService(
-    dioClient: dioClient,
-    database: database,
-  );
+  return BasemapStorageService(dioClient: dioClient, database: database);
 });
 
 final locationServiceProvider = Provider<LocationService>((ref) {
@@ -31,6 +29,12 @@ final locationServiceProvider = Provider<LocationService>((ref) {
 final landUseApiServiceProvider = Provider<LandUseApiService>((ref) {
   final dioClient = ref.watch(dioClientProvider);
   return LandUseApiService(dioClient: dioClient);
+});
+
+// Zoning API service for bulk uploads
+final zoningApiServiceProvider = Provider<ZoningApiService>((ref) {
+  final dioClient = ref.watch(dioClientProvider);
+  return ZoningApiService(dioClient: dioClient);
 });
 
 // Fetch and cache land uses
@@ -94,13 +98,19 @@ final zoningRepositoryProvider = Provider<ZoningRepository>((ref) {
 });
 
 // Basemap Providers
-final basemapDownloadStatusProvider = FutureProvider.family<bool, String>((ref, localityId) async {
+final basemapDownloadStatusProvider = FutureProvider.family<bool, String>((
+  ref,
+  localityId,
+) async {
   final repository = ref.watch(zoningRepositoryProvider);
   final result = await repository.isBasemapDownloaded(localityId);
   return result.fold((failure) => false, (isDownloaded) => isDownloaded);
 });
 
-final basemapProvider = FutureProvider.family<Basemap?, String>((ref, localityId) async {
+final basemapProvider = FutureProvider.family<Basemap?, String>((
+  ref,
+  localityId,
+) async {
   final repository = ref.watch(zoningRepositoryProvider);
   final result = await repository.loadBasemap(localityId);
   return result.fold((failure) => null, (basemap) => basemap);
@@ -113,29 +123,44 @@ final locationPermissionProvider = FutureProvider<bool>((ref) async {
   return result.fold((failure) => false, (hasPermission) => hasPermission);
 });
 
-final currentLocationProvider = FutureProvider.family<UserLocation?, List<LatLng>?>((ref, projectBoundary) async {
-  final repository = ref.watch(zoningRepositoryProvider);
-  final result = await repository.getCurrentLocation(projectBoundary: projectBoundary);
-  return result.fold((failure) => null, (location) => location);
-});
+final currentLocationProvider =
+    FutureProvider.family<UserLocation?, List<LatLng>?>((
+      ref,
+      projectBoundary,
+    ) async {
+      final repository = ref.watch(zoningRepositoryProvider);
+      final result = await repository.getCurrentLocation(
+        projectBoundary: projectBoundary,
+      );
+      return result.fold((failure) => null, (location) => location);
+    });
 
-final locationStreamProvider = StreamProvider.family<UserLocation, List<LatLng>?>((ref, projectBoundary) {
-  final repository = ref.watch(zoningRepositoryProvider);
-  return repository.getLocationStream(projectBoundary: projectBoundary);
-});
+final locationStreamProvider =
+    StreamProvider.family<UserLocation, List<LatLng>?>((ref, projectBoundary) {
+      final repository = ref.watch(zoningRepositoryProvider);
+      return repository.getLocationStream(projectBoundary: projectBoundary);
+    });
 
 // Feature Providers
-final zoningFeaturesProvider = FutureProvider.family<List<ZoningFeature>, String>((ref, projectId) async {
-  final repository = ref.watch(zoningRepositoryProvider);
-  final result = await repository.getFeatures(projectId);
-  return result.fold((failure) => <ZoningFeature>[], (features) => features);
-});
+final zoningFeaturesProvider =
+    FutureProvider.family<List<ZoningFeature>, String>((ref, projectId) async {
+      final repository = ref.watch(zoningRepositoryProvider);
+      final result = await repository.getFeatures(projectId);
+      return result.fold(
+        (failure) => <ZoningFeature>[],
+        (features) => features,
+      );
+    });
 
-final unsyncedFeaturesProvider = FutureProvider.family<List<ZoningFeature>, String>((ref, projectId) async {
-  final repository = ref.watch(zoningRepositoryProvider);
-  final result = await repository.getUnsyncedFeatures(projectId);
-  return result.fold((failure) => <ZoningFeature>[], (features) => features);
-});
+final unsyncedFeaturesProvider =
+    FutureProvider.family<List<ZoningFeature>, String>((ref, projectId) async {
+      final repository = ref.watch(zoningRepositoryProvider);
+      final result = await repository.getUnsyncedFeatures(projectId);
+      return result.fold(
+        (failure) => <ZoningFeature>[],
+        (features) => features,
+      );
+    });
 
 // State Notifiers
 class ZoningStateNotifier extends StateNotifier<ZoningState> {
@@ -148,7 +173,7 @@ class ZoningStateNotifier extends StateNotifier<ZoningState> {
     String? accessToken,
   }) async {
     state = const ZoningDownloadingBasemap();
-    
+
     final result = await _repository.downloadBasemap(
       localityId: localityId,
       accessToken: accessToken,
@@ -159,17 +184,19 @@ class ZoningStateNotifier extends StateNotifier<ZoningState> {
 
     result.fold(
       (failure) => state = ZoningError(failure.message),
-      (success) => state = success 
-          ? const ZoningBasemapReady()
-          : const ZoningError('Failed to download basemap'),
+      (success) =>
+          state =
+              success
+                  ? const ZoningBasemapReady()
+                  : const ZoningError('Failed to download basemap'),
     );
   }
 
   Future<void> createFeature(ZoningFeature feature) async {
     state = const ZoningSavingFeature();
-    
+
     final result = await _repository.createFeature(feature);
-    
+
     result.fold(
       (failure) => state = ZoningError(failure.message),
       (savedFeature) => state = ZoningFeatureSaved(savedFeature),
@@ -178,9 +205,9 @@ class ZoningStateNotifier extends StateNotifier<ZoningState> {
 
   Future<void> updateFeature(ZoningFeature feature) async {
     state = const ZoningSavingFeature();
-    
+
     final result = await _repository.updateFeature(feature);
-    
+
     result.fold(
       (failure) => state = ZoningError(failure.message),
       (updatedFeature) => state = ZoningFeatureSaved(updatedFeature),
@@ -189,27 +216,31 @@ class ZoningStateNotifier extends StateNotifier<ZoningState> {
 
   Future<void> deleteFeature(String featureId) async {
     state = const ZoningDeletingFeature();
-    
+
     final result = await _repository.deleteFeature(featureId);
-    
+
     result.fold(
       (failure) => state = ZoningError(failure.message),
-      (success) => state = success 
-          ? const ZoningFeatureDeleted()
-          : const ZoningError('Failed to delete feature'),
+      (success) =>
+          state =
+              success
+                  ? const ZoningFeatureDeleted()
+                  : const ZoningError('Failed to delete feature'),
     );
   }
 
   Future<void> exportFeatures(String projectId, String filePath) async {
     state = const ZoningExporting();
-    
+
     final result = await _repository.exportFeatures(projectId, filePath);
-    
+
     result.fold(
       (failure) => state = ZoningError(failure.message),
-      (success) => state = success 
-          ? const ZoningExported('')
-          : const ZoningError('Export failed'),
+      (success) =>
+          state =
+              success
+                  ? const ZoningExported('')
+                  : const ZoningError('Export failed'),
     );
   }
 
@@ -220,10 +251,11 @@ class ZoningStateNotifier extends StateNotifier<ZoningState> {
   }
 }
 
-final zoningStateProvider = StateNotifierProvider<ZoningStateNotifier, ZoningState>((ref) {
-  final repository = ref.watch(zoningRepositoryProvider);
-  return ZoningStateNotifier(repository);
-});
+final zoningStateProvider =
+    StateNotifierProvider<ZoningStateNotifier, ZoningState>((ref) {
+      final repository = ref.watch(zoningRepositoryProvider);
+      return ZoningStateNotifier(repository);
+    });
 
 // Zoning State
 abstract class ZoningState {
