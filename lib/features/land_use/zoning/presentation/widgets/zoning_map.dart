@@ -14,6 +14,9 @@ import '../../data/services/calculation_service.dart';
 import 'feature_metadata_sheet.dart';
 import 'feature_details_sheet.dart';
 import 'location_indicator.dart';
+import 'coordinate_editor_map.dart';
+import 'manual_coordinate_entry_sheet.dart';
+import '../../data/services/coordinate_converter.dart';
 
 const _uuid = Uuid();
 
@@ -22,6 +25,8 @@ class ZoningMap extends ConsumerStatefulWidget {
   final Basemap basemap;
   final ValueChanged<bool>? onCreatingFeatureChanged;
   final ZoningFeatureType? startFeatureCreation;
+  final String? inputMethod; // 'tapping', 'manual', or 'automatic'
+  final String? highlightFeatureId; // Feature to highlight from external source
 
   const ZoningMap({
     super.key,
@@ -29,6 +34,8 @@ class ZoningMap extends ConsumerStatefulWidget {
     required this.basemap,
     this.onCreatingFeatureChanged,
     this.startFeatureCreation,
+    this.inputMethod,
+    this.highlightFeatureId,
   });
 
   @override
@@ -39,8 +46,10 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
   late final MapController _mapController;
   bool _isCreatingFeature = false;
   ZoningFeatureType? _activeFeatureType;
+  String? _activeInputMethod; // Track which input method is active
   final List<LatLng> _currentFeaturePoints = [];
   UserLocation? _lastLocation;
+  String? _selectedFeatureId; // For highlighting selected features
 
   MapType _mapType = MapType.standard;
   String? _mapTypeBanner;
@@ -65,9 +74,61 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
         widget.startFeatureCreation != oldWidget.startFeatureCreation) {
       // Defer the call to after build phase completes
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _startFeatureCreation(widget.startFeatureCreation!);
+        // Check input method
+        if (widget.inputMethod == 'manualEntry') {
+          _openManualCoordinateEntry(widget.startFeatureCreation!);
+        } else if (widget.inputMethod == 'automaticRecording') {
+          _startAutomaticRecording(widget.startFeatureCreation!);
+        } else {
+          // Default to tapping mode
+          _startFeatureCreation(widget.startFeatureCreation!);
+        }
       });
     }
+    
+    // Handle external feature highlighting
+    if (widget.highlightFeatureId != null &&
+        widget.highlightFeatureId != oldWidget.highlightFeatureId) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _highlightAndZoomToFeature(widget.highlightFeatureId!);
+      });
+    }
+  }
+  
+  void _highlightAndZoomToFeature(String featureId) async {
+    final featuresAsync = ref.read(zoningFeaturesProvider(widget.projectId));
+    featuresAsync.whenData((features) {
+      final feature = features.firstWhere(
+        (f) => f.clientUuid == featureId,
+        orElse: () => features.first,
+      );
+      
+      setState(() {
+        _selectedFeatureId = featureId;
+      });
+      
+      // Zoom to feature
+      if (feature.coordinates.isNotEmpty) {
+        if (feature.featureType == ZoningFeatureType.point) {
+          _mapController.move(feature.coordinates.first, 18.0);
+        } else {
+          final bounds = LatLngBounds.fromPoints(feature.coordinates);
+          _mapController.fitCamera(
+            CameraFit.bounds(
+              bounds: bounds,
+              padding: const EdgeInsets.all(100.0),
+            ),
+          );
+        }
+      }
+      
+      // Show feature details after a short delay
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (mounted) {
+          _showFeatureDetails(feature);
+        }
+      });
+    });
   }
 
   Future<void> _initializeTileStores() async {
@@ -114,25 +175,124 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
   }
 
   void _onMapTap(TapPosition tapPosition, LatLng point) {
-    if (!_isCreatingFeature || _activeFeatureType == null) return;
+    // If creating feature, add point
+    if (_isCreatingFeature && _activeFeatureType != null) {
+      setState(() {
+        _currentFeaturePoints.add(point);
+      });
 
-    setState(() {
-      _currentFeaturePoints.add(point);
-    });
-
-    // Auto-complete for point features
-    if (_activeFeatureType == ZoningFeatureType.point) {
-      _completeFeature();
+      // Auto-complete for point features
+      if (_activeFeatureType == ZoningFeatureType.point) {
+        _completeFeature();
+      }
+      return;
     }
+
+    // Otherwise, check if we tapped on a feature
+    final featuresAsync = ref.read(zoningFeaturesProvider(widget.projectId));
+    featuresAsync.whenData((features) {
+      final tappedFeature = _findFeatureAtPoint(point, features);
+      if (tappedFeature != null) {
+        _showFeatureDetails(tappedFeature);
+      }
+    });
+  }
+
+  void _onMapLongPress(TapPosition tapPosition, LatLng point) {
+    // Don't allow editing while creating a new feature
+    if (_isCreatingFeature) return;
+
+    // Find if long-press is on a feature
+    final featuresAsync = ref.read(zoningFeaturesProvider(widget.projectId));
+    featuresAsync.whenData((features) {
+      final tappedFeature = _findFeatureAtPoint(point, features);
+      if (tappedFeature != null) {
+        // Open coordinate editor for this feature
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => CoordinateEditorMap(
+              feature: tappedFeature,
+              onSave: (updatedCoordinates) {
+                // Recalculate area/length
+                double? area;
+                double? length;
+
+                if (tappedFeature.featureType == ZoningFeatureType.polygon) {
+                  area = CalculationService.calculatePolygonArea(updatedCoordinates);
+                } else if (tappedFeature.featureType == ZoningFeatureType.lineString) {
+                  length = CalculationService.calculateLineLength(updatedCoordinates);
+                }
+
+                final updatedFeature = tappedFeature.copyWith(
+                  coordinates: updatedCoordinates,
+                  area: area,
+                  length: length,
+                  updatedAt: DateTime.now(),
+                );
+
+                ref.read(zoningStateProvider.notifier).updateFeature(updatedFeature);
+                ref.invalidate(zoningFeaturesProvider(widget.projectId));
+                
+                Navigator.of(context).pop();
+                
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Feature coordinates updated successfully'),
+                    backgroundColor: AppColors.success,
+                  ),
+                );
+              },
+              onCancel: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ),
+        );
+      }
+    });
   }
 
   void _startFeatureCreation(ZoningFeatureType featureType) {
     setState(() {
       _isCreatingFeature = true;
       _activeFeatureType = featureType;
+      _activeInputMethod = 'tapping'; // Placement by tapping
       _currentFeaturePoints.clear();
     });
     widget.onCreatingFeatureChanged?.call(true);
+  }
+
+  void _startAutomaticRecording(ZoningFeatureType featureType) {
+    setState(() {
+      _isCreatingFeature = true;
+      _activeFeatureType = featureType;
+      _activeInputMethod = 'automaticRecording'; // Automatic GPS recording
+      _currentFeaturePoints.clear();
+    });
+    widget.onCreatingFeatureChanged?.call(true);
+
+    // Automatically add the first GPS point
+    if (_lastLocation != null) {
+      setState(() {
+        _currentFeaturePoints.add(_lastLocation!.position);
+      });
+
+      // For point features, auto-complete immediately
+      if (featureType == ZoningFeatureType.point) {
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (mounted) {
+            _completeFeature();
+          }
+        });
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Waiting for GPS location...'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   void _completeFeature() {
@@ -180,6 +340,7 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
     setState(() {
       _isCreatingFeature = false;
       _activeFeatureType = null;
+      _activeInputMethod = null; // Reset input method
       _currentFeaturePoints.clear();
     });
     widget.onCreatingFeatureChanged?.call(false);
@@ -213,6 +374,51 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
     );
   }
 
+  void _openManualCoordinateEntry(ZoningFeatureType featureType) {
+    setState(() {
+      _isCreatingFeature = true;
+      _activeFeatureType = featureType;
+      _activeInputMethod = 'manualEntry'; // Manual coordinate entry
+    });
+    widget.onCreatingFeatureChanged?.call(true);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
+      builder: (context) => ManualCoordinateEntrySheet(
+        featureType: featureType,
+        onSave: (zoneName, srid, coordinates) {
+          // Convert coordinates from the selected SRID to WGS84
+          CoordinateConverter.initialize();
+          final wgs84Coordinates = coordinates.map((coord) {
+            return CoordinateConverter.toWGS84(
+              x: coord[0],
+              y: coord[1],
+              fromSrid: srid,
+            );
+          }).toList();
+
+          setState(() {
+            _currentFeaturePoints.clear();
+            _currentFeaturePoints.addAll(wgs84Coordinates);
+          });
+
+          // Close the manual entry sheet
+          Navigator.of(context).pop();
+
+          // Open metadata sheet to complete the feature
+          _openMetadataSheet();
+        },
+        onCancel: () {
+          Navigator.of(context).pop();
+          _cancelFeatureCreation();
+        },
+      ),
+    );
+  }
+
   void _saveFeature(Map<String, dynamic> metadata) async {
     if (_activeFeatureType == null || _currentFeaturePoints.isEmpty) return;
 
@@ -226,7 +432,6 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
       length = CalculationService.calculateLineLength(_currentFeaturePoints);
     }
 
-    // TODO: Remove dummy fields like ownershipDetails
     final now = DateTime.now();
     final feature = ZoningFeature(
       clientUuid: _uuid.v4(),
@@ -240,7 +445,6 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
       plotId: metadata['plotId'],
       plotName: metadata['plotName'],
       notes: metadata['notes'],
-      ownershipDetails: metadata['ownershipDetails'],
       area: area,
       length: length,
       isProposed: metadata['isProposed'] ?? false,
@@ -286,6 +490,7 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
             // minZoom: 8.0,
             maxZoom: 20.0,
             onTap: _onMapTap,
+            onLongPress: _onMapLongPress,
             interactionOptions: const InteractionOptions(
               flags: InteractiveFlag.all,
             ),
@@ -402,6 +607,8 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
     final polygons = <Polygon>[];
 
     for (final feature in features) {
+      final isSelected = _selectedFeatureId == feature.clientUuid;
+      
       // Use land-use color, fallback to grey if not available
       final color =
           feature.landUseId != null
@@ -417,12 +624,12 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
                 onTap: () => _showFeatureDetails(feature),
                 child: Icon(
                   Icons.location_pin,
-                  color: color,
-                  size: 32,
+                  color: isSelected ? AppColors.accent : color,
+                  size: isSelected ? 40 : 32,
                   shadows: [
                     Shadow(
                       color: Colors.black.withValues(alpha: 0.3),
-                      blurRadius: 4,
+                      blurRadius: isSelected ? 6 : 4,
                       offset: const Offset(0, 2),
                     ),
                   ],
@@ -436,8 +643,8 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
           polylines.add(
             Polyline(
               points: feature.coordinates,
-              color: color,
-              strokeWidth: 3.0,
+              color: isSelected ? AppColors.accent : color,
+              strokeWidth: isSelected ? 5.0 : 3.0,
             ),
           );
           break;
@@ -446,9 +653,9 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
           polygons.add(
             Polygon(
               points: feature.coordinates,
-              color: color.withValues(alpha: 0.3),
-              borderColor: color,
-              borderStrokeWidth: 2.0,
+              color: (isSelected ? AppColors.accent : color).withValues(alpha: isSelected ? 0.4 : 0.3),
+              borderColor: isSelected ? AppColors.accent : color,
+              borderStrokeWidth: isSelected ? 3.0 : 2.0,
             ),
           );
           break;
@@ -634,7 +841,124 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
     );
   }
 
+  /// Finds if a tapped point intersects with any feature
+  ZoningFeature? _findFeatureAtPoint(
+    LatLng tappedPoint,
+    List<ZoningFeature> features,
+  ) {
+    const double tolerance = 0.0001; // ~11 meters at equator
+
+    for (final feature in features) {
+      switch (feature.featureType) {
+        case ZoningFeatureType.point:
+          // Check if tap is near the point marker
+          final distance = const Distance().distance(
+            tappedPoint,
+            feature.coordinates.first,
+          );
+          if (distance < 30) {
+            // 30 meters radius
+            return feature;
+          }
+          break;
+
+        case ZoningFeatureType.lineString:
+          // Check if tap is near any line segment
+          if (_isPointNearPolyline(tappedPoint, feature.coordinates, tolerance)) {
+            return feature;
+          }
+          break;
+
+        case ZoningFeatureType.polygon:
+          // Check if point is inside polygon or near boundary
+          if (_isPointInPolygon(tappedPoint, feature.coordinates) ||
+              _isPointNearPolyline(tappedPoint, feature.coordinates, tolerance)) {
+            return feature;
+          }
+          break;
+      }
+    }
+    return null;
+  }
+
+  /// Check if point is inside a polygon using ray casting algorithm
+  bool _isPointInPolygon(LatLng point, List<LatLng> polygon) {
+    int intersections = 0;
+    for (int i = 0; i < polygon.length; i++) {
+      final v1 = polygon[i];
+      final v2 = polygon[(i + 1) % polygon.length];
+
+      if ((v1.latitude <= point.latitude && point.latitude < v2.latitude) ||
+          (v2.latitude <= point.latitude && point.latitude < v1.latitude)) {
+        final xIntersect = (point.latitude - v1.latitude) *
+                (v2.longitude - v1.longitude) /
+                (v2.latitude - v1.latitude) +
+            v1.longitude;
+
+        if (point.longitude < xIntersect) {
+          intersections++;
+        }
+      }
+    }
+    return intersections % 2 == 1;
+  }
+
+  /// Check if point is near a polyline/polygon boundary
+  bool _isPointNearPolyline(
+    LatLng point,
+    List<LatLng> polyline,
+    double tolerance,
+  ) {
+    for (int i = 0; i < polyline.length - 1; i++) {
+      final p1 = polyline[i];
+      final p2 = polyline[i + 1];
+
+      final distance = _distanceToSegment(point, p1, p2);
+      if (distance < tolerance) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /// Calculate perpendicular distance from point to line segment
+  double _distanceToSegment(LatLng point, LatLng lineStart, LatLng lineEnd) {
+    final x0 = point.longitude;
+    final y0 = point.latitude;
+    final x1 = lineStart.longitude;
+    final y1 = lineStart.latitude;
+    final x2 = lineEnd.longitude;
+    final y2 = lineEnd.latitude;
+
+    final dx = x2 - x1;
+    final dy = y2 - y1;
+
+    if (dx == 0 && dy == 0) {
+      // Line segment is a point
+      return ((x0 - x1) * (x0 - x1) + (y0 - y1) * (y0 - y1)).abs();
+    }
+
+    final t = ((x0 - x1) * dx + (y0 - y1) * dy) / (dx * dx + dy * dy);
+
+    if (t < 0) {
+      // Beyond start point
+      return ((x0 - x1) * (x0 - x1) + (y0 - y1) * (y0 - y1)).abs();
+    } else if (t > 1) {
+      // Beyond end point
+      return ((x0 - x2) * (x0 - x2) + (y0 - y2) * (y0 - y2)).abs();
+    }
+
+    // Closest point is on the segment
+    final projX = x1 + t * dx;
+    final projY = y1 + t * dy;
+    return ((x0 - projX) * (x0 - projX) + (y0 - projY) * (y0 - projY)).abs();
+  }
+
   void _showFeatureDetails(ZoningFeature feature) {
+    setState(() {
+      _selectedFeatureId = feature.clientUuid;
+    });
+
     showModalBottomSheet(
       context: context,
       builder:
@@ -653,7 +977,11 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
               ref.invalidate(zoningFeaturesProvider(widget.projectId));
             },
           ),
-    );
+    ).whenComplete(() {
+      setState(() {
+        _selectedFeatureId = null;
+      });
+    });
   }
 
   Widget _buildTileLayer(bool isDark) {
@@ -743,8 +1071,9 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
               // Action buttons
               Row(
                 children: [
-                  // Only show 'Mark Location' when user is inside boundary
-                  if (_lastLocation?.isInsideBoundary ?? false) ...[
+                  // Only show 'Mark Location' for automatic recording mode
+                  if (_activeInputMethod == 'automaticRecording' &&
+                      (_lastLocation?.isInsideBoundary ?? false)) ...[
                     Expanded(
                       child: OutlinedButton.icon(
                         onPressed: _markCurrentLocation,
