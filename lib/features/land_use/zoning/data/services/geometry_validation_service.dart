@@ -13,7 +13,7 @@ class GeometryValidationService {
     if (coordinates.isEmpty) {
       return ValidationResult(
         isValid: false,
-        error: 'Hakuna kuratibu zilizotolewa',
+        error: 'Hakuna coordinates zilizotolewa',
       );
     }
 
@@ -69,7 +69,7 @@ class GeometryValidationService {
       if (_arePointsEqual(coordinates[i], coordinates[i + 1])) {
         return ValidationResult(
           isValid: false,
-          error: 'Kuratibu zinazofanana zimegundulika katika nafasi ${i + 1}',
+          error: 'Coordinates zinazofanana zimegundulika katika nafasi ${i + 1}',
           warning: 'Pointi mbili zinazofuatana ni sawa',
         );
       }
@@ -99,7 +99,7 @@ class GeometryValidationService {
     if (coordinates.length < 3) {
       return ValidationResult(
         isValid: false,
-        error: 'Polygon lazima iwe na kuratibu angalau tatu',
+        error: 'Polygon lazima iwe na coordinates angalau tatu',
       );
     }
 
