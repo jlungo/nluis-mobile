@@ -12,7 +12,7 @@ import '../../features/settings/presentation/pages/settings_page.dart';
 import '../../features/notifications/presentation/pages/notifications_page.dart';
 import '../../features/madodoso/presentation/pages/madodoso_page.dart';
 import '../../features/land_use/survey/presentation/pages/questionnaire_form_page.dart';
-import '../../features/zoning_manager/presentation/pages/zoning_manager_page.dart';
+import '../../features/land_use/zoning/presentation/pages/zoning_manager_page.dart';
 import '../../shared/widgets/app_shell.dart';
 import '../../features/auth/presentation/providers/auth_providers.dart';
 import '../../features/auth/domain/entities/user.dart';
