@@ -121,9 +121,9 @@ class _MadodosoTabBar extends StatelessWidget implements PreferredSizeWidget {
       indicatorSize: TabBarIndicatorSize.tab,
       padding: const EdgeInsets.symmetric(horizontal: AppConstants.spacingSm),
       tabs: [
-        buildTab('Draft', counts.$1, AppColors.warning),
-        buildTab('Completed', counts.$2, AppColors.info),
-        buildTab('Uploaded', counts.$3, AppColors.success),
+        buildTab('Rasimu', counts.$1, AppColors.warning),
+        buildTab('Zilizohifadhiwa', counts.$2, AppColors.info),
+        buildTab('Zimepakiwa', counts.$3, AppColors.success),
       ],
     );
   }
