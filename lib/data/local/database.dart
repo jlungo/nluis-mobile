@@ -172,6 +172,52 @@ class SyncLogs extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+class ZoningFeatureHistory extends Table {
+  TextColumn get id => text()();
+  TextColumn get featureId => text().named('feature_id')();
+  TextColumn get action => text()(); // 'create', 'update', 'delete', 'coordinate_edit'
+  TextColumn get userId => text().named('user_id').nullable()();
+  TextColumn get oldDataJson => text().named('old_data_json').nullable()();
+  TextColumn get newDataJson => text().named('new_data_json')();
+  TextColumn get changesJson => text().named('changes_json').nullable()(); // Specific field changes
+  IntColumn get timestamp => integer()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+class FeatureUploadQueue extends Table {
+  TextColumn get id => text()();
+  TextColumn get featureId => text().named('feature_id')();
+  TextColumn get projectId => text().named('project_id')();
+  IntColumn get retryCount => integer().named('retry_count').withDefault(const Constant(0))();
+  IntColumn get maxRetries => integer().named('max_retries').withDefault(const Constant(5))();
+  IntColumn get nextRetryAt => integer().named('next_retry_at').nullable()();
+  TextColumn get lastError => text().named('last_error').nullable()();
+  TextColumn get status => text().withDefault(const Constant('pending'))(); // pending, uploading, failed, completed
+  IntColumn get createdAt => integer().named('created_at')();
+  IntColumn get updatedAt => integer().named('updated_at')();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+class ManualZoneDrafts extends Table {
+  TextColumn get id => text()();
+  TextColumn get projectId => text().named('project_id')();
+  TextColumn get zoneName => text().named('zone_name')();
+  TextColumn get description => text().nullable()();
+  IntColumn get srid => integer()(); // EPSG code (4326, 32736, etc)
+  TextColumn get featureType => text().named('feature_type')(); // point, line, polygon
+  TextColumn get pointsJson => text().named('points_json')(); // [[x,y], [x,y], ...]
+  IntColumn get pointCount => integer().named('point_count').withDefault(const Constant(0))();
+  IntColumn get createdAt => integer().named('created_at')();
+  IntColumn get updatedAt => integer().named('updated_at')();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 @DriftDatabase(tables: [
   Users,
   Projects,
@@ -184,12 +230,15 @@ class SyncLogs extends Table {
   BaseMaps,
   ZoningFeatures,
   SyncLogs,
+  ZoningFeatureHistory,
+  FeatureUploadQueue,
+  ManualZoneDrafts,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration {
@@ -229,6 +278,15 @@ class AppDatabase extends _$AppDatabase {
           // Recreate ZoningFeatures table with enhanced schema for upload tracking and SRID
           await m.drop(zoningFeatures);
           await m.createTable(zoningFeatures);
+        }
+        if (from < 8) {
+          // Add feature edit history tracking and upload queue tables
+          await m.createTable(zoningFeatureHistory);
+          await m.createTable(featureUploadQueue);
+        }
+        if (from < 9) {
+          // Add manual zone drafts table for manual coordinate entry
+          await m.createTable(manualZoneDrafts);
         }
       },
     );
