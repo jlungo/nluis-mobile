@@ -3,6 +3,7 @@ import '../../../../../shared/constants/app_constants.dart';
 import '../../../../../shared/theme/app_colors.dart';
 import '../../../../../shared/widgets/app_button.dart';
 import '../../domain/entities/zoning_feature.dart';
+import 'coordinate_editor_map.dart';
 
 class FeatureDetailsSheet extends StatelessWidget {
   final ZoningFeature feature;
@@ -235,9 +236,6 @@ class FeatureDetailsSheet extends StatelessWidget {
                     if (feature.plotId?.isNotEmpty == true)
                       _buildDetailRow('Plot ID', feature.plotId!, theme, isDark),
                     
-                    if (feature.ownershipDetails?.isNotEmpty == true)
-                      _buildDetailRow('Ownership', feature.ownershipDetails!, theme, isDark),
-                    
                     if (feature.notes?.isNotEmpty == true)
                       _buildDetailRow('Notes', feature.notes!, theme, isDark),
                     
@@ -270,35 +268,96 @@ class FeatureDetailsSheet extends StatelessWidget {
             
             const SizedBox(height: AppConstants.spacingLg),
             
+            // Uploaded features notice
+            if (feature.uploaded)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppConstants.spacingLg),
+                child: Container(
+                  padding: const EdgeInsets.all(AppConstants.spacingMd),
+                  decoration: BoxDecoration(
+                    color: AppColors.info.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppConstants.radiusMd),
+                    border: Border.all(
+                      color: AppColors.info.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.cloud_done,
+                        color: AppColors.info,
+                        size: 20,
+                      ),
+                      const SizedBox(width: AppConstants.spacingSm),
+                      Expanded(
+                        child: Text(
+                          'This feature has been uploaded and cannot be edited or deleted.',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: AppColors.info,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            
+            if (feature.uploaded)
+              const SizedBox(height: AppConstants.spacingMd),
+            
             // Actions
             Padding(
               padding: const EdgeInsets.all(AppConstants.spacingLg),
               child: Row(
                 children: [
                   Expanded(
-                    child: AppButton(
-                      label: 'Delete',
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        _showDeleteConfirmation(context);
-                      },
-                      gradientColors: [AppColors.error.withValues(alpha: 0.1), AppColors.error.withValues(alpha: 0.2)],
+                    child: Opacity(
+                      opacity: feature.uploaded ? 0.5 : 1.0,
+                      child: AbsorbPointer(
+                        absorbing: feature.uploaded,
+                        child: AppButton(
+                          label: 'Delete',
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            _showDeleteConfirmation(context);
+                          },
+                          gradientColors: [AppColors.error.withValues(alpha: 0.1), AppColors.error.withValues(alpha: 0.2)],
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(width: AppConstants.spacingMd),
                   Expanded(
-                    child: AppButton(
-                      label: 'Edit',
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        // TODO: Implement edit functionality
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Edit functionality coming soon'),
-                          ),
-                        );
-                      },
-                      gradientColors: [AppColors.primary, AppColors.primary.withValues(alpha: 0.8)],
+                    child: Opacity(
+                      opacity: feature.uploaded ? 0.5 : 1.0,
+                      child: AbsorbPointer(
+                        absorbing: feature.uploaded,
+                        child: AppButton(
+                          label: 'Edit Coordinates',
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => CoordinateEditorMap(
+                                  feature: feature,
+                                  onSave: (updatedCoordinates) {
+                                    final updatedFeature = feature.copyWith(
+                                      coordinates: updatedCoordinates,
+                                      updatedAt: DateTime.now(),
+                                    );
+                                    onEdit(updatedFeature);
+                                    Navigator.of(context).pop();
+                                  },
+                                  onCancel: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ),
+                            );
+                          },
+                          gradientColors: [AppColors.primary, AppColors.primary.withValues(alpha: 0.8)],
+                        ),
+                      ),
                     ),
                   ),
                 ],
