@@ -25,8 +25,9 @@ class AppDrawer extends ConsumerWidget {
     final isOnDashboard = matchesLocation('/module/land-use/dashboard');
     final isOnProjects =
         matchesLocation('/module/land-use/projects') ||
-        matchesLocation('/module/land-use/survey') ||
-        matchesLocation('/module/land-use/zoning');
+        matchesLocation('/module/land-use/survey');
+    final isOnZoning = matchesLocation('/module/land-use/zoning') ||
+        matchesLocation('/zoning-manager');
     final isOnDrafts = matchesLocation('/madodoso');
     final isOnSettings = matchesLocation('/settings');
     // final isOnNotifications = matchesLocation('/notifications');
@@ -118,6 +119,15 @@ class AppDrawer extends ConsumerWidget {
                   onTap: () {
                     Navigator.pop(context);
                     context.goNamed('luProjects');
+                  },
+                ),
+                _DrawerMenuItem(
+                  icon: Icons.map_outlined,
+                  label: 'Zoning',
+                  isSelected: isOnZoning,
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.goNamed('zoningManager');
                   },
                 ),
                 _DrawerMenuItem(
