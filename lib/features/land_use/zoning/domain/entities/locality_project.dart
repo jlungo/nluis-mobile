@@ -8,6 +8,8 @@ class LocalityProject extends Equatable {
   final int savedCount;
   final int uploadedCount;
   final List<String> projectIds;
+  final DateTime? lastUpdatedAt;
+  final DateTime? uploadedAt;
 
   const LocalityProject({
     required this.localityId,
@@ -16,6 +18,8 @@ class LocalityProject extends Equatable {
     required this.savedCount,
     required this.uploadedCount,
     required this.projectIds,
+    this.lastUpdatedAt,
+    this.uploadedAt,
   });
 
   int get totalFeatures => draftCount + savedCount + uploadedCount;
@@ -28,5 +32,7 @@ class LocalityProject extends Equatable {
         savedCount,
         uploadedCount,
         projectIds,
+        lastUpdatedAt,
+        uploadedAt,
       ];
 }
