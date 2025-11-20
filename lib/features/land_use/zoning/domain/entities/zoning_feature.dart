@@ -33,6 +33,7 @@ class ZoningFeature extends Equatable {
   final String? notes;
   final double? area; // For polygons (in square meters)
   final double? length; // For lines (in meters)
+  final double buffer; // Buffer distance in meters (default 0)
   final bool isProposed; // false = existing, true = proposed
   final String status; // Draft, Ready, Uploaded
   final String source; // field_survey, manual_input, etc.
@@ -60,6 +61,7 @@ class ZoningFeature extends Equatable {
     this.notes,
     this.area,
     this.length,
+    this.buffer = 0.0,
     this.isProposed = false,
     this.status = 'Draft',
     this.source = 'field_survey',
@@ -88,6 +90,7 @@ class ZoningFeature extends Equatable {
     String? notes,
     double? area,
     double? length,
+    double? buffer,
     bool? isProposed,
     String? status,
     String? source,
@@ -115,6 +118,7 @@ class ZoningFeature extends Equatable {
       notes: notes ?? this.notes,
       area: area ?? this.area,
       length: length ?? this.length,
+      buffer: buffer ?? this.buffer,
       isProposed: isProposed ?? this.isProposed,
       status: status ?? this.status,
       source: source ?? this.source,
@@ -174,6 +178,7 @@ class ZoningFeature extends Equatable {
         'notes': notes,
         'area': area,
         'length': length,
+        'buffer': buffer,
         'isProposed': isProposed,
         'status': status,
         'source': source,
@@ -205,6 +210,7 @@ class ZoningFeature extends Equatable {
         notes,
         area,
         length,
+        buffer,
         isProposed,
         status,
         source,
