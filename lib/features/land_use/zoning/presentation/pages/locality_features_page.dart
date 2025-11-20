@@ -226,6 +226,35 @@ class _FeatureCard extends ConsumerWidget {
     }
   }
 
+  String _getTimestampText() {
+    final DateTime timestamp = feature.uploaded && feature.uploadedAt != null
+        ? feature.uploadedAt!
+        : feature.updatedAt;
+    
+    final now = DateTime.now();
+    final difference = now.difference(timestamp);
+    
+    if (difference.inMinutes < 1) {
+      return feature.uploaded ? 'Uploaded just now' : 'Updated just now';
+    } else if (difference.inHours < 1) {
+      return feature.uploaded
+          ? 'Uploaded ${difference.inMinutes}m ago'
+          : 'Updated ${difference.inMinutes}m ago';
+    } else if (difference.inDays < 1) {
+      return feature.uploaded
+          ? 'Uploaded ${difference.inHours}h ago'
+          : 'Updated ${difference.inHours}h ago';
+    } else if (difference.inDays < 7) {
+      return feature.uploaded
+          ? 'Uploaded ${difference.inDays}d ago'
+          : 'Updated ${difference.inDays}d ago';
+    } else {
+      return feature.uploaded
+          ? 'Uploaded ${timestamp.day}/${timestamp.month}/${timestamp.year}'
+          : 'Updated ${timestamp.day}/${timestamp.month}/${timestamp.year}';
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
@@ -305,6 +334,32 @@ class _FeatureCard extends ConsumerWidget {
                         ),
                       ),
                     ],
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(
+                          feature.uploaded
+                              ? Icons.cloud_upload_rounded
+                              : Icons.update_rounded,
+                          size: 14,
+                          color:
+                              isDark
+                                  ? AppColors.darkTextSecondary
+                                  : AppColors.textSecondary,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          _getTimestampText(),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color:
+                                isDark
+                                    ? AppColors.darkTextSecondary
+                                    : AppColors.textSecondary,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
