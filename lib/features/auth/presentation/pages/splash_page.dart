@@ -6,6 +6,7 @@ import 'package:nluis_app/core/env/env.dart';
 import '../../../../shared/constants/app_constants.dart';
 import '../../../../core/network/network_info.dart';
 import '../providers/auth_providers.dart';
+import '../../../settings/presentation/providers/setup_providers.dart';
 
 class SplashPage extends ConsumerStatefulWidget {
   const SplashPage({super.key});
@@ -75,12 +76,23 @@ class _SplashPageState extends ConsumerState<SplashPage> {
             if (mounted) context.go('/login');
           });
         },
-        (user) {
+        (user) async {
           if (user != null) {
             setState(() {
-              _statusMessage = 'Session valid. Redirecting...';
+              _statusMessage = 'Session valid. Loading configurations...';
             });
-            Future.delayed(const Duration(milliseconds: 500), () {
+            
+            // Fetch land uses and other setup data in background
+            ref.read(setupStateProvider.notifier).fetchLandUses().catchError((_) {
+              // Silently fail - user can manually refresh from settings
+            });
+            
+            await Future.delayed(const Duration(milliseconds: 800));
+            setState(() {
+              _statusMessage = 'Redirecting...';
+            });
+            
+            Future.delayed(const Duration(milliseconds: 300), () {
               if (mounted) context.go('/module-switch');
             });
           } else {
