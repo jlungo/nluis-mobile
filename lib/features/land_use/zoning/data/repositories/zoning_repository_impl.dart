@@ -143,6 +143,7 @@ class ZoningRepositoryImpl implements ZoningRepository {
             .toList()),
         areaSqm: drift.Value(feature.area),
         lengthM: drift.Value(feature.length),
+        buffer: drift.Value(feature.buffer),
         propertiesJson: drift.Value(jsonEncode({
           'zoningType': feature.zoningType.name,
           'plotId': feature.plotId,
@@ -185,6 +186,7 @@ class ZoningRepositoryImpl implements ZoningRepository {
             .toList())),
         areaSqm: drift.Value(feature.area),
         lengthM: drift.Value(feature.length),
+        buffer: drift.Value(feature.buffer),
         propertiesJson: drift.Value(jsonEncode({
           'zoningType': feature.zoningType.name,
           'plotId': feature.plotId,
@@ -349,6 +351,7 @@ class ZoningRepositoryImpl implements ZoningRepository {
       notes: properties['notes'],
       area: dbFeature.areaSqm,
       length: dbFeature.lengthM,
+      buffer: dbFeature.buffer,
       isProposed: dbFeature.isProposed,
       status: dbFeature.status,
       source: dbFeature.source,
