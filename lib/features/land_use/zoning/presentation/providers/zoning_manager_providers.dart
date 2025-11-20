@@ -53,18 +53,36 @@ final localityProjectsProvider = FutureProvider.autoDispose<List<LocalityProject
             : 'Locality $localityId';
         
         // Count features by status
-        final draftCount = features.where((f) => f.isDraft && !f.uploaded).length;
-        final savedCount = features.where((f) => !f.isDraft && !f.uploaded).length;
-        final uploadedCount = features.where((f) => f.uploaded).length;
+        final draftFeatures = features.where((f) => f.isDraft && !f.uploaded).toList();
+        final savedFeatures = features.where((f) => !f.isDraft && !f.uploaded).toList();
+        final uploadedFeatures = features.where((f) => f.uploaded).toList();
         
-        if (draftCount + savedCount + uploadedCount > 0) {
+        // Get most recent timestamps
+        DateTime? lastUpdatedAt;
+        if (draftFeatures.isNotEmpty || savedFeatures.isNotEmpty) {
+          final nonUploadedFeatures = [...draftFeatures, ...savedFeatures];
+          lastUpdatedAt = nonUploadedFeatures
+              .map((f) => f.updatedAt)
+              .reduce((a, b) => a.isAfter(b) ? a : b);
+        }
+        
+        DateTime? uploadedAt;
+        if (uploadedFeatures.isNotEmpty && uploadedFeatures.first.uploadedAt != null) {
+          uploadedAt = uploadedFeatures
+              .map((f) => f.uploadedAt!)
+              .reduce((a, b) => a.isAfter(b) ? a : b);
+        }
+        
+        if (draftFeatures.length + savedFeatures.length + uploadedFeatures.length > 0) {
           localityProjects.add(LocalityProject(
             localityId: localityId,
             localityName: localityName,
-            draftCount: draftCount,
-            savedCount: savedCount,
-            uploadedCount: uploadedCount,
+            draftCount: draftFeatures.length,
+            savedCount: savedFeatures.length,
+            uploadedCount: uploadedFeatures.length,
             projectIds: projectIds.toList(),
+            lastUpdatedAt: lastUpdatedAt,
+            uploadedAt: uploadedAt,
           ));
         }
       }
