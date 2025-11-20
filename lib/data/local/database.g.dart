@@ -4866,6 +4866,16 @@ class $ZoningFeaturesTable extends ZoningFeatures
     type: DriftSqlType.double,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _bufferMeta = const VerificationMeta('buffer');
+  @override
+  late final GeneratedColumn<double> buffer = GeneratedColumn<double>(
+    'buffer',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0.0),
+  );
   static const VerificationMeta _propertiesJsonMeta = const VerificationMeta(
     'propertiesJson',
   );
@@ -5023,6 +5033,7 @@ class $ZoningFeaturesTable extends ZoningFeatures
     coordsJson,
     areaSqm,
     lengthM,
+    buffer,
     propertiesJson,
     isDraft,
     isProposed,
@@ -5116,6 +5127,12 @@ class $ZoningFeaturesTable extends ZoningFeatures
       context.handle(
         _lengthMMeta,
         lengthM.isAcceptableOrUnknown(data['length_m']!, _lengthMMeta),
+      );
+    }
+    if (data.containsKey('buffer')) {
+      context.handle(
+        _bufferMeta,
+        buffer.isAcceptableOrUnknown(data['buffer']!, _bufferMeta),
       );
     }
     if (data.containsKey('properties_json')) {
@@ -5255,6 +5272,11 @@ class $ZoningFeaturesTable extends ZoningFeatures
         DriftSqlType.double,
         data['${effectivePrefix}length_m'],
       ),
+      buffer:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.double,
+            data['${effectivePrefix}buffer'],
+          )!,
       propertiesJson: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}properties_json'],
@@ -5332,6 +5354,7 @@ class ZoningFeature extends DataClass implements Insertable<ZoningFeature> {
   final String coordsJson;
   final double? areaSqm;
   final double? lengthM;
+  final double buffer;
   final String? propertiesJson;
   final bool isDraft;
   final bool isProposed;
@@ -5355,6 +5378,7 @@ class ZoningFeature extends DataClass implements Insertable<ZoningFeature> {
     required this.coordsJson,
     this.areaSqm,
     this.lengthM,
+    required this.buffer,
     this.propertiesJson,
     required this.isDraft,
     required this.isProposed,
@@ -5389,6 +5413,7 @@ class ZoningFeature extends DataClass implements Insertable<ZoningFeature> {
     if (!nullToAbsent || lengthM != null) {
       map['length_m'] = Variable<double>(lengthM);
     }
+    map['buffer'] = Variable<double>(buffer);
     if (!nullToAbsent || propertiesJson != null) {
       map['properties_json'] = Variable<String>(propertiesJson);
     }
@@ -5434,6 +5459,7 @@ class ZoningFeature extends DataClass implements Insertable<ZoningFeature> {
           lengthM == null && nullToAbsent
               ? const Value.absent()
               : Value(lengthM),
+      buffer: Value(buffer),
       propertiesJson:
           propertiesJson == null && nullToAbsent
               ? const Value.absent()
@@ -5474,6 +5500,7 @@ class ZoningFeature extends DataClass implements Insertable<ZoningFeature> {
       coordsJson: serializer.fromJson<String>(json['coordsJson']),
       areaSqm: serializer.fromJson<double?>(json['areaSqm']),
       lengthM: serializer.fromJson<double?>(json['lengthM']),
+      buffer: serializer.fromJson<double>(json['buffer']),
       propertiesJson: serializer.fromJson<String?>(json['propertiesJson']),
       isDraft: serializer.fromJson<bool>(json['isDraft']),
       isProposed: serializer.fromJson<bool>(json['isProposed']),
@@ -5502,6 +5529,7 @@ class ZoningFeature extends DataClass implements Insertable<ZoningFeature> {
       'coordsJson': serializer.toJson<String>(coordsJson),
       'areaSqm': serializer.toJson<double?>(areaSqm),
       'lengthM': serializer.toJson<double?>(lengthM),
+      'buffer': serializer.toJson<double>(buffer),
       'propertiesJson': serializer.toJson<String?>(propertiesJson),
       'isDraft': serializer.toJson<bool>(isDraft),
       'isProposed': serializer.toJson<bool>(isProposed),
@@ -5528,6 +5556,7 @@ class ZoningFeature extends DataClass implements Insertable<ZoningFeature> {
     String? coordsJson,
     Value<double?> areaSqm = const Value.absent(),
     Value<double?> lengthM = const Value.absent(),
+    double? buffer,
     Value<String?> propertiesJson = const Value.absent(),
     bool? isDraft,
     bool? isProposed,
@@ -5551,6 +5580,7 @@ class ZoningFeature extends DataClass implements Insertable<ZoningFeature> {
     coordsJson: coordsJson ?? this.coordsJson,
     areaSqm: areaSqm.present ? areaSqm.value : this.areaSqm,
     lengthM: lengthM.present ? lengthM.value : this.lengthM,
+    buffer: buffer ?? this.buffer,
     propertiesJson:
         propertiesJson.present ? propertiesJson.value : this.propertiesJson,
     isDraft: isDraft ?? this.isDraft,
@@ -5580,6 +5610,7 @@ class ZoningFeature extends DataClass implements Insertable<ZoningFeature> {
           data.coordsJson.present ? data.coordsJson.value : this.coordsJson,
       areaSqm: data.areaSqm.present ? data.areaSqm.value : this.areaSqm,
       lengthM: data.lengthM.present ? data.lengthM.value : this.lengthM,
+      buffer: data.buffer.present ? data.buffer.value : this.buffer,
       propertiesJson:
           data.propertiesJson.present
               ? data.propertiesJson.value
@@ -5616,6 +5647,7 @@ class ZoningFeature extends DataClass implements Insertable<ZoningFeature> {
           ..write('coordsJson: $coordsJson, ')
           ..write('areaSqm: $areaSqm, ')
           ..write('lengthM: $lengthM, ')
+          ..write('buffer: $buffer, ')
           ..write('propertiesJson: $propertiesJson, ')
           ..write('isDraft: $isDraft, ')
           ..write('isProposed: $isProposed, ')
@@ -5644,6 +5676,7 @@ class ZoningFeature extends DataClass implements Insertable<ZoningFeature> {
     coordsJson,
     areaSqm,
     lengthM,
+    buffer,
     propertiesJson,
     isDraft,
     isProposed,
@@ -5671,6 +5704,7 @@ class ZoningFeature extends DataClass implements Insertable<ZoningFeature> {
           other.coordsJson == this.coordsJson &&
           other.areaSqm == this.areaSqm &&
           other.lengthM == this.lengthM &&
+          other.buffer == this.buffer &&
           other.propertiesJson == this.propertiesJson &&
           other.isDraft == this.isDraft &&
           other.isProposed == this.isProposed &&
@@ -5696,6 +5730,7 @@ class ZoningFeaturesCompanion extends UpdateCompanion<ZoningFeature> {
   final Value<String> coordsJson;
   final Value<double?> areaSqm;
   final Value<double?> lengthM;
+  final Value<double> buffer;
   final Value<String?> propertiesJson;
   final Value<bool> isDraft;
   final Value<bool> isProposed;
@@ -5720,6 +5755,7 @@ class ZoningFeaturesCompanion extends UpdateCompanion<ZoningFeature> {
     this.coordsJson = const Value.absent(),
     this.areaSqm = const Value.absent(),
     this.lengthM = const Value.absent(),
+    this.buffer = const Value.absent(),
     this.propertiesJson = const Value.absent(),
     this.isDraft = const Value.absent(),
     this.isProposed = const Value.absent(),
@@ -5745,6 +5781,7 @@ class ZoningFeaturesCompanion extends UpdateCompanion<ZoningFeature> {
     required String coordsJson,
     this.areaSqm = const Value.absent(),
     this.lengthM = const Value.absent(),
+    this.buffer = const Value.absent(),
     this.propertiesJson = const Value.absent(),
     this.isDraft = const Value.absent(),
     this.isProposed = const Value.absent(),
@@ -5776,6 +5813,7 @@ class ZoningFeaturesCompanion extends UpdateCompanion<ZoningFeature> {
     Expression<String>? coordsJson,
     Expression<double>? areaSqm,
     Expression<double>? lengthM,
+    Expression<double>? buffer,
     Expression<String>? propertiesJson,
     Expression<bool>? isDraft,
     Expression<bool>? isProposed,
@@ -5801,6 +5839,7 @@ class ZoningFeaturesCompanion extends UpdateCompanion<ZoningFeature> {
       if (coordsJson != null) 'coords_json': coordsJson,
       if (areaSqm != null) 'area_sqm': areaSqm,
       if (lengthM != null) 'length_m': lengthM,
+      if (buffer != null) 'buffer': buffer,
       if (propertiesJson != null) 'properties_json': propertiesJson,
       if (isDraft != null) 'is_draft': isDraft,
       if (isProposed != null) 'is_proposed': isProposed,
@@ -5828,6 +5867,7 @@ class ZoningFeaturesCompanion extends UpdateCompanion<ZoningFeature> {
     Value<String>? coordsJson,
     Value<double?>? areaSqm,
     Value<double?>? lengthM,
+    Value<double>? buffer,
     Value<String?>? propertiesJson,
     Value<bool>? isDraft,
     Value<bool>? isProposed,
@@ -5853,6 +5893,7 @@ class ZoningFeaturesCompanion extends UpdateCompanion<ZoningFeature> {
       coordsJson: coordsJson ?? this.coordsJson,
       areaSqm: areaSqm ?? this.areaSqm,
       lengthM: lengthM ?? this.lengthM,
+      buffer: buffer ?? this.buffer,
       propertiesJson: propertiesJson ?? this.propertiesJson,
       isDraft: isDraft ?? this.isDraft,
       isProposed: isProposed ?? this.isProposed,
@@ -5901,6 +5942,9 @@ class ZoningFeaturesCompanion extends UpdateCompanion<ZoningFeature> {
     }
     if (lengthM.present) {
       map['length_m'] = Variable<double>(lengthM.value);
+    }
+    if (buffer.present) {
+      map['buffer'] = Variable<double>(buffer.value);
     }
     if (propertiesJson.present) {
       map['properties_json'] = Variable<String>(propertiesJson.value);
@@ -5957,6 +6001,7 @@ class ZoningFeaturesCompanion extends UpdateCompanion<ZoningFeature> {
           ..write('coordsJson: $coordsJson, ')
           ..write('areaSqm: $areaSqm, ')
           ..write('lengthM: $lengthM, ')
+          ..write('buffer: $buffer, ')
           ..write('propertiesJson: $propertiesJson, ')
           ..write('isDraft: $isDraft, ')
           ..write('isProposed: $isProposed, ')
@@ -8211,6 +8256,1245 @@ class ManualZoneDraftsCompanion extends UpdateCompanion<ManualZoneDraft> {
   }
 }
 
+class $LandUsesTable extends LandUses with TableInfo<$LandUsesTable, LandUse> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LandUsesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _colorMeta = const VerificationMeta('color');
+  @override
+  late final GeneratedColumn<String> color = GeneratedColumn<String>(
+    'color',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _styleJsonMeta = const VerificationMeta(
+    'styleJson',
+  );
+  @override
+  late final GeneratedColumn<String> styleJson = GeneratedColumn<String>(
+    'style_json',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    description,
+    color,
+    styleJson,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'land_uses';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<LandUse> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_descriptionMeta);
+    }
+    if (data.containsKey('color')) {
+      context.handle(
+        _colorMeta,
+        color.isAcceptableOrUnknown(data['color']!, _colorMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_colorMeta);
+    }
+    if (data.containsKey('style_json')) {
+      context.handle(
+        _styleJsonMeta,
+        styleJson.isAcceptableOrUnknown(data['style_json']!, _styleJsonMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  LandUse map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LandUse(
+      id:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}id'],
+          )!,
+      name:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}name'],
+          )!,
+      description:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}description'],
+          )!,
+      color:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}color'],
+          )!,
+      styleJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}style_json'],
+      ),
+      updatedAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}updated_at'],
+          )!,
+    );
+  }
+
+  @override
+  $LandUsesTable createAlias(String alias) {
+    return $LandUsesTable(attachedDatabase, alias);
+  }
+}
+
+class LandUse extends DataClass implements Insertable<LandUse> {
+  final int id;
+  final String name;
+  final String description;
+  final String color;
+  final String? styleJson;
+  final int updatedAt;
+  const LandUse({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.color,
+    this.styleJson,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    map['description'] = Variable<String>(description);
+    map['color'] = Variable<String>(color);
+    if (!nullToAbsent || styleJson != null) {
+      map['style_json'] = Variable<String>(styleJson);
+    }
+    map['updated_at'] = Variable<int>(updatedAt);
+    return map;
+  }
+
+  LandUsesCompanion toCompanion(bool nullToAbsent) {
+    return LandUsesCompanion(
+      id: Value(id),
+      name: Value(name),
+      description: Value(description),
+      color: Value(color),
+      styleJson:
+          styleJson == null && nullToAbsent
+              ? const Value.absent()
+              : Value(styleJson),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory LandUse.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LandUse(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      description: serializer.fromJson<String>(json['description']),
+      color: serializer.fromJson<String>(json['color']),
+      styleJson: serializer.fromJson<String?>(json['styleJson']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'description': serializer.toJson<String>(description),
+      'color': serializer.toJson<String>(color),
+      'styleJson': serializer.toJson<String?>(styleJson),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+    };
+  }
+
+  LandUse copyWith({
+    int? id,
+    String? name,
+    String? description,
+    String? color,
+    Value<String?> styleJson = const Value.absent(),
+    int? updatedAt,
+  }) => LandUse(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    description: description ?? this.description,
+    color: color ?? this.color,
+    styleJson: styleJson.present ? styleJson.value : this.styleJson,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  LandUse copyWithCompanion(LandUsesCompanion data) {
+    return LandUse(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      description:
+          data.description.present ? data.description.value : this.description,
+      color: data.color.present ? data.color.value : this.color,
+      styleJson: data.styleJson.present ? data.styleJson.value : this.styleJson,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LandUse(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('description: $description, ')
+          ..write('color: $color, ')
+          ..write('styleJson: $styleJson, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, name, description, color, styleJson, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LandUse &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.description == this.description &&
+          other.color == this.color &&
+          other.styleJson == this.styleJson &&
+          other.updatedAt == this.updatedAt);
+}
+
+class LandUsesCompanion extends UpdateCompanion<LandUse> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<String> description;
+  final Value<String> color;
+  final Value<String?> styleJson;
+  final Value<int> updatedAt;
+  const LandUsesCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.description = const Value.absent(),
+    this.color = const Value.absent(),
+    this.styleJson = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  });
+  LandUsesCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    required String description,
+    required String color,
+    this.styleJson = const Value.absent(),
+    required int updatedAt,
+  }) : name = Value(name),
+       description = Value(description),
+       color = Value(color),
+       updatedAt = Value(updatedAt);
+  static Insertable<LandUse> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<String>? description,
+    Expression<String>? color,
+    Expression<String>? styleJson,
+    Expression<int>? updatedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (description != null) 'description': description,
+      if (color != null) 'color': color,
+      if (styleJson != null) 'style_json': styleJson,
+      if (updatedAt != null) 'updated_at': updatedAt,
+    });
+  }
+
+  LandUsesCompanion copyWith({
+    Value<int>? id,
+    Value<String>? name,
+    Value<String>? description,
+    Value<String>? color,
+    Value<String?>? styleJson,
+    Value<int>? updatedAt,
+  }) {
+    return LandUsesCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      color: color ?? this.color,
+      styleJson: styleJson ?? this.styleJson,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (color.present) {
+      map['color'] = Variable<String>(color.value);
+    }
+    if (styleJson.present) {
+      map['style_json'] = Variable<String>(styleJson.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LandUsesCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('description: $description, ')
+          ..write('color: $color, ')
+          ..write('styleJson: $styleJson, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $AppSettingsTable extends AppSettings
+    with TableInfo<$AppSettingsTable, AppSetting> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AppSettingsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _keyMeta = const VerificationMeta('key');
+  @override
+  late final GeneratedColumn<String> key = GeneratedColumn<String>(
+    'key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _valueMeta = const VerificationMeta('value');
+  @override
+  late final GeneratedColumn<String> value = GeneratedColumn<String>(
+    'value',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [key, value, updatedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'app_settings';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<AppSetting> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('key')) {
+      context.handle(
+        _keyMeta,
+        key.isAcceptableOrUnknown(data['key']!, _keyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_keyMeta);
+    }
+    if (data.containsKey('value')) {
+      context.handle(
+        _valueMeta,
+        value.isAcceptableOrUnknown(data['value']!, _valueMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_valueMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {key};
+  @override
+  AppSetting map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return AppSetting(
+      key:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}key'],
+          )!,
+      value:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}value'],
+          )!,
+      updatedAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}updated_at'],
+          )!,
+    );
+  }
+
+  @override
+  $AppSettingsTable createAlias(String alias) {
+    return $AppSettingsTable(attachedDatabase, alias);
+  }
+}
+
+class AppSetting extends DataClass implements Insertable<AppSetting> {
+  final String key;
+  final String value;
+  final int updatedAt;
+  const AppSetting({
+    required this.key,
+    required this.value,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['key'] = Variable<String>(key);
+    map['value'] = Variable<String>(value);
+    map['updated_at'] = Variable<int>(updatedAt);
+    return map;
+  }
+
+  AppSettingsCompanion toCompanion(bool nullToAbsent) {
+    return AppSettingsCompanion(
+      key: Value(key),
+      value: Value(value),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory AppSetting.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AppSetting(
+      key: serializer.fromJson<String>(json['key']),
+      value: serializer.fromJson<String>(json['value']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'key': serializer.toJson<String>(key),
+      'value': serializer.toJson<String>(value),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+    };
+  }
+
+  AppSetting copyWith({String? key, String? value, int? updatedAt}) =>
+      AppSetting(
+        key: key ?? this.key,
+        value: value ?? this.value,
+        updatedAt: updatedAt ?? this.updatedAt,
+      );
+  AppSetting copyWithCompanion(AppSettingsCompanion data) {
+    return AppSetting(
+      key: data.key.present ? data.key.value : this.key,
+      value: data.value.present ? data.value.value : this.value,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AppSetting(')
+          ..write('key: $key, ')
+          ..write('value: $value, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(key, value, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AppSetting &&
+          other.key == this.key &&
+          other.value == this.value &&
+          other.updatedAt == this.updatedAt);
+}
+
+class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
+  final Value<String> key;
+  final Value<String> value;
+  final Value<int> updatedAt;
+  final Value<int> rowid;
+  const AppSettingsCompanion({
+    this.key = const Value.absent(),
+    this.value = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  AppSettingsCompanion.insert({
+    required String key,
+    required String value,
+    required int updatedAt,
+    this.rowid = const Value.absent(),
+  }) : key = Value(key),
+       value = Value(value),
+       updatedAt = Value(updatedAt);
+  static Insertable<AppSetting> custom({
+    Expression<String>? key,
+    Expression<String>? value,
+    Expression<int>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (key != null) 'key': key,
+      if (value != null) 'value': value,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  AppSettingsCompanion copyWith({
+    Value<String>? key,
+    Value<String>? value,
+    Value<int>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return AppSettingsCompanion(
+      key: key ?? this.key,
+      value: value ?? this.value,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (key.present) {
+      map['key'] = Variable<String>(key.value);
+    }
+    if (value.present) {
+      map['value'] = Variable<String>(value.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AppSettingsCompanion(')
+          ..write('key: $key, ')
+          ..write('value: $value, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $MvtTilesetsTable extends MvtTilesets
+    with TableInfo<$MvtTilesetsTable, MvtTileset> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MvtTilesetsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _localityIdMeta = const VerificationMeta(
+    'localityId',
+  );
+  @override
+  late final GeneratedColumn<int> localityId = GeneratedColumn<int>(
+    'locality_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _mbtilesPathMeta = const VerificationMeta(
+    'mbtilesPath',
+  );
+  @override
+  late final GeneratedColumn<String> mbtilesPath = GeneratedColumn<String>(
+    'mbtiles_path',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _minZoomMeta = const VerificationMeta(
+    'minZoom',
+  );
+  @override
+  late final GeneratedColumn<int> minZoom = GeneratedColumn<int>(
+    'min_zoom',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _maxZoomMeta = const VerificationMeta(
+    'maxZoom',
+  );
+  @override
+  late final GeneratedColumn<int> maxZoom = GeneratedColumn<int>(
+    'max_zoom',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _boundsJsonMeta = const VerificationMeta(
+    'boundsJson',
+  );
+  @override
+  late final GeneratedColumn<String> boundsJson = GeneratedColumn<String>(
+    'bounds_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _isProposedMeta = const VerificationMeta(
+    'isProposed',
+  );
+  @override
+  late final GeneratedColumn<bool> isProposed = GeneratedColumn<bool>(
+    'is_proposed',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_proposed" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _tileCountMeta = const VerificationMeta(
+    'tileCount',
+  );
+  @override
+  late final GeneratedColumn<int> tileCount = GeneratedColumn<int>(
+    'tile_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _downloadedAtMeta = const VerificationMeta(
+    'downloadedAt',
+  );
+  @override
+  late final GeneratedColumn<int> downloadedAt = GeneratedColumn<int>(
+    'downloaded_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    localityId,
+    mbtilesPath,
+    minZoom,
+    maxZoom,
+    boundsJson,
+    isProposed,
+    tileCount,
+    downloadedAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'mvt_tilesets';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MvtTileset> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('locality_id')) {
+      context.handle(
+        _localityIdMeta,
+        localityId.isAcceptableOrUnknown(data['locality_id']!, _localityIdMeta),
+      );
+    }
+    if (data.containsKey('mbtiles_path')) {
+      context.handle(
+        _mbtilesPathMeta,
+        mbtilesPath.isAcceptableOrUnknown(
+          data['mbtiles_path']!,
+          _mbtilesPathMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_mbtilesPathMeta);
+    }
+    if (data.containsKey('min_zoom')) {
+      context.handle(
+        _minZoomMeta,
+        minZoom.isAcceptableOrUnknown(data['min_zoom']!, _minZoomMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_minZoomMeta);
+    }
+    if (data.containsKey('max_zoom')) {
+      context.handle(
+        _maxZoomMeta,
+        maxZoom.isAcceptableOrUnknown(data['max_zoom']!, _maxZoomMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_maxZoomMeta);
+    }
+    if (data.containsKey('bounds_json')) {
+      context.handle(
+        _boundsJsonMeta,
+        boundsJson.isAcceptableOrUnknown(data['bounds_json']!, _boundsJsonMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_boundsJsonMeta);
+    }
+    if (data.containsKey('is_proposed')) {
+      context.handle(
+        _isProposedMeta,
+        isProposed.isAcceptableOrUnknown(data['is_proposed']!, _isProposedMeta),
+      );
+    }
+    if (data.containsKey('tile_count')) {
+      context.handle(
+        _tileCountMeta,
+        tileCount.isAcceptableOrUnknown(data['tile_count']!, _tileCountMeta),
+      );
+    }
+    if (data.containsKey('downloaded_at')) {
+      context.handle(
+        _downloadedAtMeta,
+        downloadedAt.isAcceptableOrUnknown(
+          data['downloaded_at']!,
+          _downloadedAtMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_downloadedAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {localityId};
+  @override
+  MvtTileset map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MvtTileset(
+      localityId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}locality_id'],
+          )!,
+      mbtilesPath:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}mbtiles_path'],
+          )!,
+      minZoom:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}min_zoom'],
+          )!,
+      maxZoom:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}max_zoom'],
+          )!,
+      boundsJson:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}bounds_json'],
+          )!,
+      isProposed:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}is_proposed'],
+          )!,
+      tileCount:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}tile_count'],
+          )!,
+      downloadedAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}downloaded_at'],
+          )!,
+      updatedAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}updated_at'],
+          )!,
+    );
+  }
+
+  @override
+  $MvtTilesetsTable createAlias(String alias) {
+    return $MvtTilesetsTable(attachedDatabase, alias);
+  }
+}
+
+class MvtTileset extends DataClass implements Insertable<MvtTileset> {
+  final int localityId;
+  final String mbtilesPath;
+  final int minZoom;
+  final int maxZoom;
+  final String boundsJson;
+  final bool isProposed;
+  final int tileCount;
+  final int downloadedAt;
+  final int updatedAt;
+  const MvtTileset({
+    required this.localityId,
+    required this.mbtilesPath,
+    required this.minZoom,
+    required this.maxZoom,
+    required this.boundsJson,
+    required this.isProposed,
+    required this.tileCount,
+    required this.downloadedAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['locality_id'] = Variable<int>(localityId);
+    map['mbtiles_path'] = Variable<String>(mbtilesPath);
+    map['min_zoom'] = Variable<int>(minZoom);
+    map['max_zoom'] = Variable<int>(maxZoom);
+    map['bounds_json'] = Variable<String>(boundsJson);
+    map['is_proposed'] = Variable<bool>(isProposed);
+    map['tile_count'] = Variable<int>(tileCount);
+    map['downloaded_at'] = Variable<int>(downloadedAt);
+    map['updated_at'] = Variable<int>(updatedAt);
+    return map;
+  }
+
+  MvtTilesetsCompanion toCompanion(bool nullToAbsent) {
+    return MvtTilesetsCompanion(
+      localityId: Value(localityId),
+      mbtilesPath: Value(mbtilesPath),
+      minZoom: Value(minZoom),
+      maxZoom: Value(maxZoom),
+      boundsJson: Value(boundsJson),
+      isProposed: Value(isProposed),
+      tileCount: Value(tileCount),
+      downloadedAt: Value(downloadedAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory MvtTileset.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MvtTileset(
+      localityId: serializer.fromJson<int>(json['localityId']),
+      mbtilesPath: serializer.fromJson<String>(json['mbtilesPath']),
+      minZoom: serializer.fromJson<int>(json['minZoom']),
+      maxZoom: serializer.fromJson<int>(json['maxZoom']),
+      boundsJson: serializer.fromJson<String>(json['boundsJson']),
+      isProposed: serializer.fromJson<bool>(json['isProposed']),
+      tileCount: serializer.fromJson<int>(json['tileCount']),
+      downloadedAt: serializer.fromJson<int>(json['downloadedAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'localityId': serializer.toJson<int>(localityId),
+      'mbtilesPath': serializer.toJson<String>(mbtilesPath),
+      'minZoom': serializer.toJson<int>(minZoom),
+      'maxZoom': serializer.toJson<int>(maxZoom),
+      'boundsJson': serializer.toJson<String>(boundsJson),
+      'isProposed': serializer.toJson<bool>(isProposed),
+      'tileCount': serializer.toJson<int>(tileCount),
+      'downloadedAt': serializer.toJson<int>(downloadedAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+    };
+  }
+
+  MvtTileset copyWith({
+    int? localityId,
+    String? mbtilesPath,
+    int? minZoom,
+    int? maxZoom,
+    String? boundsJson,
+    bool? isProposed,
+    int? tileCount,
+    int? downloadedAt,
+    int? updatedAt,
+  }) => MvtTileset(
+    localityId: localityId ?? this.localityId,
+    mbtilesPath: mbtilesPath ?? this.mbtilesPath,
+    minZoom: minZoom ?? this.minZoom,
+    maxZoom: maxZoom ?? this.maxZoom,
+    boundsJson: boundsJson ?? this.boundsJson,
+    isProposed: isProposed ?? this.isProposed,
+    tileCount: tileCount ?? this.tileCount,
+    downloadedAt: downloadedAt ?? this.downloadedAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  MvtTileset copyWithCompanion(MvtTilesetsCompanion data) {
+    return MvtTileset(
+      localityId:
+          data.localityId.present ? data.localityId.value : this.localityId,
+      mbtilesPath:
+          data.mbtilesPath.present ? data.mbtilesPath.value : this.mbtilesPath,
+      minZoom: data.minZoom.present ? data.minZoom.value : this.minZoom,
+      maxZoom: data.maxZoom.present ? data.maxZoom.value : this.maxZoom,
+      boundsJson:
+          data.boundsJson.present ? data.boundsJson.value : this.boundsJson,
+      isProposed:
+          data.isProposed.present ? data.isProposed.value : this.isProposed,
+      tileCount: data.tileCount.present ? data.tileCount.value : this.tileCount,
+      downloadedAt:
+          data.downloadedAt.present
+              ? data.downloadedAt.value
+              : this.downloadedAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MvtTileset(')
+          ..write('localityId: $localityId, ')
+          ..write('mbtilesPath: $mbtilesPath, ')
+          ..write('minZoom: $minZoom, ')
+          ..write('maxZoom: $maxZoom, ')
+          ..write('boundsJson: $boundsJson, ')
+          ..write('isProposed: $isProposed, ')
+          ..write('tileCount: $tileCount, ')
+          ..write('downloadedAt: $downloadedAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    localityId,
+    mbtilesPath,
+    minZoom,
+    maxZoom,
+    boundsJson,
+    isProposed,
+    tileCount,
+    downloadedAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MvtTileset &&
+          other.localityId == this.localityId &&
+          other.mbtilesPath == this.mbtilesPath &&
+          other.minZoom == this.minZoom &&
+          other.maxZoom == this.maxZoom &&
+          other.boundsJson == this.boundsJson &&
+          other.isProposed == this.isProposed &&
+          other.tileCount == this.tileCount &&
+          other.downloadedAt == this.downloadedAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class MvtTilesetsCompanion extends UpdateCompanion<MvtTileset> {
+  final Value<int> localityId;
+  final Value<String> mbtilesPath;
+  final Value<int> minZoom;
+  final Value<int> maxZoom;
+  final Value<String> boundsJson;
+  final Value<bool> isProposed;
+  final Value<int> tileCount;
+  final Value<int> downloadedAt;
+  final Value<int> updatedAt;
+  const MvtTilesetsCompanion({
+    this.localityId = const Value.absent(),
+    this.mbtilesPath = const Value.absent(),
+    this.minZoom = const Value.absent(),
+    this.maxZoom = const Value.absent(),
+    this.boundsJson = const Value.absent(),
+    this.isProposed = const Value.absent(),
+    this.tileCount = const Value.absent(),
+    this.downloadedAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  });
+  MvtTilesetsCompanion.insert({
+    this.localityId = const Value.absent(),
+    required String mbtilesPath,
+    required int minZoom,
+    required int maxZoom,
+    required String boundsJson,
+    this.isProposed = const Value.absent(),
+    this.tileCount = const Value.absent(),
+    required int downloadedAt,
+    required int updatedAt,
+  }) : mbtilesPath = Value(mbtilesPath),
+       minZoom = Value(minZoom),
+       maxZoom = Value(maxZoom),
+       boundsJson = Value(boundsJson),
+       downloadedAt = Value(downloadedAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<MvtTileset> custom({
+    Expression<int>? localityId,
+    Expression<String>? mbtilesPath,
+    Expression<int>? minZoom,
+    Expression<int>? maxZoom,
+    Expression<String>? boundsJson,
+    Expression<bool>? isProposed,
+    Expression<int>? tileCount,
+    Expression<int>? downloadedAt,
+    Expression<int>? updatedAt,
+  }) {
+    return RawValuesInsertable({
+      if (localityId != null) 'locality_id': localityId,
+      if (mbtilesPath != null) 'mbtiles_path': mbtilesPath,
+      if (minZoom != null) 'min_zoom': minZoom,
+      if (maxZoom != null) 'max_zoom': maxZoom,
+      if (boundsJson != null) 'bounds_json': boundsJson,
+      if (isProposed != null) 'is_proposed': isProposed,
+      if (tileCount != null) 'tile_count': tileCount,
+      if (downloadedAt != null) 'downloaded_at': downloadedAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+    });
+  }
+
+  MvtTilesetsCompanion copyWith({
+    Value<int>? localityId,
+    Value<String>? mbtilesPath,
+    Value<int>? minZoom,
+    Value<int>? maxZoom,
+    Value<String>? boundsJson,
+    Value<bool>? isProposed,
+    Value<int>? tileCount,
+    Value<int>? downloadedAt,
+    Value<int>? updatedAt,
+  }) {
+    return MvtTilesetsCompanion(
+      localityId: localityId ?? this.localityId,
+      mbtilesPath: mbtilesPath ?? this.mbtilesPath,
+      minZoom: minZoom ?? this.minZoom,
+      maxZoom: maxZoom ?? this.maxZoom,
+      boundsJson: boundsJson ?? this.boundsJson,
+      isProposed: isProposed ?? this.isProposed,
+      tileCount: tileCount ?? this.tileCount,
+      downloadedAt: downloadedAt ?? this.downloadedAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (localityId.present) {
+      map['locality_id'] = Variable<int>(localityId.value);
+    }
+    if (mbtilesPath.present) {
+      map['mbtiles_path'] = Variable<String>(mbtilesPath.value);
+    }
+    if (minZoom.present) {
+      map['min_zoom'] = Variable<int>(minZoom.value);
+    }
+    if (maxZoom.present) {
+      map['max_zoom'] = Variable<int>(maxZoom.value);
+    }
+    if (boundsJson.present) {
+      map['bounds_json'] = Variable<String>(boundsJson.value);
+    }
+    if (isProposed.present) {
+      map['is_proposed'] = Variable<bool>(isProposed.value);
+    }
+    if (tileCount.present) {
+      map['tile_count'] = Variable<int>(tileCount.value);
+    }
+    if (downloadedAt.present) {
+      map['downloaded_at'] = Variable<int>(downloadedAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MvtTilesetsCompanion(')
+          ..write('localityId: $localityId, ')
+          ..write('mbtilesPath: $mbtilesPath, ')
+          ..write('minZoom: $minZoom, ')
+          ..write('maxZoom: $maxZoom, ')
+          ..write('boundsJson: $boundsJson, ')
+          ..write('isProposed: $isProposed, ')
+          ..write('tileCount: $tileCount, ')
+          ..write('downloadedAt: $downloadedAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -8235,6 +9519,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $ManualZoneDraftsTable manualZoneDrafts = $ManualZoneDraftsTable(
     this,
   );
+  late final $LandUsesTable landUses = $LandUsesTable(this);
+  late final $AppSettingsTable appSettings = $AppSettingsTable(this);
+  late final $MvtTilesetsTable mvtTilesets = $MvtTilesetsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -8254,6 +9541,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     zoningFeatureHistory,
     featureUploadQueue,
     manualZoneDrafts,
+    landUses,
+    appSettings,
+    mvtTilesets,
   ];
 }
 
@@ -10696,6 +11986,7 @@ typedef $$ZoningFeaturesTableCreateCompanionBuilder =
       required String coordsJson,
       Value<double?> areaSqm,
       Value<double?> lengthM,
+      Value<double> buffer,
       Value<String?> propertiesJson,
       Value<bool> isDraft,
       Value<bool> isProposed,
@@ -10722,6 +12013,7 @@ typedef $$ZoningFeaturesTableUpdateCompanionBuilder =
       Value<String> coordsJson,
       Value<double?> areaSqm,
       Value<double?> lengthM,
+      Value<double> buffer,
       Value<String?> propertiesJson,
       Value<bool> isDraft,
       Value<bool> isProposed,
@@ -10793,6 +12085,11 @@ class $$ZoningFeaturesTableFilterComposer
 
   ColumnFilters<double> get lengthM => $composableBuilder(
     column: $table.lengthM,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get buffer => $composableBuilder(
+    column: $table.buffer,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -10916,6 +12213,11 @@ class $$ZoningFeaturesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<double> get buffer => $composableBuilder(
+    column: $table.buffer,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get propertiesJson => $composableBuilder(
     column: $table.propertiesJson,
     builder: (column) => ColumnOrderings(column),
@@ -11022,6 +12324,9 @@ class $$ZoningFeaturesTableAnnotationComposer
   GeneratedColumn<double> get lengthM =>
       $composableBuilder(column: $table.lengthM, builder: (column) => column);
 
+  GeneratedColumn<double> get buffer =>
+      $composableBuilder(column: $table.buffer, builder: (column) => column);
+
   GeneratedColumn<String> get propertiesJson => $composableBuilder(
     column: $table.propertiesJson,
     builder: (column) => column,
@@ -11114,6 +12419,7 @@ class $$ZoningFeaturesTableTableManager
                 Value<String> coordsJson = const Value.absent(),
                 Value<double?> areaSqm = const Value.absent(),
                 Value<double?> lengthM = const Value.absent(),
+                Value<double> buffer = const Value.absent(),
                 Value<String?> propertiesJson = const Value.absent(),
                 Value<bool> isDraft = const Value.absent(),
                 Value<bool> isProposed = const Value.absent(),
@@ -11138,6 +12444,7 @@ class $$ZoningFeaturesTableTableManager
                 coordsJson: coordsJson,
                 areaSqm: areaSqm,
                 lengthM: lengthM,
+                buffer: buffer,
                 propertiesJson: propertiesJson,
                 isDraft: isDraft,
                 isProposed: isProposed,
@@ -11164,6 +12471,7 @@ class $$ZoningFeaturesTableTableManager
                 required String coordsJson,
                 Value<double?> areaSqm = const Value.absent(),
                 Value<double?> lengthM = const Value.absent(),
+                Value<double> buffer = const Value.absent(),
                 Value<String?> propertiesJson = const Value.absent(),
                 Value<bool> isDraft = const Value.absent(),
                 Value<bool> isProposed = const Value.absent(),
@@ -11188,6 +12496,7 @@ class $$ZoningFeaturesTableTableManager
                 coordsJson: coordsJson,
                 areaSqm: areaSqm,
                 lengthM: lengthM,
+                buffer: buffer,
                 propertiesJson: propertiesJson,
                 isDraft: isDraft,
                 isProposed: isProposed,
@@ -12412,6 +13721,680 @@ typedef $$ManualZoneDraftsTableProcessedTableManager =
       ManualZoneDraft,
       PrefetchHooks Function()
     >;
+typedef $$LandUsesTableCreateCompanionBuilder =
+    LandUsesCompanion Function({
+      Value<int> id,
+      required String name,
+      required String description,
+      required String color,
+      Value<String?> styleJson,
+      required int updatedAt,
+    });
+typedef $$LandUsesTableUpdateCompanionBuilder =
+    LandUsesCompanion Function({
+      Value<int> id,
+      Value<String> name,
+      Value<String> description,
+      Value<String> color,
+      Value<String?> styleJson,
+      Value<int> updatedAt,
+    });
+
+class $$LandUsesTableFilterComposer
+    extends Composer<_$AppDatabase, $LandUsesTable> {
+  $$LandUsesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get color => $composableBuilder(
+    column: $table.color,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get styleJson => $composableBuilder(
+    column: $table.styleJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$LandUsesTableOrderingComposer
+    extends Composer<_$AppDatabase, $LandUsesTable> {
+  $$LandUsesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get color => $composableBuilder(
+    column: $table.color,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get styleJson => $composableBuilder(
+    column: $table.styleJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$LandUsesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LandUsesTable> {
+  $$LandUsesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get color =>
+      $composableBuilder(column: $table.color, builder: (column) => column);
+
+  GeneratedColumn<String> get styleJson =>
+      $composableBuilder(column: $table.styleJson, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$LandUsesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $LandUsesTable,
+          LandUse,
+          $$LandUsesTableFilterComposer,
+          $$LandUsesTableOrderingComposer,
+          $$LandUsesTableAnnotationComposer,
+          $$LandUsesTableCreateCompanionBuilder,
+          $$LandUsesTableUpdateCompanionBuilder,
+          (LandUse, BaseReferences<_$AppDatabase, $LandUsesTable, LandUse>),
+          LandUse,
+          PrefetchHooks Function()
+        > {
+  $$LandUsesTableTableManager(_$AppDatabase db, $LandUsesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer:
+              () => $$LandUsesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer:
+              () => $$LandUsesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer:
+              () => $$LandUsesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> description = const Value.absent(),
+                Value<String> color = const Value.absent(),
+                Value<String?> styleJson = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+              }) => LandUsesCompanion(
+                id: id,
+                name: name,
+                description: description,
+                color: color,
+                styleJson: styleJson,
+                updatedAt: updatedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String name,
+                required String description,
+                required String color,
+                Value<String?> styleJson = const Value.absent(),
+                required int updatedAt,
+              }) => LandUsesCompanion.insert(
+                id: id,
+                name: name,
+                description: description,
+                color: color,
+                styleJson: styleJson,
+                updatedAt: updatedAt,
+              ),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          BaseReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$LandUsesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $LandUsesTable,
+      LandUse,
+      $$LandUsesTableFilterComposer,
+      $$LandUsesTableOrderingComposer,
+      $$LandUsesTableAnnotationComposer,
+      $$LandUsesTableCreateCompanionBuilder,
+      $$LandUsesTableUpdateCompanionBuilder,
+      (LandUse, BaseReferences<_$AppDatabase, $LandUsesTable, LandUse>),
+      LandUse,
+      PrefetchHooks Function()
+    >;
+typedef $$AppSettingsTableCreateCompanionBuilder =
+    AppSettingsCompanion Function({
+      required String key,
+      required String value,
+      required int updatedAt,
+      Value<int> rowid,
+    });
+typedef $$AppSettingsTableUpdateCompanionBuilder =
+    AppSettingsCompanion Function({
+      Value<String> key,
+      Value<String> value,
+      Value<int> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$AppSettingsTableFilterComposer
+    extends Composer<_$AppDatabase, $AppSettingsTable> {
+  $$AppSettingsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get key => $composableBuilder(
+    column: $table.key,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$AppSettingsTableOrderingComposer
+    extends Composer<_$AppDatabase, $AppSettingsTable> {
+  $$AppSettingsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get key => $composableBuilder(
+    column: $table.key,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$AppSettingsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $AppSettingsTable> {
+  $$AppSettingsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get key =>
+      $composableBuilder(column: $table.key, builder: (column) => column);
+
+  GeneratedColumn<String> get value =>
+      $composableBuilder(column: $table.value, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$AppSettingsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $AppSettingsTable,
+          AppSetting,
+          $$AppSettingsTableFilterComposer,
+          $$AppSettingsTableOrderingComposer,
+          $$AppSettingsTableAnnotationComposer,
+          $$AppSettingsTableCreateCompanionBuilder,
+          $$AppSettingsTableUpdateCompanionBuilder,
+          (
+            AppSetting,
+            BaseReferences<_$AppDatabase, $AppSettingsTable, AppSetting>,
+          ),
+          AppSetting,
+          PrefetchHooks Function()
+        > {
+  $$AppSettingsTableTableManager(_$AppDatabase db, $AppSettingsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer:
+              () => $$AppSettingsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer:
+              () => $$AppSettingsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer:
+              () =>
+                  $$AppSettingsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> key = const Value.absent(),
+                Value<String> value = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => AppSettingsCompanion(
+                key: key,
+                value: value,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String key,
+                required String value,
+                required int updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => AppSettingsCompanion.insert(
+                key: key,
+                value: value,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          BaseReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$AppSettingsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $AppSettingsTable,
+      AppSetting,
+      $$AppSettingsTableFilterComposer,
+      $$AppSettingsTableOrderingComposer,
+      $$AppSettingsTableAnnotationComposer,
+      $$AppSettingsTableCreateCompanionBuilder,
+      $$AppSettingsTableUpdateCompanionBuilder,
+      (
+        AppSetting,
+        BaseReferences<_$AppDatabase, $AppSettingsTable, AppSetting>,
+      ),
+      AppSetting,
+      PrefetchHooks Function()
+    >;
+typedef $$MvtTilesetsTableCreateCompanionBuilder =
+    MvtTilesetsCompanion Function({
+      Value<int> localityId,
+      required String mbtilesPath,
+      required int minZoom,
+      required int maxZoom,
+      required String boundsJson,
+      Value<bool> isProposed,
+      Value<int> tileCount,
+      required int downloadedAt,
+      required int updatedAt,
+    });
+typedef $$MvtTilesetsTableUpdateCompanionBuilder =
+    MvtTilesetsCompanion Function({
+      Value<int> localityId,
+      Value<String> mbtilesPath,
+      Value<int> minZoom,
+      Value<int> maxZoom,
+      Value<String> boundsJson,
+      Value<bool> isProposed,
+      Value<int> tileCount,
+      Value<int> downloadedAt,
+      Value<int> updatedAt,
+    });
+
+class $$MvtTilesetsTableFilterComposer
+    extends Composer<_$AppDatabase, $MvtTilesetsTable> {
+  $$MvtTilesetsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get localityId => $composableBuilder(
+    column: $table.localityId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get mbtilesPath => $composableBuilder(
+    column: $table.mbtilesPath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get minZoom => $composableBuilder(
+    column: $table.minZoom,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get maxZoom => $composableBuilder(
+    column: $table.maxZoom,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get boundsJson => $composableBuilder(
+    column: $table.boundsJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isProposed => $composableBuilder(
+    column: $table.isProposed,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get tileCount => $composableBuilder(
+    column: $table.tileCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get downloadedAt => $composableBuilder(
+    column: $table.downloadedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$MvtTilesetsTableOrderingComposer
+    extends Composer<_$AppDatabase, $MvtTilesetsTable> {
+  $$MvtTilesetsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get localityId => $composableBuilder(
+    column: $table.localityId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get mbtilesPath => $composableBuilder(
+    column: $table.mbtilesPath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get minZoom => $composableBuilder(
+    column: $table.minZoom,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get maxZoom => $composableBuilder(
+    column: $table.maxZoom,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get boundsJson => $composableBuilder(
+    column: $table.boundsJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isProposed => $composableBuilder(
+    column: $table.isProposed,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get tileCount => $composableBuilder(
+    column: $table.tileCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get downloadedAt => $composableBuilder(
+    column: $table.downloadedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$MvtTilesetsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MvtTilesetsTable> {
+  $$MvtTilesetsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get localityId => $composableBuilder(
+    column: $table.localityId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get mbtilesPath => $composableBuilder(
+    column: $table.mbtilesPath,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get minZoom =>
+      $composableBuilder(column: $table.minZoom, builder: (column) => column);
+
+  GeneratedColumn<int> get maxZoom =>
+      $composableBuilder(column: $table.maxZoom, builder: (column) => column);
+
+  GeneratedColumn<String> get boundsJson => $composableBuilder(
+    column: $table.boundsJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isProposed => $composableBuilder(
+    column: $table.isProposed,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get tileCount =>
+      $composableBuilder(column: $table.tileCount, builder: (column) => column);
+
+  GeneratedColumn<int> get downloadedAt => $composableBuilder(
+    column: $table.downloadedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$MvtTilesetsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MvtTilesetsTable,
+          MvtTileset,
+          $$MvtTilesetsTableFilterComposer,
+          $$MvtTilesetsTableOrderingComposer,
+          $$MvtTilesetsTableAnnotationComposer,
+          $$MvtTilesetsTableCreateCompanionBuilder,
+          $$MvtTilesetsTableUpdateCompanionBuilder,
+          (
+            MvtTileset,
+            BaseReferences<_$AppDatabase, $MvtTilesetsTable, MvtTileset>,
+          ),
+          MvtTileset,
+          PrefetchHooks Function()
+        > {
+  $$MvtTilesetsTableTableManager(_$AppDatabase db, $MvtTilesetsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer:
+              () => $$MvtTilesetsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer:
+              () => $$MvtTilesetsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer:
+              () =>
+                  $$MvtTilesetsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> localityId = const Value.absent(),
+                Value<String> mbtilesPath = const Value.absent(),
+                Value<int> minZoom = const Value.absent(),
+                Value<int> maxZoom = const Value.absent(),
+                Value<String> boundsJson = const Value.absent(),
+                Value<bool> isProposed = const Value.absent(),
+                Value<int> tileCount = const Value.absent(),
+                Value<int> downloadedAt = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+              }) => MvtTilesetsCompanion(
+                localityId: localityId,
+                mbtilesPath: mbtilesPath,
+                minZoom: minZoom,
+                maxZoom: maxZoom,
+                boundsJson: boundsJson,
+                isProposed: isProposed,
+                tileCount: tileCount,
+                downloadedAt: downloadedAt,
+                updatedAt: updatedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> localityId = const Value.absent(),
+                required String mbtilesPath,
+                required int minZoom,
+                required int maxZoom,
+                required String boundsJson,
+                Value<bool> isProposed = const Value.absent(),
+                Value<int> tileCount = const Value.absent(),
+                required int downloadedAt,
+                required int updatedAt,
+              }) => MvtTilesetsCompanion.insert(
+                localityId: localityId,
+                mbtilesPath: mbtilesPath,
+                minZoom: minZoom,
+                maxZoom: maxZoom,
+                boundsJson: boundsJson,
+                isProposed: isProposed,
+                tileCount: tileCount,
+                downloadedAt: downloadedAt,
+                updatedAt: updatedAt,
+              ),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          BaseReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$MvtTilesetsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MvtTilesetsTable,
+      MvtTileset,
+      $$MvtTilesetsTableFilterComposer,
+      $$MvtTilesetsTableOrderingComposer,
+      $$MvtTilesetsTableAnnotationComposer,
+      $$MvtTilesetsTableCreateCompanionBuilder,
+      $$MvtTilesetsTableUpdateCompanionBuilder,
+      (
+        MvtTileset,
+        BaseReferences<_$AppDatabase, $MvtTilesetsTable, MvtTileset>,
+      ),
+      MvtTileset,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -12444,4 +14427,10 @@ class $AppDatabaseManager {
       $$FeatureUploadQueueTableTableManager(_db, _db.featureUploadQueue);
   $$ManualZoneDraftsTableTableManager get manualZoneDrafts =>
       $$ManualZoneDraftsTableTableManager(_db, _db.manualZoneDrafts);
+  $$LandUsesTableTableManager get landUses =>
+      $$LandUsesTableTableManager(_db, _db.landUses);
+  $$AppSettingsTableTableManager get appSettings =>
+      $$AppSettingsTableTableManager(_db, _db.appSettings);
+  $$MvtTilesetsTableTableManager get mvtTilesets =>
+      $$MvtTilesetsTableTableManager(_db, _db.mvtTilesets);
 }

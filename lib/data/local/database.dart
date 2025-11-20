@@ -142,6 +142,7 @@ class ZoningFeatures extends Table {
   TextColumn get coordsJson => text().named('coords_json')();
   RealColumn get areaSqm => real().named('area_sqm').nullable()();
   RealColumn get lengthM => real().named('length_m').nullable()();
+  RealColumn get buffer => real().withDefault(const Constant(0.0))(); // Buffer in meters
   TextColumn get propertiesJson => text().named('properties_json').nullable()();
   BoolColumn get isDraft => boolean().named('is_draft').withDefault(const Constant(true))();
   BoolColumn get isProposed => boolean().named('is_proposed').withDefault(const Constant(false))();
@@ -218,6 +219,42 @@ class ManualZoneDrafts extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+class LandUses extends Table {
+  IntColumn get id => integer()();
+  TextColumn get name => text()();
+  TextColumn get description => text()();
+  TextColumn get color => text()();
+  TextColumn get styleJson => text().named('style_json').nullable()();
+  IntColumn get updatedAt => integer().named('updated_at')();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+class AppSettings extends Table {
+  TextColumn get key => text()();
+  TextColumn get value => text()();
+  IntColumn get updatedAt => integer().named('updated_at')();
+
+  @override
+  Set<Column> get primaryKey => {key};
+}
+
+class MvtTilesets extends Table {
+  IntColumn get localityId => integer().named('locality_id')();
+  TextColumn get mbtilesPath => text().named('mbtiles_path')();
+  IntColumn get minZoom => integer().named('min_zoom')();
+  IntColumn get maxZoom => integer().named('max_zoom')();
+  TextColumn get boundsJson => text().named('bounds_json')();
+  BoolColumn get isProposed => boolean().named('is_proposed').withDefault(const Constant(false))();
+  IntColumn get tileCount => integer().named('tile_count').withDefault(const Constant(0))();
+  IntColumn get downloadedAt => integer().named('downloaded_at')();
+  IntColumn get updatedAt => integer().named('updated_at')();
+
+  @override
+  Set<Column> get primaryKey => {localityId};
+}
+
 @DriftDatabase(tables: [
   Users,
   Projects,
@@ -233,12 +270,15 @@ class ManualZoneDrafts extends Table {
   ZoningFeatureHistory,
   FeatureUploadQueue,
   ManualZoneDrafts,
+  LandUses,
+  AppSettings,
+  MvtTilesets,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 11;
 
   @override
   MigrationStrategy get migration {
@@ -287,6 +327,18 @@ class AppDatabase extends _$AppDatabase {
         if (from < 9) {
           // Add manual zone drafts table for manual coordinate entry
           await m.createTable(manualZoneDrafts);
+        }
+        if (from < 10) {
+          // Add land uses table for local storage
+          await m.createTable(this.landUses);
+          // Add app settings table for buffer defaults
+          await m.createTable(this.appSettings);
+          // Add buffer column to zoning features
+          await m.addColumn(this.zoningFeatures, this.zoningFeatures.buffer);
+        }
+        if (from < 11) {
+          // Add MVT tilesets table for vector tile caching
+          await m.createTable(this.mvtTilesets);
         }
       },
     );
