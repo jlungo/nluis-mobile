@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/zoning_map.dart';
 import '../widgets/map_features_sheet.dart';
 import '../widgets/feature_details_sheet.dart';
-import '../widgets/feature_edit_sheet.dart';
 import '../providers/zoning_providers.dart';
 import '../widgets/basemap_download_dialog.dart';
 import '../widgets/input_method_selection_sheet.dart';
@@ -232,28 +231,7 @@ class _ZoningPageState extends ConsumerState<ZoningPage> {
                                   );
                                 },
                                 onFeatureEdit: (feature) {
-                                  showModalBottomSheet(
-                                    context: context,
-                                    isScrollControlled: true,
-                                    builder: (context) => FeatureEditSheet(
-                                      feature: feature,
-                                      onSave: (updatedFeature) {
-                                        ref
-                                            .read(zoningStateProvider.notifier)
-                                            .updateFeature(updatedFeature);
-                                        ref.invalidate(
-                                          zoningFeaturesProvider(
-                                            widget.projectId,
-                                          ),
-                                        );
-                                        Navigator.of(context).pop();
-                                        SnackBarUtils.showSuccess(
-                                          context,
-                                          'Feature updated successfully',
-                                        );
-                                      },
-                                    ),
-                                  );
+                                  // Editing is handled in the feature details sheet
                                 },
                                 onFeatureDelete: (feature) {
                                   ref
@@ -269,7 +247,7 @@ class _ZoningPageState extends ConsumerState<ZoningPage> {
                                 },
                               ),
 
-                            // FAB positioned based on bottom sheet - Google Maps style
+                            // FAB positioned based on bottom sheet
                             if (!_isCreatingFeature)
                               _buildNewFeatureFAB(basemap),
                           ],
