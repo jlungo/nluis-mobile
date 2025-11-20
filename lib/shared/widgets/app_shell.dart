@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/madodoso/presentation/providers/madodoso_providers.dart';
+import '../../features/land_use/zoning/presentation/providers/zoning_manager_providers.dart';
 import '../theme/app_colors.dart';
 
 class AppShell extends ConsumerStatefulWidget {
@@ -17,6 +18,7 @@ class AppShell extends ConsumerStatefulWidget {
 
 class _AppShellState extends ConsumerState<AppShell> {
   static const int _draftsIndex = 2;
+  static const int _zoningIndex = 3;
 
   static const List<_BottomNavDestination> _destinations = [
     _BottomNavDestination(
@@ -61,7 +63,7 @@ class _AppShellState extends ConsumerState<AppShell> {
 
   bool _shouldShowBottomBar(BuildContext context) {
     final location = GoRouterState.of(context).matchedLocation;
-    
+
     // Only show bottom bar on these specific routes
     return location == '/module/land-use/dashboard' ||
         location == '/module/land-use/projects' ||
@@ -75,16 +77,24 @@ class _AppShellState extends ConsumerState<AppShell> {
     context.goNamed(destination.routeName);
   }
 
-  List<TabItem> _buildTabItems(ThemeData theme, String? draftsBadge) {
+  List<TabItem> _buildTabItems(
+    ThemeData theme,
+    String? draftsBadge,
+    String? zoningBadge,
+  ) {
     final bool isDark = theme.brightness == Brightness.dark;
-    final Widget? badge = _buildDraftBadge(draftsBadge, isDark);
+    final Widget? draftBadgeWidget = _buildDraftBadge(draftsBadge, isDark);
+    final Widget? zoningBadgeWidget = _buildDraftBadge(zoningBadge, isDark);
 
     return List<TabItem>.generate(_destinations.length, (index) {
       final destination = _destinations[index];
       return TabItem(
         icon: destination.icon,
         title: destination.label,
-        count: index == _draftsIndex ? badge : null,
+        count:
+            index == _draftsIndex
+                ? draftBadgeWidget
+                : (index == _zoningIndex ? zoningBadgeWidget : null),
       );
     });
   }
@@ -121,6 +131,15 @@ class _AppShellState extends ConsumerState<AppShell> {
       orElse: () => null,
     );
 
+    // Get zoning draft features count
+    final zoningDraftsAsync = ref.watch(draftFeaturesProvider);
+    final zoningBadge = zoningDraftsAsync.when(
+      data:
+          (features) => features.isNotEmpty ? features.length.toString() : null,
+      loading: () => null,
+      error: (_, _) => null,
+    );
+
     final bool isDark = theme.brightness == Brightness.dark;
     final Color backgroundColor =
         isDark ? AppColors.darkSurface : theme.colorScheme.surface;
@@ -135,40 +154,41 @@ class _AppShellState extends ConsumerState<AppShell> {
 
     return Scaffold(
       body: widget.child,
-      bottomNavigationBar: shouldShowBottomBar
-          ? Padding(
-              padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
-              child: SafeArea(
-                top: false,
-                child: BottomBarDefault(
-                  items: _buildTabItems(theme, draftsBadge),
-                  indexSelected: currentIndex,
-                  onTap: (index) => _onDestinationSelected(context, index),
-                  backgroundColor: backgroundColor,
-                  boxShadow: [
-                    BoxShadow(
-                      color: shadowColor,
-                      blurRadius: 20,
-                      offset: const Offset(0, -4),
+      bottomNavigationBar:
+          shouldShowBottomBar
+              ? Padding(
+                padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+                child: SafeArea(
+                  top: false,
+                  child: BottomBarDefault(
+                    items: _buildTabItems(theme, draftsBadge, zoningBadge),
+                    indexSelected: currentIndex,
+                    onTap: (index) => _onDestinationSelected(context, index),
+                    backgroundColor: backgroundColor,
+                    boxShadow: [
+                      BoxShadow(
+                        color: shadowColor,
+                        blurRadius: 20,
+                        offset: const Offset(0, -4),
+                      ),
+                    ],
+                    borderRadius: BorderRadius.circular(20),
+                    color: unselectedColor,
+                    colorSelected: selectedColor,
+                    iconSize: 20,
+                    titleStyle: const TextStyle(
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 0.5,
                     ),
-                  ],
-                  borderRadius: BorderRadius.circular(20),
-                  color: unselectedColor,
-                  colorSelected: selectedColor,
-                  iconSize: 20,
-                  titleStyle: const TextStyle(
-                    fontWeight: FontWeight.w500,
-                    letterSpacing: 0.5,
+                    top: 16,
+                    countStyle: const CountStyle(size: 16),
+                    duration: const Duration(milliseconds: 220),
+                    curve: Curves.easeInOut,
+                    enableShadow: false,
                   ),
-                  top: 16,
-                  countStyle: const CountStyle(size: 16),
-                  duration: const Duration(milliseconds: 220),
-                  curve: Curves.easeInOut,
-                  enableShadow: false,
                 ),
-              ),
-            )
-          : null,
+              )
+              : null,
     );
   }
 }
