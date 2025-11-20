@@ -4,13 +4,16 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../../../shared/constants/app_constants.dart';
 import '../../../../../shared/theme/app_colors.dart';
+import '../../../../../shared/widgets/app_bottom_sheet.dart';
+import '../../../../../shared/widgets/app_button.dart';
+import '../../../../../shared/widgets/toggle_card_widget.dart';
 import '../../data/services/coordinate_converter.dart';
 import '../../domain/entities/zoning_feature.dart';
 
 /// Fullscreen bottom sheet for manual coordinate entry
 class ManualCoordinateEntrySheet extends StatefulWidget {
   final ZoningFeatureType featureType;
-  final Function(String zoneName, int srid, List<List<double>> coordinates) onSave;
+  final Function(String zoneName, int srid, List<List<double>> coordinates, bool isDraft) onSave;
   final VoidCallback onCancel;
 
   const ManualCoordinateEntrySheet({
@@ -34,6 +37,7 @@ class _ManualCoordinateEntrySheetState
   int _selectedSrid = 4326;
   final List<List<double>> _coordinates = [];
   bool _showMap = false;
+  bool _isDraft = false;
 
   @override
   void initState() {
@@ -170,14 +174,14 @@ class _ManualCoordinateEntrySheetState
   }
 
   void _handleSave() {
-    if (!_formKey.currentState!.validate()) return;
-    if (_zoneNameController.text.trim().isEmpty) return;
     if (!_hasMinPoints) return;
 
+    final zoneName = _zoneNameController.text.trim();
     widget.onSave(
-      _zoneNameController.text.trim(),
+      zoneName.isEmpty ? 'Zone ${_coordinates.length}' : zoneName,
       _selectedSrid,
       List.from(_coordinates),
+      _isDraft,
     );
   }
 
@@ -186,78 +190,47 @@ class _ManualCoordinateEntrySheetState
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.9,
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.darkBackground : AppColors.background,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(AppConstants.radiusXl),
-          topRight: Radius.circular(AppConstants.radiusXl),
+    return AppBottomSheet(
+      title: 'Ingiza Coordinate - ${_getFeatureTypeName()}',
+      titleIcon: Icons.add_location_alt,
+      maxHeight: MediaQuery.of(context).size.height * 0.9,
+      padding: EdgeInsets.zero,
+      actions: [
+        // View toggle
+        IconButton(
+          icon: Icon(_showMap ? Icons.list : Icons.map),
+          onPressed: () {
+            setState(() => _showMap = !_showMap);
+            if (_showMap) _updateMapView();
+          },
+          tooltip: _showMap ? 'Orodha' : 'Ramani',
         ),
-      ),
+      ],
       child: Column(
         children: [
-          // Header
+          // Progress indicator
           Container(
-            padding: const EdgeInsets.all(AppConstants.spacingMd),
-            decoration: BoxDecoration(
-              color: isDark ? AppColors.darkSurface : Colors.white,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(AppConstants.radiusXl),
-                topRight: Radius.circular(AppConstants.radiusXl),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppConstants.spacingMd,
+              vertical: AppConstants.spacingSm,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            color: _hasMinPoints
+                ? AppColors.success.withValues(alpha: 0.1)
+                : AppColors.warning.withValues(alpha: 0.1),
+            child: Row(
               children: [
-                Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: widget.onCancel,
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Ingiza Coordinate - ${_getFeatureTypeName()}',
-                            style: theme.textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: isDark
-                                  ? AppColors.darkTextPrimary
-                                  : AppColors.textPrimary,
-                            ),
-                          ),
-                          Text(
-                            'Cooordinates: ${_coordinates.length} / $_minPointsRequired ${_hasMinPoints ? "✓" : ""}',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: _hasMinPoints
-                                  ? Colors.green
-                                  : (isDark
-                                      ? AppColors.darkTextSecondary
-                                      : AppColors.textSecondary),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(_showMap ? Icons.list : Icons.map),
-                      onPressed: () {
-                        setState(() => _showMap = !_showMap);
-                        if (_showMap) _updateMapView();
-                      },
-                      tooltip: _showMap ? 'Orodha' : 'Ramani',
-                    ),
-                  ],
+                Icon(
+                  _hasMinPoints ? Icons.check_circle : Icons.info_outline,
+                  size: 20,
+                  color: _hasMinPoints ? AppColors.success : AppColors.warning,
+                ),
+                const SizedBox(width: AppConstants.spacingXs),
+                Text(
+                  'Coordinates: ${_coordinates.length} / $_minPointsRequired ${_hasMinPoints ? "✓" : ""}',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: _hasMinPoints ? AppColors.success : AppColors.warning,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ],
             ),
@@ -273,35 +246,55 @@ class _ManualCoordinateEntrySheetState
             padding: const EdgeInsets.all(AppConstants.spacingMd),
             decoration: BoxDecoration(
               color: isDark ? AppColors.darkSurface : Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 4,
-                  offset: const Offset(0, -2),
+              border: Border(
+                top: BorderSide(
+                  color: isDark ? AppColors.darkDivider : AppColors.divider,
                 ),
-              ],
+              ),
             ),
-            child: Row(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: _addCoordinate,
-                    icon: const Icon(Icons.add_location),
-                    label: const Text('Ingiza Coordinates'),
-                  ),
+                // Draft toggle
+                ToggleCardWidget(
+                  value: _isDraft,
+                  onChanged: (v) => setState(() => _isDraft = v),
+                  title: 'Save as Draft',
+                  activeSubtitle: 'Will be saved as draft for later editing',
+                  inactiveSubtitle: 'Will be marked as final',
+                  activeIcon: Icons.edit_note,
+                  inactiveIcon: Icons.check_circle_outline,
                 ),
-                const SizedBox(width: AppConstants.spacingSm),
-                ElevatedButton.icon(
-                  onPressed: _hasMinPoints &&
-                          _zoneNameController.text.trim().isNotEmpty
-                      ? _handleSave
-                      : null,
-                  icon: const Icon(Icons.save),
-                  label: const Text('Hifadhi'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        isDark ? AppColors.darkPrimary : AppColors.primary,
-                  ),
+                const SizedBox(height: AppConstants.spacingMd),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: _addCoordinate,
+                        icon: const Icon(Icons.add_location),
+                        label: const Text('Ongeza'),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: AppConstants.spacingSm),
+                    Expanded(
+                      flex: 2,
+                      child: AppButton(
+                        label: 'Hifadhi',
+                        icon: Icons.save,
+                        onPressed: _handleSave,
+                        gradientColors: [
+                          isDark ? AppColors.darkPrimary : AppColors.primary,
+                          (isDark ? AppColors.darkPrimary : AppColors.primary)
+                              .withValues(alpha: 0.8),
+                        ],
+                        height: 50,
+                        isDisabled: !_hasMinPoints,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -323,19 +316,13 @@ class _ManualCoordinateEntrySheetState
             TextFormField(
               controller: _zoneNameController,
               decoration: InputDecoration(
-                labelText: 'Jina la eneo *',
+                labelText: 'Jina la eneo (optional)',
                 hintText: 'Andika jina la eneo',
                 prefixIcon: const Icon(Icons.label),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(AppConstants.radiusSm),
                 ),
               ),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Jina la eneo linahitajika';
-                }
-                return null;
-              },
             ),
             const SizedBox(height: AppConstants.spacingMd),
 
@@ -343,7 +330,7 @@ class _ManualCoordinateEntrySheetState
             DropdownButtonFormField<int>(
               value: _selectedSrid,
               decoration: InputDecoration(
-                labelText: 'Coordinate System *',
+                labelText: 'Coordinate System',
                 prefixIcon: const Icon(Icons.public),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(AppConstants.radiusSm),
@@ -356,7 +343,7 @@ class _ManualCoordinateEntrySheetState
                 return DropdownMenuItem<int>(
                   value: sridInfo.srid,
                   child: Container(
-                    constraints: const BoxConstraints(maxHeight: 56),
+                    constraints: const BoxConstraints(maxHeight: 48),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
@@ -366,8 +353,10 @@ class _ManualCoordinateEntrySheetState
                           sridInfo.name,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.w600,
+                            fontSize: 13,
                           ),
                           overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
                         ),
                         Text(
                           sridInfo.description,
@@ -375,8 +364,10 @@ class _ManualCoordinateEntrySheetState
                             color: isDark
                                 ? AppColors.darkTextSecondary
                                 : AppColors.textSecondary,
+                            fontSize: 11,
                           ),
                           overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
                         ),
                       ],
                     ),
@@ -726,7 +717,7 @@ class _CoordinateInputDialogState extends State<_CoordinateInputDialog> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Uhakiki #${widget.pointNumber}',
+              'Coordinate #${widget.pointNumber}',
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
