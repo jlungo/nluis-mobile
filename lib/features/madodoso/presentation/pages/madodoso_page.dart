@@ -6,6 +6,7 @@ import '../../../../shared/constants/app_constants.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/app_drawer.dart';
 import '../../../../shared/widgets/custom_app_bar.dart';
+import '../../../../shared/widgets/status_card.dart';
 import '../providers/madodoso_providers.dart';
 
 class MadodosoPage extends ConsumerWidget {
@@ -260,9 +261,12 @@ class _MadodosoCard extends StatelessWidget {
     return 'Just now';
   }
 
-  double _progress() {
-    if (entry.totalForms == 0) return 0;
-    return entry.completedForms / entry.totalForms;
+  String? _getUploadedAt() {
+    // Only show uploaded at for uploaded status
+    if (status == MadodosoStatus.uploaded) {
+      return _formatRelative(entry.updatedAt);
+    }
+    return null;
   }
 
   @override
@@ -270,198 +274,36 @@ class _MadodosoCard extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: AppConstants.spacingMd),
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.darkSurface : Colors.white,
-        borderRadius: BorderRadius.circular(AppConstants.radiusMd),
-        border: Border.all(
-          color:
-              isDark
-                  ? AppColors.darkDivider.withValues(alpha: 0.5)
-                  : AppColors.divider.withValues(alpha: 0.3),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.1 : 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(AppConstants.radiusMd),
-          onTap: () {
-            context.pushNamed(
-              'questionnaireForm',
-              pathParameters: {
-                'questionnaireSlug': entry.questionnaireSlug,
-                'projectId': entry.projectId,
-                'projectName': entry.projectName,
-              },
-              queryParameters: {
-                'surveyId': entry.surveyId,
-                'isReadOnly': entry.isReadOnly.toString(),
-              },
-            );
+    // Progress bar only for draft, progress percentage for draft and completed
+    final showProgressBar = status == MadodosoStatus.draft;
+    final showProgress = status == MadodosoStatus.draft || status == MadodosoStatus.completed;
+
+    return StatusCard(
+      title: entry.questionnaireName,
+      subtitle: entry.projectName,
+      statusLabel: _statusLabel(),
+      statusColor: _statusColor(context),
+      updatedAt: 'Updated ${_formatRelative(entry.updatedAt)}',
+      uploadedAt: _getUploadedAt(),
+      completedCount: entry.completedForms,
+      totalCount: entry.totalForms,
+      showProgress: showProgress,
+      showProgressBar: showProgressBar,
+      isDark: isDark,
+      onTap: () {
+        context.pushNamed(
+          'questionnaireForm',
+          pathParameters: {
+            'questionnaireSlug': entry.questionnaireSlug,
+            'projectId': entry.projectId,
+            'projectName': entry.projectName,
           },
-          child: Padding(
-            padding: const EdgeInsets.all(AppConstants.spacingMd),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            entry.questionnaireName,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w700,
-                              color:
-                                  isDark
-                                      ? AppColors.darkTextPrimary
-                                      : AppColors.textPrimary,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            entry.projectName,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color:
-                                  isDark
-                                      ? AppColors.darkTextSecondary
-                                      : AppColors.textSecondary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: AppConstants.spacingSm),
-                    _StatusChip(
-                      label: _statusLabel(),
-                      color: _statusColor(context),
-                      isDark: isDark,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppConstants.spacingMd),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.access_time_rounded,
-                      size: 16,
-                      color:
-                          isDark
-                              ? AppColors.darkTextSecondary
-                              : AppColors.textSecondary,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      'Updated ${_formatRelative(entry.updatedAt)}',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color:
-                            isDark
-                                ? AppColors.darkTextSecondary
-                                : AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-                if (entry.totalForms > 0) ...[
-                  const SizedBox(height: AppConstants.spacingMd),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: LinearProgressIndicator(
-                          value: _progress(),
-                          minHeight: 8,
-                          backgroundColor:
-                              isDark
-                                  ? AppColors.darkDivider
-                                  : AppColors.divider.withValues(alpha: 0.4),
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            _statusColor(context),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            '${entry.completedForms}/${entry.totalForms} forms completed',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color:
-                                  isDark
-                                      ? AppColors.darkTextSecondary
-                                      : AppColors.textSecondary,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          Text(
-                            '${(_progress() * 100).toStringAsFixed(0)}%',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: _statusColor(context),
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _StatusChip extends StatelessWidget {
-  final String label;
-  final Color color;
-  final bool isDark;
-
-  const _StatusChip({
-    required this.label,
-    required this.color,
-    required this.isDark,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [color.withValues(alpha: 0.2), color.withValues(alpha: 0.15)],
-        ),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: color.withValues(alpha: isDark ? 0.5 : 0.3),
-          width: 1.5,
-        ),
-      ),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          fontWeight: FontWeight.w700,
-          color: color,
-          fontSize: 11,
-        ),
-      ),
+          queryParameters: {
+            'surveyId': entry.surveyId,
+            'isReadOnly': entry.isReadOnly.toString(),
+          },
+        );
+      },
     );
   }
 }
