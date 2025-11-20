@@ -140,7 +140,7 @@ class SettingsPage extends ConsumerWidget {
                   theme: theme,
                   icon: Icons.palette_outlined,
                   iconColor: isDark ? AppColors.warningDark : AppColors.warning,
-                  title: 'Mandhari',
+                  title: 'Muonekano',
                   subtitle: currentTheme.label,
                   trailing: Icon(
                     Icons.arrow_forward_ios,
@@ -156,27 +156,27 @@ class SettingsPage extends ConsumerWidget {
                   height: 1,
                   color: isDark ? AppColors.darkDivider : AppColors.divider,
                 ),
-                _SettingTile(
-                  theme: theme,
-                  icon: Icons.notifications_outlined,
-                  iconColor: isDark ? AppColors.infoDark : AppColors.info,
-                  title: 'Arifa',
-                  subtitle: 'Simamia arifa',
-                  trailing: Icon(
-                    Icons.arrow_forward_ios,
-                    size: 16,
-                    color:
-                        isDark
-                            ? AppColors.darkTextSecondary
-                            : AppColors.textSecondary,
-                  ),
-                  onTap: () {
-                    SnackBarUtils.showInfo(
-                      context,
-                      'This is feature coming soon.',
-                    );
-                  },
-                ),
+                // _SettingTile(
+                //   theme: theme,
+                //   icon: Icons.notifications_outlined,
+                //   iconColor: isDark ? AppColors.infoDark : AppColors.info,
+                //   title: 'Arifa',
+                //   subtitle: 'Simamia arifa',
+                //   trailing: Icon(
+                //     Icons.arrow_forward_ios,
+                //     size: 16,
+                //     color:
+                //         isDark
+                //             ? AppColors.darkTextSecondary
+                //             : AppColors.textSecondary,
+                //   ),
+                //   onTap: () {
+                //     SnackBarUtils.showInfo(
+                //       context,
+                //       'This is feature coming soon.',
+                //     );
+                //   },
+                // ),
               ],
             ),
             const SizedBox(height: AppConstants.spacingLg),
@@ -189,10 +189,10 @@ class SettingsPage extends ConsumerWidget {
               children: [
                 _SettingTile(
                   theme: theme,
-                  icon: Icons.storage_outlined,
+                  icon: Icons.settings_applications_outlined,
                   iconColor: isDark ? AppColors.successDark : AppColors.success,
-                  title: 'Sync Data',
-                  subtitle: 'Pakua data kutoka kwenye seva',
+                  title: 'Mipangilio ya Programu',
+                  subtitle: 'Mipangilio na data za msingi',
                   trailing: Icon(
                     Icons.arrow_forward_ios,
                     size: 16,
@@ -202,10 +202,7 @@ class SettingsPage extends ConsumerWidget {
                             : AppColors.textSecondary,
                   ),
                   onTap: () {
-                    SnackBarUtils.showInfo(
-                      context,
-                      'This is feature coming soon.',
-                    );
+                    context.pushNamed('appConfigurations');
                   },
                 ),
                 Divider(
@@ -452,65 +449,79 @@ class SettingsPage extends ConsumerWidget {
     );
   }
 
-  Future<void> _showClearStorageDialog(BuildContext context, WidgetRef ref) async {
+  Future<void> _showClearStorageDialog(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
     final confirm = await DialogUtils.showCustomDialog<bool>(
       context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppConstants.radiusMd),
-        ),
-        title: Row(
-          children: [
-            Icon(
-              Icons.warning_amber_rounded,
-              color: isDark ? AppColors.errorDark : AppColors.error,
-              size: 28,
+      builder:
+          (dialogContext) => AlertDialog(
+            backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppConstants.radiusMd),
             ),
-            const SizedBox(width: AppConstants.spacingSm),
-            Expanded(
-              child: Text(
-                'Futa Data?',
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+            title: Row(
+              children: [
+                Icon(
+                  Icons.warning_amber_rounded,
+                  color: isDark ? AppColors.errorDark : AppColors.error,
+                  size: 28,
+                ),
+                const SizedBox(width: AppConstants.spacingSm),
+                Expanded(
+                  child: Text(
+                    'Futa Data?',
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color:
+                          isDark
+                              ? AppColors.darkTextPrimary
+                              : AppColors.textPrimary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            content: Text(
+              'Je, una uhakika unataka kufuta data zote zilizohifadhiwa? Hatua hii haiwezi kubatilishwa. Data zote za miradi, dodoso, na rasimu zitafutwa.',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color:
+                    isDark
+                        ? AppColors.darkTextSecondary
+                        : AppColors.textSecondary,
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(false),
+                child: Text(
+                  'Ghairi',
+                  style: TextStyle(
+                    color:
+                        isDark
+                            ? AppColors.darkTextSecondary
+                            : AppColors.textSecondary,
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-        content: Text(
-          'Je, una uhakika unataka kufuta data zote zilizohifadhiwa? Hatua hii haiwezi kubatilishwa. Data zote za miradi, dodoso, na rasimu zitafutwa.',
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: Text(
-              'Ghairi',
-              style: TextStyle(
-                color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+              ElevatedButton(
+                onPressed: () => Navigator.of(dialogContext).pop(true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      isDark ? AppColors.errorDark : AppColors.error,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppConstants.radiusSm),
+                  ),
+                ),
+                child: const Text('Futa'),
               ),
-            ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: isDark ? AppColors.errorDark : AppColors.error,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppConstants.radiusSm),
-              ),
-            ),
-            child: const Text('Futa'),
-          ),
-        ],
-      ),
     );
 
     if (confirm == true) {
@@ -519,10 +530,7 @@ class SettingsPage extends ConsumerWidget {
         await draftService.clearAllData();
 
         if (context.mounted) {
-          SnackBarUtils.showSuccess(
-            context,
-            'Data zote zimefutwa kamili',
-          );
+          SnackBarUtils.showSuccess(context, 'Data zote zimefutwa kamili');
         }
       } catch (e) {
         if (context.mounted) {
