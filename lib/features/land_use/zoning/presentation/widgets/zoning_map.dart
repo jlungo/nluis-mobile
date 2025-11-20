@@ -53,6 +53,7 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
 
   MapType _mapType = MapType.standard;
   String? _mapTypeBanner;
+  bool _showServerFeatures = true;
 
   @override
   void initState() {
@@ -263,6 +264,20 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
   }
 
   void _startAutomaticRecording(ZoningFeatureType featureType) {
+    // Check if user is inside basemap boundaries
+    if (_lastLocation != null && !(_lastLocation!.isInsideBoundary)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'You are not inside the basemap area. Please move to the project area or use manual coordinate entry.',
+          ),
+          backgroundColor: AppColors.error,
+          duration: Duration(seconds: 4),
+        ),
+      );
+      return; // Don't start recording
+    }
+
     setState(() {
       _isCreatingFeature = true;
       _activeFeatureType = featureType;
@@ -389,7 +404,7 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
       enableDrag: false,
       builder: (context) => ManualCoordinateEntrySheet(
         featureType: featureType,
-        onSave: (zoneName, srid, coordinates) {
+        onSave: (zoneName, srid, coordinates, isDraft) {
           // Convert coordinates from the selected SRID to WGS84
           CoordinateConverter.initialize();
           final wgs84Coordinates = coordinates.map((coord) {
@@ -409,6 +424,7 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
           Navigator.of(context).pop();
 
           // Open metadata sheet to complete the feature
+          // Note: Pass isDraft to metadata sheet if needed
           _openMetadataSheet();
         },
         onCancel: () {
@@ -527,9 +543,36 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
               ],
             ),
 
-            // Existing features
+            // Existing features (split into local and server)
             featuresAsync.when(
-              data: (features) => _buildFeaturesLayer(features, landUseColors),
+              data: (features) {
+                // Separate local and server features
+                final localFeatures = features.where((f) => !f.uploaded).toList();
+                final serverFeatures = features.where((f) => f.uploaded).toList();
+                
+                return Stack(
+                  children: [
+                    // Server features (from MVT tiles) - render first (behind)
+                    if (_showServerFeatures && serverFeatures.isNotEmpty)
+                      _buildFeaturesLayer(
+                        serverFeatures,
+                        landUseColors,
+                        strokeWidth: 2.0,
+                        fillOpacity: 0.15,
+                        borderOpacity: 0.6,
+                      ),
+                    // Local features (created on device) - render on top
+                    if (localFeatures.isNotEmpty)
+                      _buildFeaturesLayer(
+                        localFeatures,
+                        landUseColors,
+                        strokeWidth: 3.0,
+                        fillOpacity: 0.3,
+                        borderOpacity: 1.0,
+                      ),
+                  ],
+                );
+              },
               loading: () => const SizedBox.shrink(),
               error: (_, _) => const SizedBox.shrink(),
             ),
@@ -600,8 +643,11 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
 
   Widget _buildFeaturesLayer(
     List<ZoningFeature> features,
-    Map<int, Color> landUseColors,
-  ) {
+    Map<int, Color> landUseColors, {
+    double strokeWidth = 3.0,
+    double fillOpacity = 0.3,
+    double borderOpacity = 1.0,
+  }) {
     final markers = <Marker>[];
     final polylines = <Polyline>[];
     final polygons = <Polygon>[];
@@ -610,10 +656,13 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
       final isSelected = _selectedFeatureId == feature.clientUuid;
       
       // Use land-use color, fallback to grey if not available
-      final color =
+      final baseColor =
           feature.landUseId != null
               ? (landUseColors[feature.landUseId!] ?? Colors.grey)
               : Colors.grey;
+      
+      // Apply border opacity to color
+      final color = baseColor.withValues(alpha: borderOpacity);
 
       switch (feature.featureType) {
         case ZoningFeatureType.point:
@@ -644,7 +693,7 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
             Polyline(
               points: feature.coordinates,
               color: isSelected ? AppColors.accent : color,
-              strokeWidth: isSelected ? 5.0 : 3.0,
+              strokeWidth: isSelected ? (strokeWidth + 2.0) : strokeWidth,
             ),
           );
           break;
@@ -653,9 +702,11 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
           polygons.add(
             Polygon(
               points: feature.coordinates,
-              color: (isSelected ? AppColors.accent : color).withValues(alpha: isSelected ? 0.4 : 0.3),
+              color: (isSelected ? AppColors.accent : baseColor).withValues(
+                alpha: isSelected ? 0.4 : fillOpacity,
+              ),
               borderColor: isSelected ? AppColors.accent : color,
-              borderStrokeWidth: isSelected ? 3.0 : 2.0,
+              borderStrokeWidth: isSelected ? (strokeWidth + 1.0) : strokeWidth,
             ),
           );
           break;
@@ -788,6 +839,39 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
         control(Icons.layers, () {
           _showMapTypeSheet();
         }),
+        // Server features toggle
+        Container(
+          margin: const EdgeInsets.only(bottom: AppConstants.spacingSm),
+          decoration: BoxDecoration(
+            color: _showServerFeatures
+                ? AppColors.primary.withValues(alpha: 0.9)
+                : (isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant),
+            borderRadius: BorderRadius.circular(AppConstants.radiusMd),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.1),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: IconButton(
+            icon: Icon(
+              _showServerFeatures ? Icons.cloud_done : Icons.cloud_off,
+            ),
+            tooltip: _showServerFeatures 
+                ? 'Ficha vipimo vya seva' 
+                : 'Onyesha vipimo vya seva',
+            onPressed: () {
+              setState(() {
+                _showServerFeatures = !_showServerFeatures;
+              });
+            },
+            color: _showServerFeatures
+                ? Colors.white
+                : (isDark ? AppColors.surfaceVariant : AppColors.darkSurfaceVariant),
+          ),
+        ),
       ],
     );
   }
