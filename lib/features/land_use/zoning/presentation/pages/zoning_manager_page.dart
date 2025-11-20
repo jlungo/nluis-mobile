@@ -16,6 +16,7 @@ import '../providers/zoning_manager_providers.dart';
 import 'locality_features_page.dart';
 import '../../domain/entities/zoning_feature.dart';
 import '../providers/zoning_providers.dart';
+import '../../../../../data/local/draft_provider.dart';
 
 class ZoningManagerPage extends ConsumerStatefulWidget {
   const ZoningManagerPage({super.key});
@@ -171,12 +172,18 @@ class _ZoningManagerPageState extends ConsumerState<ZoningManagerPage> {
       await zoningApi.bulkUploadZones(features: savedFeatures);
 
       // Mark features as uploaded in local database
+      final database = ref.read(databaseProvider);
       for (final feature in savedFeatures) {
         final updatedFeature = feature.copyWith(
           uploaded: true,
           uploadedAt: DateTime.now(),
         );
         await repository.updateFeature(updatedFeature);
+        
+        // Delete feature history after successful upload
+        await (database.delete(database.zoningFeatureHistory)
+          ..where((tbl) => tbl.featureId.equals(feature.clientUuid)))
+          .go();
       }
 
       // Refresh locality projects list
@@ -555,6 +562,32 @@ class _LocalityProjectCard extends StatelessWidget {
                                 : AppColors.textSecondary,
                       ),
                     ),
+                    if (_shouldShowTimestamp()) ...[
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(
+                            _getTimestampIcon(),
+                            size: 14,
+                            color:
+                                isDark
+                                    ? AppColors.darkTextSecondary
+                                    : AppColors.textSecondary,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            _getTimestampText(),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color:
+                                  isDark
+                                      ? AppColors.darkTextSecondary
+                                      : AppColors.textSecondary,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -592,6 +625,49 @@ class _LocalityProjectCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  bool _shouldShowTimestamp() {
+    return (status == 'draft' || status == 'saved') && project.lastUpdatedAt != null ||
+        status == 'uploaded' && project.uploadedAt != null;
+  }
+
+  IconData _getTimestampIcon() {
+    if (status == 'uploaded') {
+      return Icons.cloud_upload_rounded;
+    }
+    return Icons.update_rounded;
+  }
+
+  String _getTimestampText() {
+    final DateTime? timestamp = status == 'uploaded' 
+        ? project.uploadedAt 
+        : project.lastUpdatedAt;
+    
+    if (timestamp == null) return '';
+    
+    final now = DateTime.now();
+    final difference = now.difference(timestamp);
+    
+    if (difference.inMinutes < 1) {
+      return status == 'uploaded' ? 'Uploaded just now' : 'Updated just now';
+    } else if (difference.inHours < 1) {
+      return status == 'uploaded' 
+          ? 'Uploaded ${difference.inMinutes}m ago'
+          : 'Updated ${difference.inMinutes}m ago';
+    } else if (difference.inDays < 1) {
+      return status == 'uploaded'
+          ? 'Uploaded ${difference.inHours}h ago'
+          : 'Updated ${difference.inHours}h ago';
+    } else if (difference.inDays < 7) {
+      return status == 'uploaded'
+          ? 'Uploaded ${difference.inDays}d ago'
+          : 'Updated ${difference.inDays}d ago';
+    } else {
+      return status == 'uploaded'
+          ? 'Uploaded ${timestamp.day}/${timestamp.month}/${timestamp.year}'
+          : 'Updated ${timestamp.day}/${timestamp.month}/${timestamp.year}';
+    }
   }
 }
 
