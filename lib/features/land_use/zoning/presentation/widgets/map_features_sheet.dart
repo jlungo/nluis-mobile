@@ -341,41 +341,9 @@ class _MapFeaturesSheetState extends ConsumerState<MapFeaturesSheet> {
                         ],
                       ),
                     ),
-                    PopupMenuButton<String>(
-                      icon: const Icon(Icons.more_vert),
-                      onSelected: (value) {
-                        if (value == 'edit') {
-                          widget.onFeatureEdit(feature);
-                        } else if (value == 'delete') {
-                          _confirmDelete(feature);
-                        }
-                      },
-                      itemBuilder:
-                          (context) => [
-                            const PopupMenuItem(
-                              value: 'edit',
-                              child: Row(
-                                children: [
-                                  Icon(Icons.edit, size: 20),
-                                  SizedBox(width: 12),
-                                  Text('Edit'),
-                                ],
-                              ),
-                            ),
-                            const PopupMenuItem(
-                              value: 'delete',
-                              child: Row(
-                                children: [
-                                  Icon(Icons.delete, size: 20, color: AppColors.error),
-                                  SizedBox(width: 12),
-                                  Text(
-                                    'Delete',
-                                    style: TextStyle(color: AppColors.error),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                    Icon(
+                      Icons.chevron_right,
+                      color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                     ),
                   ],
                 ),
@@ -384,63 +352,6 @@ class _MapFeaturesSheetState extends ConsumerState<MapFeaturesSheet> {
           ),
         ),
       ),
-    );
-  }
-
-  void _confirmDelete(ZoningFeature feature) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(AppConstants.spacingMd),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Icon(Icons.delete, color: AppColors.error),
-                    const SizedBox(width: AppConstants.spacingSm),
-                    const Text(
-                      'Delete Feature',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppConstants.spacingSm),
-                Text(
-                  'Are you sure you want to delete "${feature.plotName ?? feature.plotId ?? 'this feature'}"?',
-                ),
-                const SizedBox(height: AppConstants.spacingMd),
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('Cancel'),
-                      ),
-                    ),
-                    const SizedBox(width: AppConstants.spacingSm),
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.error,
-                        ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                          widget.onFeatureDelete(feature);
-                        },
-                        child: const Text('Delete'),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 
