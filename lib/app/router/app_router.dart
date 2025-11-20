@@ -9,6 +9,7 @@ import '../../features/land_use/dashboard/presentation/pages/projects_list_page.
 import '../../features/land_use/survey/presentation/pages/survey_list_page.dart';
 import '../../features/land_use/zoning/presentation/pages/zoning_page_wrapper.dart';
 import '../../features/settings/presentation/pages/settings_page.dart';
+import '../../features/settings/presentation/pages/app_configurations_page.dart';
 import '../../features/notifications/presentation/pages/notifications_page.dart';
 import '../../features/madodoso/presentation/pages/madodoso_page.dart';
 import '../../features/land_use/survey/presentation/pages/questionnaire_form_page.dart';
@@ -114,6 +115,12 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const SettingsPage(),
           ),
         ],
+      ),
+      // APP CONFIGURATIONS
+      GoRoute(
+        path: '/app-configurations',
+        name: 'appConfigurations',
+        builder: (context, state) => const AppConfigurationsPage(),
       ),
       GoRoute(
         path: '/notifications',
