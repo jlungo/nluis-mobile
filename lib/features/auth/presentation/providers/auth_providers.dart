@@ -19,6 +19,7 @@ final dioClientProvider = Provider<DioClient>((ref) {
   return DioClient(
     secureStorage: ref.watch(secureStorageProvider),
     networkInfo: ref.watch(networkInfoProvider),
+    sharedPreferences: ref.watch(sharedPreferencesProvider),
     onTokenRefreshFailedWhileOnline: () async {
       // Trigger logout by incrementing the state
       // This will be watched by the auth listener
@@ -48,7 +49,6 @@ final authRemoteDataSourceProvider = Provider<AuthRemoteDataSource>((ref) {
 
 final authLocalDataSourceProvider = Provider<AuthLocalDataSource>((ref) {
   return AuthLocalDataSourceImpl(
-    secureStorage: ref.watch(secureStorageProvider),
     sharedPreferences: ref.watch(sharedPreferencesProvider),
   );
 });
