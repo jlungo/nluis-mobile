@@ -19,18 +19,8 @@ class AppDrawer extends ConsumerWidget {
     final location =
         goRouter?.routeInformationProvider.value.uri.toString() ?? '';
 
-    bool matchesLocation(String path) => location.startsWith(path);
-
     final isOnSwitchboard = location == '/module-switch';
-    final isOnDashboard = matchesLocation('/module/land-use/dashboard');
-    final isOnProjects =
-        matchesLocation('/module/land-use/projects') ||
-        matchesLocation('/module/land-use/survey');
-    final isOnZoning = matchesLocation('/module/land-use/zoning') ||
-        matchesLocation('/zoning-manager');
-    final isOnDrafts = matchesLocation('/madodoso');
-    final isOnSettings = matchesLocation('/settings');
-    // final isOnNotifications = matchesLocation('/notifications');
+    final isOnSettings = location.startsWith('/settings') || location.startsWith('/app-configurations');
 
     return Drawer(
       backgroundColor:
@@ -95,48 +85,12 @@ class AppDrawer extends ConsumerWidget {
               ),
               children: [
                 _DrawerMenuItem(
-                  icon: Icons.home_outlined,
+                  icon: Icons.apps_outlined,
                   label: 'Switchboard',
                   isSelected: isOnSwitchboard,
                   onTap: () {
                     Navigator.pop(context);
                     context.goNamed('moduleSwitch');
-                  },
-                ),
-                _DrawerMenuItem(
-                  icon: Icons.grid_view_outlined,
-                  label: 'Dashboard',
-                  isSelected: isOnDashboard,
-                  onTap: () {
-                    Navigator.pop(context);
-                    context.goNamed('luDashboard');
-                  },
-                ),
-                _DrawerMenuItem(
-                  icon: Icons.folder_copy_outlined,
-                  label: 'My Projects',
-                  isSelected: isOnProjects,
-                  onTap: () {
-                    Navigator.pop(context);
-                    context.goNamed('luProjects');
-                  },
-                ),
-                _DrawerMenuItem(
-                  icon: Icons.map_outlined,
-                  label: 'Zoning',
-                  isSelected: isOnZoning,
-                  onTap: () {
-                    Navigator.pop(context);
-                    context.goNamed('zoningManager');
-                  },
-                ),
-                _DrawerMenuItem(
-                  icon: Icons.library_books_outlined,
-                  label: 'Madodoso',
-                  isSelected: isOnDrafts,
-                  onTap: () {
-                    Navigator.pop(context);
-                    context.goNamed('madodoso');
                   },
                 ),
                 _DrawerMenuItem(
@@ -148,94 +102,43 @@ class AppDrawer extends ConsumerWidget {
                     context.goNamed('settings');
                   },
                 ),
-                // _DrawerMenuItem(
-                //   icon: Icons.notifications_outlined,
-                //   label: 'Notifications',
-                //   badge: '1',
-                //   isSelected: isOnNotifications,
-                //   onTap: () {
-                //     Navigator.pop(context);
-                //     context.goNamed('notifications');
-                //   },
-                // ),
               ],
             ),
           ),
 
+          // Logout Button (Fixed at bottom)
           Container(
-            margin: const EdgeInsets.all(AppConstants.spacingLg),
-            padding: const EdgeInsets.all(AppConstants.spacingMd),
-            decoration: BoxDecoration(
-              color:
-                  isDark
-                      ? AppColors.darkPrimary.withValues(alpha: 0.1)
-                      : AppColors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(AppConstants.radiusMd),
-              border: Border.all(
-                color:
-                    isDark
-                        ? AppColors.darkPrimary.withValues(alpha: 0.3)
-                        : AppColors.primary.withValues(alpha: 0.3),
+            margin: const EdgeInsets.all(AppConstants.spacingMd),
+            child: ElevatedButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                await ref.read(authStateProvider.notifier).logout();
+                if (context.mounted) {
+                  context.goNamed('login');
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.error,
+                foregroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 48),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppConstants.radiusMd),
+                ),
               ),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors:
-                          isDark
-                              ? [
-                                AppColors.darkPrimary,
-                                AppColors.darkPrimaryDark,
-                              ]
-                              : [AppColors.primary, AppColors.primaryDark],
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Center(
-                    child: Text(
-                      user != null ? user.firstName[0].toUpperCase() : 'U',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color:
-                            isDark ? AppColors.darkTextInverse : Colors.white,
-                      ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.logout_outlined),
+                  const SizedBox(width: AppConstants.spacingSm),
+                  Text(
+                    'Logout',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                ),
-                const SizedBox(width: AppConstants.spacingMd),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        '${user?.firstName ?? 'User'} ${user?.lastName ?? ''}',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color:
-                              isDark
-                                  ? AppColors.darkTextPrimary
-                                  : AppColors.textPrimary,
-                        ),
-                      ),
-                      Text(
-                        user?.role?.name ?? '',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color:
-                              isDark
-                                  ? AppColors.darkTextSecondary
-                                  : AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
