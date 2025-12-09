@@ -8,7 +8,6 @@ import '../../../../features/auth/presentation/providers/auth_providers.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/constants/app_constants.dart';
 import '../../../../shared/widgets/custom_app_bar.dart';
-import '../../../../shared/widgets/app_drawer.dart';
 import '../../../../data/local/draft_provider.dart';
 import '../../../../shared/utils/dialog_utils.dart';
 import '../../../../shared/utils/snackbar_utils.dart';
@@ -26,8 +25,11 @@ class SettingsPage extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
-      drawer: const AppDrawer(),
-      appBar: const CustomAppBar(hasNotification: true),
+      appBar: const CustomAppBar(
+        showBackButton: true,
+        showProfile: false,
+        hasNotification: true,
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppConstants.spacingLg),
         child: Column(
@@ -292,65 +294,6 @@ class SettingsPage extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: AppConstants.spacingXl),
-
-            // Logout Button
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    isDark ? AppColors.errorDark : AppColors.error,
-                    (isDark ? AppColors.errorDark : AppColors.error).withValues(
-                      alpha: 0.8,
-                    ),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(AppConstants.radiusMd),
-                boxShadow: [
-                  BoxShadow(
-                    color: (isDark ? AppColors.errorDark : AppColors.error)
-                        .withValues(alpha: 0.3),
-                    blurRadius: 12,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
-              ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () => unawaited(_showLogoutDialog(context, ref)),
-                  borderRadius: BorderRadius.circular(AppConstants.radiusMd),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: AppConstants.spacingMd,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.logout,
-                          color:
-                              isDark ? AppColors.darkTextInverse : Colors.white,
-                        ),
-                        const SizedBox(width: AppConstants.spacingMd),
-                        Text(
-                          'Toka',
-                          style: TextStyle(
-                            color:
-                                isDark
-                                    ? AppColors.darkTextInverse
-                                    : Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: AppConstants.spacingXl),
           ],
         ),
       ),
@@ -536,46 +479,6 @@ class SettingsPage extends ConsumerWidget {
         if (context.mounted) {
           SnackBarUtils.showError(context, 'Hitilafu: $e');
         }
-      }
-    }
-  }
-
-  Future<void> _showLogoutDialog(BuildContext context, WidgetRef ref) async {
-    final confirm = await DialogUtils.showCustomDialog<bool>(
-      context,
-      builder:
-          (dialogContext) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            title: const Row(
-              children: [
-                Icon(Icons.logout, color: AppColors.error),
-                SizedBox(width: 12),
-                Text('Toka?'),
-              ],
-            ),
-            content: const Text('Je, una uhakika unataka kutoka?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(dialogContext).pop(false),
-                child: const Text('Ghairi'),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.of(dialogContext).pop(true),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.error,
-                ),
-                child: const Text('Toka'),
-              ),
-            ],
-          ),
-    );
-
-    if (confirm == true) {
-      await ref.read(authStateProvider.notifier).logout();
-      if (context.mounted) {
-        context.goNamed('login');
       }
     }
   }
