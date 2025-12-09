@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/providers/auth_providers.dart';
 import '../../features/notifications/presentation/pages/notifications_page.dart';
 import '../constants/app_constants.dart';
@@ -12,6 +13,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final bool showProfile;
   final VoidCallback? onNotificationTap;
   final String? title;
+  final String? subtitle;
   final PreferredSizeWidget? bottom;
 
   const CustomAppBar({
@@ -22,6 +24,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
     this.showProfile = true,
     this.onNotificationTap,
     this.title,
+    this.subtitle,
     this.bottom,
   });
 
@@ -42,12 +45,33 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
       surfaceTintColor: isDark ? AppColors.darkSurface : Colors.white,
       elevation: 0,
       title: title != null
-          ? Text(
-              title!,
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-            )
+          ? subtitle != null
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title!,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Text(
+                      subtitle!,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: isDark
+                            ? AppColors.darkTextSecondary
+                            : AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                )
+              : Text(
+                  title!,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                )
           : null,
       leading: Builder(
         builder: (context) => IconButton(
@@ -59,7 +83,8 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
           ),
           onPressed: () {
             if (showBackButton) {
-              Navigator.of(context).pop();
+              // Always try to pop first for proper back navigation
+              context.pop();
             } else {
               Scaffold.of(context).openDrawer();
             }
