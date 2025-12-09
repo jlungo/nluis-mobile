@@ -230,10 +230,13 @@ class ModuleSwitchboardPage extends ConsumerWidget {
         context.goNamed('luDashboard');
         break;
       case ModuleType.landSubDivision:
-        SnackBarUtils.showInfo(context, 'Moduli ya CCRO bado haijatekelezwa');
+        context.goNamed('ccroDashboard');
         break;
       case ModuleType.monitoringAndEvaluation:
-        SnackBarUtils.showInfo(context, 'Moduli ya M&E haijatekelezwa bado');
+        SnackBarUtils.showInfo(
+          context,
+          'Moduli ya Monitoring and Evaluation haijatekelezwa bado',
+        );
         break;
       case ModuleType.compliance:
         SnackBarUtils.showInfo(
@@ -301,7 +304,7 @@ class _ModernModuleCardState extends State<_ModernModuleCard>
       case ModuleType.landUse:
         return ModuleType.labels[ModuleType.landUse] ?? 'Matumizi ya Ardhi';
       case ModuleType.landSubDivision:
-        return ModuleType.labels[ModuleType.landSubDivision] ?? 'CCRO';
+        return ModuleType.labels[ModuleType.landSubDivision] ?? 'Adjudication';
       case ModuleType.monitoringAndEvaluation:
         return ModuleType.labels[ModuleType.monitoringAndEvaluation] ??
             'Ufuatiliaji & Tathmini';
