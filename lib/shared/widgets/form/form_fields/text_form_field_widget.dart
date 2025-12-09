@@ -10,6 +10,8 @@ class TextFormFieldWidget extends StatelessWidget {
   final String? Function(String?)? validator;
   final TextInputType keyboardType;
   final bool enabled;
+  final int? maxLength;
+  final bool showCounter;
 
   const TextFormFieldWidget({
     super.key,
@@ -20,6 +22,8 @@ class TextFormFieldWidget extends StatelessWidget {
     this.validator,
     this.keyboardType = TextInputType.text,
     this.enabled = true,
+    this.maxLength,
+    this.showCounter = false,
   });
 
   @override
@@ -65,6 +69,20 @@ class TextFormFieldWidget extends StatelessWidget {
           keyboardType: keyboardType,
           validator: validator,
           enabled: enabled,
+          maxLength: maxLength,
+          buildCounter: showCounter && maxLength != null
+              ? (context, {required currentLength, required isFocused, maxLength}) {
+                  return Text(
+                    '$currentLength/$maxLength',
+                    style: TextStyle(
+                      color: currentLength == maxLength
+                          ? (isDark ? AppColors.successDark : AppColors.success)
+                          : (isDark ? AppColors.darkTextHint : AppColors.textHint),
+                      fontSize: 12,
+                    ),
+                  );
+                }
+              : null,
           decoration: InputDecoration(
             hintText: placeholder ?? label,
             hintStyle: TextStyle(
