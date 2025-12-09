@@ -17,21 +17,19 @@ class AppShell extends ConsumerStatefulWidget {
 }
 
 class _AppShellState extends ConsumerState<AppShell> {
-  static const int _draftsIndex = 2;
-  static const int _zoningIndex = 3;
-
-  static const List<_BottomNavDestination> _destinations = [
+  // Land Use module destinations
+  static const List<_BottomNavDestination> _landUseDestinations = [
     _BottomNavDestination(
       icon: Icons.grid_view_outlined,
       label: 'Dashibodi',
       routeName: 'luDashboard',
-      locationMatchers: ['/dashboard'],
+      locationMatchers: ['/module/land-use/dashboard'],
     ),
     _BottomNavDestination(
       icon: Icons.folder_copy_outlined,
       label: 'Miradi',
       routeName: 'luProjects',
-      locationMatchers: ['/projects', '/survey'],
+      locationMatchers: ['/module/land-use/projects', '/module/land-use/survey'],
     ),
     _BottomNavDestination(
       icon: Icons.library_books_outlined,
@@ -45,17 +43,44 @@ class _AppShellState extends ConsumerState<AppShell> {
       routeName: 'zoningManager',
       locationMatchers: ['/zoning-manager', '/zoning'],
     ),
+  ];
+
+  // CCRO module destinations
+  static const List<_BottomNavDestination> _ccroDestinations = [
     _BottomNavDestination(
-      icon: Icons.person_outline_rounded,
-      label: 'Mipangilio',
-      routeName: 'settings',
-      locationMatchers: ['/settings'],
+      icon: Icons.dashboard_outlined,
+      label: 'Dashibodi',
+      routeName: 'ccroDashboard',
+      locationMatchers: ['/module/ccro/dashboard'],
+    ),
+    _BottomNavDestination(
+      icon: Icons.folder_copy_outlined,
+      label: 'Miradi',
+      routeName: 'ccroProjects',
+      locationMatchers: ['/module/ccro/projects'],
+    ),
+    _BottomNavDestination(
+      icon: Icons.work_outline,
+      label: 'Kazi Zangu',
+      routeName: 'myApplications',
+      locationMatchers: ['/module/ccro/my-applications', '/module/ccro/application'],
     ),
   ];
 
-  int _getCurrentIndex(BuildContext context) {
+  List<_BottomNavDestination> _getDestinationsForModule(String location) {
+    if (location.startsWith('/module/ccro')) {
+      return _ccroDestinations;
+    } else if (location.startsWith('/module/land-use') ||
+        location.startsWith('/madodoso') ||
+        location.startsWith('/zoning-manager')) {
+      return _landUseDestinations;
+    }
+    return [];
+  }
+
+  int _getCurrentIndex(BuildContext context, List<_BottomNavDestination> destinations) {
     final location = GoRouterState.of(context).matchedLocation;
-    final index = _destinations.indexWhere(
+    final index = destinations.indexWhere(
       (destination) => destination.matches(location),
     );
     return index == -1 ? 0 : index;
@@ -64,21 +89,28 @@ class _AppShellState extends ConsumerState<AppShell> {
   bool _shouldShowBottomBar(BuildContext context) {
     final location = GoRouterState.of(context).matchedLocation;
 
-    // Only show bottom bar on these specific routes
-    return location == '/module/land-use/dashboard' ||
-        location == '/module/land-use/projects' ||
-        location == '/madodoso' ||
-        location == '/zoning-manager' ||
-        location == '/settings';
+    // For CCRO module, only show bottom bar on main pages
+    if (location.startsWith('/module/ccro')) {
+      return location == '/module/ccro/dashboard' ||
+          location == '/module/ccro/projects' ||
+          location.contains('/module/ccro/my-applications') ||
+          location.contains('/module/ccro/application');
+    }
+
+    // Show bottom bar for land-use module routes (madodoso, zoning)
+    return location.startsWith('/module/land-use') ||
+        location.startsWith('/madodoso') ||
+        location.startsWith('/zoning-manager');
   }
 
-  void _onDestinationSelected(BuildContext context, int index) {
-    final destination = _destinations[index];
+  void _onDestinationSelected(BuildContext context, int index, List<_BottomNavDestination> destinations) {
+    final destination = destinations[index];
     context.goNamed(destination.routeName);
   }
 
   List<TabItem> _buildTabItems(
     ThemeData theme,
+    List<_BottomNavDestination> destinations,
     String? draftsBadge,
     String? zoningBadge,
   ) {
@@ -86,15 +118,21 @@ class _AppShellState extends ConsumerState<AppShell> {
     final Widget? draftBadgeWidget = _buildDraftBadge(draftsBadge, isDark);
     final Widget? zoningBadgeWidget = _buildDraftBadge(zoningBadge, isDark);
 
-    return List<TabItem>.generate(_destinations.length, (index) {
-      final destination = _destinations[index];
+    return List<TabItem>.generate(destinations.length, (index) {
+      final destination = destinations[index];
+      
+      // Only show badges for land use module
+      Widget? badge;
+      if (destinations == _landUseDestinations) {
+        // Madodoso is at index 2, Zoning is at index 3 in land use
+        if (index == 2) badge = draftBadgeWidget;
+        if (index == 3) badge = zoningBadgeWidget;
+      }
+      
       return TabItem(
         icon: destination.icon,
         title: destination.label,
-        count:
-            index == _draftsIndex
-                ? draftBadgeWidget
-                : (index == _zoningIndex ? zoningBadgeWidget : null),
+        count: badge,
       );
     });
   }
@@ -123,22 +161,31 @@ class _AppShellState extends ConsumerState<AppShell> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final currentIndex = _getCurrentIndex(context);
-    final madodosoState = ref.watch(madodosoStateProvider);
-    final draftsBadge = madodosoState.maybeWhen(
-      data:
-          (state) => state.draftCount > 0 ? state.draftCount.toString() : null,
-      orElse: () => null,
-    );
+    final location = GoRouterState.of(context).matchedLocation;
+    final destinations = _getDestinationsForModule(location);
+    final currentIndex = _getCurrentIndex(context, destinations);
+    
+    // Only fetch badges for land use module
+    String? draftsBadge;
+    String? zoningBadge;
+    
+    if (destinations == _landUseDestinations) {
+      final madodosoState = ref.watch(madodosoStateProvider);
+      draftsBadge = madodosoState.maybeWhen(
+        data:
+            (state) => state.draftCount > 0 ? state.draftCount.toString() : null,
+        orElse: () => null,
+      );
 
-    // Get zoning draft features count
-    final zoningDraftsAsync = ref.watch(draftFeaturesProvider);
-    final zoningBadge = zoningDraftsAsync.when(
-      data:
-          (features) => features.isNotEmpty ? features.length.toString() : null,
-      loading: () => null,
-      error: (_, _) => null,
-    );
+      // Get zoning draft features count
+      final zoningDraftsAsync = ref.watch(draftFeaturesProvider);
+      zoningBadge = zoningDraftsAsync.when(
+        data:
+            (features) => features.isNotEmpty ? features.length.toString() : null,
+        loading: () => null,
+        error: (_, _) => null,
+      );
+    }
 
     final bool isDark = theme.brightness == Brightness.dark;
     final Color backgroundColor =
@@ -150,7 +197,7 @@ class _AppShellState extends ConsumerState<AppShell> {
     final Color shadowColor =
         isDark ? AppColors.darkShadow : Colors.black.withValues(alpha: 0.08);
 
-    final shouldShowBottomBar = _shouldShowBottomBar(context);
+    final shouldShowBottomBar = _shouldShowBottomBar(context) && destinations.isNotEmpty;
 
     return Scaffold(
       body: widget.child,
@@ -161,9 +208,9 @@ class _AppShellState extends ConsumerState<AppShell> {
                 child: SafeArea(
                   top: false,
                   child: BottomBarDefault(
-                    items: _buildTabItems(theme, draftsBadge, zoningBadge),
+                    items: _buildTabItems(theme, destinations, draftsBadge, zoningBadge),
                     indexSelected: currentIndex,
-                    onTap: (index) => _onDestinationSelected(context, index),
+                    onTap: (index) => _onDestinationSelected(context, index, destinations),
                     backgroundColor: backgroundColor,
                     boxShadow: [
                       BoxShadow(
