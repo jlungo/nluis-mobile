@@ -39,12 +39,14 @@ class ParcelLocalDataSourceImpl implements ParcelLocalDataSource {
   final AppDatabase _database;
 
   ParcelLocalDataSourceImpl({required AppDatabase database})
-      : _database = database;
+    : _database = database;
 
   @override
   Future<Either<Failure, void>> cacheParcel(ParcelModel parcel) async {
     try {
-      await _database.into(_database.parcels).insert(
+      await _database
+          .into(_database.parcels)
+          .insert(
             ParcelsCompanion(
               clientId: Value(parcel.clientId),
               serverId: Value(parcel.serverId),
@@ -82,11 +84,10 @@ class ParcelLocalDataSourceImpl implements ParcelLocalDataSource {
     String subdivisionApplicationId,
   ) async {
     try {
-      final parcels = await (_database.select(_database.parcels)
-            ..where(
-              (tbl) => tbl.applicationId.equals(subdivisionApplicationId),
-            ))
-          .get();
+      final parcels =
+          await (_database.select(_database.parcels)..where(
+            (tbl) => tbl.applicationId.equals(subdivisionApplicationId),
+          )).get();
 
       final parcelModels = parcels.map(_mapToParcelModel).toList();
       return Right(parcelModels);
@@ -98,9 +99,9 @@ class ParcelLocalDataSourceImpl implements ParcelLocalDataSource {
   @override
   Future<Either<Failure, ParcelModel?>> getCachedParcel(String clientId) async {
     try {
-      final parcel = await (_database.select(_database.parcels)
-            ..where((tbl) => tbl.clientId.equals(clientId)))
-          .getSingleOrNull();
+      final parcel =
+          await (_database.select(_database.parcels)
+            ..where((tbl) => tbl.clientId.equals(clientId))).getSingleOrNull();
 
       if (parcel == null) {
         return const Right(null);
@@ -116,8 +117,7 @@ class ParcelLocalDataSourceImpl implements ParcelLocalDataSource {
   Future<Either<Failure, void>> updateCachedParcel(ParcelModel parcel) async {
     try {
       await (_database.update(_database.parcels)
-            ..where((tbl) => tbl.clientId.equals(parcel.clientId)))
-          .write(
+        ..where((tbl) => tbl.clientId.equals(parcel.clientId))).write(
         ParcelsCompanion(
           serverId: Value(parcel.serverId),
           parcelNumber: Value(parcel.parcelNumber),
@@ -151,8 +151,7 @@ class ParcelLocalDataSourceImpl implements ParcelLocalDataSource {
   Future<Either<Failure, void>> deleteCachedParcel(String clientId) async {
     try {
       await (_database.delete(_database.parcels)
-            ..where((tbl) => tbl.clientId.equals(clientId)))
-          .go();
+        ..where((tbl) => tbl.clientId.equals(clientId))).go();
 
       return const Right(null);
     } catch (e) {
@@ -163,9 +162,9 @@ class ParcelLocalDataSourceImpl implements ParcelLocalDataSource {
   @override
   Future<Either<Failure, List<ParcelModel>>> getUnsyncedParcels() async {
     try {
-      final parcels = await (_database.select(_database.parcels)
-            ..where((tbl) => tbl.uploaded.equals(false)))
-          .get();
+      final parcels =
+          await (_database.select(_database.parcels)
+            ..where((tbl) => tbl.uploaded.equals(false))).get();
 
       final parcelModels = parcels.map(_mapToParcelModel).toList();
       return Right(parcelModels);
@@ -181,8 +180,7 @@ class ParcelLocalDataSourceImpl implements ParcelLocalDataSource {
   ) async {
     try {
       await (_database.update(_database.parcels)
-            ..where((tbl) => tbl.clientId.equals(clientId)))
-          .write(
+        ..where((tbl) => tbl.clientId.equals(clientId))).write(
         ParcelsCompanion(
           serverId: Value(serverId),
           uploaded: const Value(true),
@@ -202,9 +200,7 @@ class ParcelLocalDataSourceImpl implements ParcelLocalDataSource {
     // Parse geometry JSON
     Map<String, dynamic> geometry = {};
     try {
-      if (dbParcel.geomJson != null) {
-        geometry = jsonDecode(dbParcel.geomJson!) as Map<String, dynamic>;
-      }
+      geometry = jsonDecode(dbParcel.geomJson) as Map<String, dynamic>;
     } catch (e) {
       // Handle parse error
     }
@@ -239,9 +235,10 @@ class ParcelLocalDataSourceImpl implements ParcelLocalDataSource {
       stage: stage,
       hasConflicts: dbParcel.hasConflicts,
       uploaded: dbParcel.uploaded,
-      uploadedAt: dbParcel.uploadedAt != null
-          ? DateTime.fromMillisecondsSinceEpoch(dbParcel.uploadedAt!)
-          : null,
+      uploadedAt:
+          dbParcel.uploadedAt != null
+              ? DateTime.fromMillisecondsSinceEpoch(dbParcel.uploadedAt!)
+              : null,
       createdAt: DateTime.fromMillisecondsSinceEpoch(dbParcel.createdAt),
       updatedAt: DateTime.fromMillisecondsSinceEpoch(dbParcel.updatedAt),
     );

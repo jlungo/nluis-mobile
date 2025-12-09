@@ -3,7 +3,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../env/env.dart';
 import '../utils/logger.dart';
-import '../../shared/constants/app_constants.dart';
 import '../../features/auth/data/datasources/token_manager.dart';
 import 'network_info.dart';
 
@@ -133,31 +132,41 @@ class DioClient {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-          // Check if token is expired or expiring soon
-          final isExpired = await tokenManager.isTokenExpired();
-          final isExpiringSoon = await tokenManager.isTokenExpiringSoon();
+          // Get current token
+          final token = await tokenManager.getAccessToken();
 
-          // If token is expired or expiring soon, try to refresh proactively
-          if (isExpired || isExpiringSoon) {
-            AppLogger.info('Token expired or expiring soon, attempting refresh...');
-            final refreshed = await _refreshToken();
-            
-            if (!refreshed && isExpired) {
-              // Token is expired and refresh failed
-              final isOnline = await networkInfo.isConnected;
-              if (isOnline && onTokenRefreshFailedWhileOnline != null) {
-                AppLogger.warning('Token expired and refresh failed while online. Triggering logout...');
-                onTokenRefreshFailedWhileOnline!();
+          // Check if we need authentication (skip for auth endpoints)
+          final isAuthEndpoint = options.path.contains('/auth/');
+
+          if (!isAuthEndpoint) {
+            // Check if token exists and is valid
+            final isExpired = await tokenManager.isTokenExpired();
+            final isExpiringSoon = await tokenManager.isTokenExpiringSoon();
+
+            // If no token or expired, try to refresh
+            if (token == null || isExpired || isExpiringSoon) {
+              AppLogger.info(
+                'Token missing/expired/expiring soon, attempting refresh...',
+              );
+              final refreshed = await _refreshToken();
+
+              if (!refreshed) {
+                // Token refresh failed
+                final isOnline = await networkInfo.isConnected;
+                if (isOnline && onTokenRefreshFailedWhileOnline != null) {
+                  AppLogger.warning(
+                    'No valid token and refresh failed. Redirecting to login...',
+                  );
+                  onTokenRefreshFailedWhileOnline!();
+                }
               }
-              // Let the request proceed - it will fail with 401 and be handled in onError
             }
           }
 
-          // Add auth token to requests
-          final token = await tokenManager.getAccessToken();
-
-          if (token != null && token.isNotEmpty) {
-            options.headers['Authorization'] = 'Bearer $token';
+          // Add auth token to requests if available
+          final updatedToken = await tokenManager.getAccessToken();
+          if (updatedToken != null && updatedToken.isNotEmpty) {
+            options.headers['Authorization'] = 'Bearer $updatedToken';
           }
 
           AppLogger.debug(
@@ -177,45 +186,48 @@ class DioClient {
             error,
           );
 
-          // Handle token refresh on 401
+          // Handle 401 Unauthorized - redirect to login
           if (error.response?.statusCode == 401) {
-            final refreshed = await _refreshToken();
-            if (refreshed) {
-              // Retry the original request
-              final options = error.requestOptions;
-              final token = await secureStorage.read(
-                key: AppConstants.keyAccessToken,
-              );
-              options.headers['Authorization'] = 'Bearer $token';
+            final isOnline = await networkInfo.isConnected;
 
-              try {
-                final response = await _dio.fetch(options);
-                return handler.resolve(response);
-              } catch (e) {
-                return handler.reject(error);
+            if (isOnline) {
+              // Try to refresh token once
+              final refreshed = await _refreshToken();
+
+              if (refreshed) {
+                // Token refreshed successfully, retry the original request
+                final options = error.requestOptions;
+                final token = await tokenManager.getAccessToken();
+
+                if (token != null) {
+                  options.headers['Authorization'] = 'Bearer $token';
+
+                  try {
+                    final response = await _dio.fetch(options);
+                    return handler.resolve(response);
+                  } catch (e) {
+                    // Retry failed - trigger logout
+                    AppLogger.warning(
+                      'Request retry failed after token refresh. Logging out...',
+                    );
+                    if (onTokenRefreshFailedWhileOnline != null) {
+                      onTokenRefreshFailedWhileOnline!();
+                    }
+                    return handler.reject(error);
+                  }
+                }
+              }
+
+              // Token refresh failed or no token - trigger logout
+              AppLogger.warning('Unauthorized (401). Redirecting to login...');
+              if (onTokenRefreshFailedWhileOnline != null) {
+                onTokenRefreshFailedWhileOnline!();
               }
             } else {
-              // Token refresh failed - check if we're online
-              final isOnline = await networkInfo.isConnected;
-
-              if (isOnline) {
-                // User is online but refresh failed (refresh token expired/invalid)
-                // Trigger automatic logout
-                AppLogger.warning(
-                  'Token refresh failed while online. Logging out user...',
-                );
-
-                if (onTokenRefreshFailedWhileOnline != null) {
-                  // Call the logout callback asynchronously
-                  // Don't await to prevent blocking the error handler
-                  onTokenRefreshFailedWhileOnline!();
-                }
-              } else {
-                // User is offline - don't logout, they may be working offline
-                AppLogger.info(
-                  'Token refresh failed while offline. User can continue working offline.',
-                );
-              }
+              // Offline - allow user to continue
+              AppLogger.info(
+                'Unauthorized while offline. User can continue offline.',
+              );
             }
           }
 
@@ -247,24 +259,23 @@ class DioClient {
         return false;
       }
 
-      final response = await Dio(BaseOptions(baseUrl: Env.baseUrl)).post(
-        '/auth/refresh/',
-        data: {'refresh': refreshToken},
-      );
+      final response = await Dio(
+        BaseOptions(baseUrl: Env.baseUrl),
+      ).post('/auth/refresh/', data: {'refresh': refreshToken});
 
       if (response.statusCode == 200) {
         final newAccessToken = response.data['access'] as String;
-        
+
         // Update access token (expiration is read from JWT)
-        await tokenManager.updateAccessToken(
-          accessToken: newAccessToken,
-        );
-        
+        await tokenManager.updateAccessToken(accessToken: newAccessToken);
+
         AppLogger.info('Token refreshed successfully');
         return true;
       }
 
-      AppLogger.warning('Token refresh failed with status: ${response.statusCode}');
+      AppLogger.warning(
+        'Token refresh failed with status: ${response.statusCode}',
+      );
       return false;
     } catch (e) {
       AppLogger.error('Token refresh failed', e);

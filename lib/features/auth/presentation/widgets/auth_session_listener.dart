@@ -16,26 +16,24 @@ class AuthSessionListener extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Listen to the logout trigger
+    // Listen to the logout trigger (token expired, no token, or unauthorized)
     ref.listen<int>(
       tokenExpiredLogoutTriggerProvider,
       (previous, next) async {
         // If the state changed (incremented), trigger logout
         if (previous != null && next > previous) {
-          // Perform logout
+          // Perform logout - clear auth state
           await ref.read(authStateProvider.notifier).logout(clearData: false);
 
-          // Show a snackbar to inform the user
+          // Show clear message to user
           if (context.mounted) {
             SnackBarUtils.showWarning(
               context,
-              'Kipindi chako kimeisha. Tafadhali ingia tena.',
+              'Ingia tena ili kuendelea. (Login again to continue)',
             );
           }
 
-          // Navigate to login page
-          // Note: The router's redirect logic will handle this automatically
-          // when authStateProvider becomes null, but we can force it here
+          // Router will automatically redirect to login when auth state is null
         }
       },
     );
