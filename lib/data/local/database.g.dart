@@ -8923,6 +8923,5834 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
   }
 }
 
+class $SubdivisionZonesTable extends SubdivisionZones
+    with TableInfo<$SubdivisionZonesTable, SubdivisionZone> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SubdivisionZonesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _zoneNameMeta = const VerificationMeta(
+    'zoneName',
+  );
+  @override
+  late final GeneratedColumn<String> zoneName = GeneratedColumn<String>(
+    'zone_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _localityIdMeta = const VerificationMeta(
+    'localityId',
+  );
+  @override
+  late final GeneratedColumn<int> localityId = GeneratedColumn<int>(
+    'locality_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _localityNameMeta = const VerificationMeta(
+    'localityName',
+  );
+  @override
+  late final GeneratedColumn<String> localityName = GeneratedColumn<String>(
+    'locality_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _landUseNameMeta = const VerificationMeta(
+    'landUseName',
+  );
+  @override
+  late final GeneratedColumn<String> landUseName = GeneratedColumn<String>(
+    'land_use_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _canBeSubdividedMeta = const VerificationMeta(
+    'canBeSubdivided',
+  );
+  @override
+  late final GeneratedColumn<bool> canBeSubdivided = GeneratedColumn<bool>(
+    'can_be_subdivided',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("can_be_subdivided" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _areaSqmMeta = const VerificationMeta(
+    'areaSqm',
+  );
+  @override
+  late final GeneratedColumn<double> areaSqm = GeneratedColumn<double>(
+    'area_sqm',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _geomJsonMeta = const VerificationMeta(
+    'geomJson',
+  );
+  @override
+  late final GeneratedColumn<String> geomJson = GeneratedColumn<String>(
+    'geom_json',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _downloadedAtMeta = const VerificationMeta(
+    'downloadedAt',
+  );
+  @override
+  late final GeneratedColumn<int> downloadedAt = GeneratedColumn<int>(
+    'downloaded_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    zoneName,
+    localityId,
+    localityName,
+    landUseName,
+    canBeSubdivided,
+    areaSqm,
+    geomJson,
+    downloadedAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'subdivision_zones';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SubdivisionZone> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('zone_name')) {
+      context.handle(
+        _zoneNameMeta,
+        zoneName.isAcceptableOrUnknown(data['zone_name']!, _zoneNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_zoneNameMeta);
+    }
+    if (data.containsKey('locality_id')) {
+      context.handle(
+        _localityIdMeta,
+        localityId.isAcceptableOrUnknown(data['locality_id']!, _localityIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_localityIdMeta);
+    }
+    if (data.containsKey('locality_name')) {
+      context.handle(
+        _localityNameMeta,
+        localityName.isAcceptableOrUnknown(
+          data['locality_name']!,
+          _localityNameMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_localityNameMeta);
+    }
+    if (data.containsKey('land_use_name')) {
+      context.handle(
+        _landUseNameMeta,
+        landUseName.isAcceptableOrUnknown(
+          data['land_use_name']!,
+          _landUseNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('can_be_subdivided')) {
+      context.handle(
+        _canBeSubdividedMeta,
+        canBeSubdivided.isAcceptableOrUnknown(
+          data['can_be_subdivided']!,
+          _canBeSubdividedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('area_sqm')) {
+      context.handle(
+        _areaSqmMeta,
+        areaSqm.isAcceptableOrUnknown(data['area_sqm']!, _areaSqmMeta),
+      );
+    }
+    if (data.containsKey('geom_json')) {
+      context.handle(
+        _geomJsonMeta,
+        geomJson.isAcceptableOrUnknown(data['geom_json']!, _geomJsonMeta),
+      );
+    }
+    if (data.containsKey('downloaded_at')) {
+      context.handle(
+        _downloadedAtMeta,
+        downloadedAt.isAcceptableOrUnknown(
+          data['downloaded_at']!,
+          _downloadedAtMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_downloadedAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SubdivisionZone map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SubdivisionZone(
+      id:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}id'],
+          )!,
+      zoneName:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}zone_name'],
+          )!,
+      localityId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}locality_id'],
+          )!,
+      localityName:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}locality_name'],
+          )!,
+      landUseName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}land_use_name'],
+      ),
+      canBeSubdivided:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}can_be_subdivided'],
+          )!,
+      areaSqm: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}area_sqm'],
+      ),
+      geomJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}geom_json'],
+      ),
+      downloadedAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}downloaded_at'],
+          )!,
+      updatedAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}updated_at'],
+          )!,
+    );
+  }
+
+  @override
+  $SubdivisionZonesTable createAlias(String alias) {
+    return $SubdivisionZonesTable(attachedDatabase, alias);
+  }
+}
+
+class SubdivisionZone extends DataClass implements Insertable<SubdivisionZone> {
+  final int id;
+  final String zoneName;
+  final int localityId;
+  final String localityName;
+  final String? landUseName;
+  final bool canBeSubdivided;
+  final double? areaSqm;
+  final String? geomJson;
+  final int downloadedAt;
+  final int updatedAt;
+  const SubdivisionZone({
+    required this.id,
+    required this.zoneName,
+    required this.localityId,
+    required this.localityName,
+    this.landUseName,
+    required this.canBeSubdivided,
+    this.areaSqm,
+    this.geomJson,
+    required this.downloadedAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['zone_name'] = Variable<String>(zoneName);
+    map['locality_id'] = Variable<int>(localityId);
+    map['locality_name'] = Variable<String>(localityName);
+    if (!nullToAbsent || landUseName != null) {
+      map['land_use_name'] = Variable<String>(landUseName);
+    }
+    map['can_be_subdivided'] = Variable<bool>(canBeSubdivided);
+    if (!nullToAbsent || areaSqm != null) {
+      map['area_sqm'] = Variable<double>(areaSqm);
+    }
+    if (!nullToAbsent || geomJson != null) {
+      map['geom_json'] = Variable<String>(geomJson);
+    }
+    map['downloaded_at'] = Variable<int>(downloadedAt);
+    map['updated_at'] = Variable<int>(updatedAt);
+    return map;
+  }
+
+  SubdivisionZonesCompanion toCompanion(bool nullToAbsent) {
+    return SubdivisionZonesCompanion(
+      id: Value(id),
+      zoneName: Value(zoneName),
+      localityId: Value(localityId),
+      localityName: Value(localityName),
+      landUseName:
+          landUseName == null && nullToAbsent
+              ? const Value.absent()
+              : Value(landUseName),
+      canBeSubdivided: Value(canBeSubdivided),
+      areaSqm:
+          areaSqm == null && nullToAbsent
+              ? const Value.absent()
+              : Value(areaSqm),
+      geomJson:
+          geomJson == null && nullToAbsent
+              ? const Value.absent()
+              : Value(geomJson),
+      downloadedAt: Value(downloadedAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory SubdivisionZone.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SubdivisionZone(
+      id: serializer.fromJson<int>(json['id']),
+      zoneName: serializer.fromJson<String>(json['zoneName']),
+      localityId: serializer.fromJson<int>(json['localityId']),
+      localityName: serializer.fromJson<String>(json['localityName']),
+      landUseName: serializer.fromJson<String?>(json['landUseName']),
+      canBeSubdivided: serializer.fromJson<bool>(json['canBeSubdivided']),
+      areaSqm: serializer.fromJson<double?>(json['areaSqm']),
+      geomJson: serializer.fromJson<String?>(json['geomJson']),
+      downloadedAt: serializer.fromJson<int>(json['downloadedAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'zoneName': serializer.toJson<String>(zoneName),
+      'localityId': serializer.toJson<int>(localityId),
+      'localityName': serializer.toJson<String>(localityName),
+      'landUseName': serializer.toJson<String?>(landUseName),
+      'canBeSubdivided': serializer.toJson<bool>(canBeSubdivided),
+      'areaSqm': serializer.toJson<double?>(areaSqm),
+      'geomJson': serializer.toJson<String?>(geomJson),
+      'downloadedAt': serializer.toJson<int>(downloadedAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+    };
+  }
+
+  SubdivisionZone copyWith({
+    int? id,
+    String? zoneName,
+    int? localityId,
+    String? localityName,
+    Value<String?> landUseName = const Value.absent(),
+    bool? canBeSubdivided,
+    Value<double?> areaSqm = const Value.absent(),
+    Value<String?> geomJson = const Value.absent(),
+    int? downloadedAt,
+    int? updatedAt,
+  }) => SubdivisionZone(
+    id: id ?? this.id,
+    zoneName: zoneName ?? this.zoneName,
+    localityId: localityId ?? this.localityId,
+    localityName: localityName ?? this.localityName,
+    landUseName: landUseName.present ? landUseName.value : this.landUseName,
+    canBeSubdivided: canBeSubdivided ?? this.canBeSubdivided,
+    areaSqm: areaSqm.present ? areaSqm.value : this.areaSqm,
+    geomJson: geomJson.present ? geomJson.value : this.geomJson,
+    downloadedAt: downloadedAt ?? this.downloadedAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  SubdivisionZone copyWithCompanion(SubdivisionZonesCompanion data) {
+    return SubdivisionZone(
+      id: data.id.present ? data.id.value : this.id,
+      zoneName: data.zoneName.present ? data.zoneName.value : this.zoneName,
+      localityId:
+          data.localityId.present ? data.localityId.value : this.localityId,
+      localityName:
+          data.localityName.present
+              ? data.localityName.value
+              : this.localityName,
+      landUseName:
+          data.landUseName.present ? data.landUseName.value : this.landUseName,
+      canBeSubdivided:
+          data.canBeSubdivided.present
+              ? data.canBeSubdivided.value
+              : this.canBeSubdivided,
+      areaSqm: data.areaSqm.present ? data.areaSqm.value : this.areaSqm,
+      geomJson: data.geomJson.present ? data.geomJson.value : this.geomJson,
+      downloadedAt:
+          data.downloadedAt.present
+              ? data.downloadedAt.value
+              : this.downloadedAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SubdivisionZone(')
+          ..write('id: $id, ')
+          ..write('zoneName: $zoneName, ')
+          ..write('localityId: $localityId, ')
+          ..write('localityName: $localityName, ')
+          ..write('landUseName: $landUseName, ')
+          ..write('canBeSubdivided: $canBeSubdivided, ')
+          ..write('areaSqm: $areaSqm, ')
+          ..write('geomJson: $geomJson, ')
+          ..write('downloadedAt: $downloadedAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    zoneName,
+    localityId,
+    localityName,
+    landUseName,
+    canBeSubdivided,
+    areaSqm,
+    geomJson,
+    downloadedAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SubdivisionZone &&
+          other.id == this.id &&
+          other.zoneName == this.zoneName &&
+          other.localityId == this.localityId &&
+          other.localityName == this.localityName &&
+          other.landUseName == this.landUseName &&
+          other.canBeSubdivided == this.canBeSubdivided &&
+          other.areaSqm == this.areaSqm &&
+          other.geomJson == this.geomJson &&
+          other.downloadedAt == this.downloadedAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class SubdivisionZonesCompanion extends UpdateCompanion<SubdivisionZone> {
+  final Value<int> id;
+  final Value<String> zoneName;
+  final Value<int> localityId;
+  final Value<String> localityName;
+  final Value<String?> landUseName;
+  final Value<bool> canBeSubdivided;
+  final Value<double?> areaSqm;
+  final Value<String?> geomJson;
+  final Value<int> downloadedAt;
+  final Value<int> updatedAt;
+  const SubdivisionZonesCompanion({
+    this.id = const Value.absent(),
+    this.zoneName = const Value.absent(),
+    this.localityId = const Value.absent(),
+    this.localityName = const Value.absent(),
+    this.landUseName = const Value.absent(),
+    this.canBeSubdivided = const Value.absent(),
+    this.areaSqm = const Value.absent(),
+    this.geomJson = const Value.absent(),
+    this.downloadedAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  });
+  SubdivisionZonesCompanion.insert({
+    this.id = const Value.absent(),
+    required String zoneName,
+    required int localityId,
+    required String localityName,
+    this.landUseName = const Value.absent(),
+    this.canBeSubdivided = const Value.absent(),
+    this.areaSqm = const Value.absent(),
+    this.geomJson = const Value.absent(),
+    required int downloadedAt,
+    required int updatedAt,
+  }) : zoneName = Value(zoneName),
+       localityId = Value(localityId),
+       localityName = Value(localityName),
+       downloadedAt = Value(downloadedAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<SubdivisionZone> custom({
+    Expression<int>? id,
+    Expression<String>? zoneName,
+    Expression<int>? localityId,
+    Expression<String>? localityName,
+    Expression<String>? landUseName,
+    Expression<bool>? canBeSubdivided,
+    Expression<double>? areaSqm,
+    Expression<String>? geomJson,
+    Expression<int>? downloadedAt,
+    Expression<int>? updatedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (zoneName != null) 'zone_name': zoneName,
+      if (localityId != null) 'locality_id': localityId,
+      if (localityName != null) 'locality_name': localityName,
+      if (landUseName != null) 'land_use_name': landUseName,
+      if (canBeSubdivided != null) 'can_be_subdivided': canBeSubdivided,
+      if (areaSqm != null) 'area_sqm': areaSqm,
+      if (geomJson != null) 'geom_json': geomJson,
+      if (downloadedAt != null) 'downloaded_at': downloadedAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+    });
+  }
+
+  SubdivisionZonesCompanion copyWith({
+    Value<int>? id,
+    Value<String>? zoneName,
+    Value<int>? localityId,
+    Value<String>? localityName,
+    Value<String?>? landUseName,
+    Value<bool>? canBeSubdivided,
+    Value<double?>? areaSqm,
+    Value<String?>? geomJson,
+    Value<int>? downloadedAt,
+    Value<int>? updatedAt,
+  }) {
+    return SubdivisionZonesCompanion(
+      id: id ?? this.id,
+      zoneName: zoneName ?? this.zoneName,
+      localityId: localityId ?? this.localityId,
+      localityName: localityName ?? this.localityName,
+      landUseName: landUseName ?? this.landUseName,
+      canBeSubdivided: canBeSubdivided ?? this.canBeSubdivided,
+      areaSqm: areaSqm ?? this.areaSqm,
+      geomJson: geomJson ?? this.geomJson,
+      downloadedAt: downloadedAt ?? this.downloadedAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (zoneName.present) {
+      map['zone_name'] = Variable<String>(zoneName.value);
+    }
+    if (localityId.present) {
+      map['locality_id'] = Variable<int>(localityId.value);
+    }
+    if (localityName.present) {
+      map['locality_name'] = Variable<String>(localityName.value);
+    }
+    if (landUseName.present) {
+      map['land_use_name'] = Variable<String>(landUseName.value);
+    }
+    if (canBeSubdivided.present) {
+      map['can_be_subdivided'] = Variable<bool>(canBeSubdivided.value);
+    }
+    if (areaSqm.present) {
+      map['area_sqm'] = Variable<double>(areaSqm.value);
+    }
+    if (geomJson.present) {
+      map['geom_json'] = Variable<String>(geomJson.value);
+    }
+    if (downloadedAt.present) {
+      map['downloaded_at'] = Variable<int>(downloadedAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SubdivisionZonesCompanion(')
+          ..write('id: $id, ')
+          ..write('zoneName: $zoneName, ')
+          ..write('localityId: $localityId, ')
+          ..write('localityName: $localityName, ')
+          ..write('landUseName: $landUseName, ')
+          ..write('canBeSubdivided: $canBeSubdivided, ')
+          ..write('areaSqm: $areaSqm, ')
+          ..write('geomJson: $geomJson, ')
+          ..write('downloadedAt: $downloadedAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SubdivisionApplicationsTable extends SubdivisionApplications
+    with TableInfo<$SubdivisionApplicationsTable, SubdivisionApplication> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SubdivisionApplicationsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _clientIdMeta = const VerificationMeta(
+    'clientId',
+  );
+  @override
+  late final GeneratedColumn<String> clientId = GeneratedColumn<String>(
+    'client_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _serverIdMeta = const VerificationMeta(
+    'serverId',
+  );
+  @override
+  late final GeneratedColumn<int> serverId = GeneratedColumn<int>(
+    'server_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _applicationNumberMeta = const VerificationMeta(
+    'applicationNumber',
+  );
+  @override
+  late final GeneratedColumn<String> applicationNumber =
+      GeneratedColumn<String>(
+        'application_number',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _zoneIdMeta = const VerificationMeta('zoneId');
+  @override
+  late final GeneratedColumn<int> zoneId = GeneratedColumn<int>(
+    'zone_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _localityIdMeta = const VerificationMeta(
+    'localityId',
+  );
+  @override
+  late final GeneratedColumn<int> localityId = GeneratedColumn<int>(
+    'locality_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _applicantIdMeta = const VerificationMeta(
+    'applicantId',
+  );
+  @override
+  late final GeneratedColumn<String> applicantId = GeneratedColumn<String>(
+    'applicant_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _currentStepMeta = const VerificationMeta(
+    'currentStep',
+  );
+  @override
+  late final GeneratedColumn<int> currentStep = GeneratedColumn<int>(
+    'current_step',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('draft'),
+  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _uploadedMeta = const VerificationMeta(
+    'uploaded',
+  );
+  @override
+  late final GeneratedColumn<bool> uploaded = GeneratedColumn<bool>(
+    'uploaded',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("uploaded" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _uploadedAtMeta = const VerificationMeta(
+    'uploadedAt',
+  );
+  @override
+  late final GeneratedColumn<int> uploadedAt = GeneratedColumn<int>(
+    'uploaded_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    clientId,
+    serverId,
+    applicationNumber,
+    zoneId,
+    localityId,
+    applicantId,
+    currentStep,
+    status,
+    notes,
+    uploaded,
+    uploadedAt,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'subdivision_applications';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SubdivisionApplication> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('client_id')) {
+      context.handle(
+        _clientIdMeta,
+        clientId.isAcceptableOrUnknown(data['client_id']!, _clientIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_clientIdMeta);
+    }
+    if (data.containsKey('server_id')) {
+      context.handle(
+        _serverIdMeta,
+        serverId.isAcceptableOrUnknown(data['server_id']!, _serverIdMeta),
+      );
+    }
+    if (data.containsKey('application_number')) {
+      context.handle(
+        _applicationNumberMeta,
+        applicationNumber.isAcceptableOrUnknown(
+          data['application_number']!,
+          _applicationNumberMeta,
+        ),
+      );
+    }
+    if (data.containsKey('zone_id')) {
+      context.handle(
+        _zoneIdMeta,
+        zoneId.isAcceptableOrUnknown(data['zone_id']!, _zoneIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_zoneIdMeta);
+    }
+    if (data.containsKey('locality_id')) {
+      context.handle(
+        _localityIdMeta,
+        localityId.isAcceptableOrUnknown(data['locality_id']!, _localityIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_localityIdMeta);
+    }
+    if (data.containsKey('applicant_id')) {
+      context.handle(
+        _applicantIdMeta,
+        applicantId.isAcceptableOrUnknown(
+          data['applicant_id']!,
+          _applicantIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_applicantIdMeta);
+    }
+    if (data.containsKey('current_step')) {
+      context.handle(
+        _currentStepMeta,
+        currentStep.isAcceptableOrUnknown(
+          data['current_step']!,
+          _currentStepMeta,
+        ),
+      );
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    }
+    if (data.containsKey('uploaded')) {
+      context.handle(
+        _uploadedMeta,
+        uploaded.isAcceptableOrUnknown(data['uploaded']!, _uploadedMeta),
+      );
+    }
+    if (data.containsKey('uploaded_at')) {
+      context.handle(
+        _uploadedAtMeta,
+        uploadedAt.isAcceptableOrUnknown(data['uploaded_at']!, _uploadedAtMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {clientId};
+  @override
+  SubdivisionApplication map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SubdivisionApplication(
+      clientId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}client_id'],
+          )!,
+      serverId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}server_id'],
+      ),
+      applicationNumber: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}application_number'],
+      ),
+      zoneId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}zone_id'],
+          )!,
+      localityId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}locality_id'],
+          )!,
+      applicantId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}applicant_id'],
+          )!,
+      currentStep:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}current_step'],
+          )!,
+      status:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}status'],
+          )!,
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      ),
+      uploaded:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}uploaded'],
+          )!,
+      uploadedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}uploaded_at'],
+      ),
+      createdAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}created_at'],
+          )!,
+      updatedAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}updated_at'],
+          )!,
+    );
+  }
+
+  @override
+  $SubdivisionApplicationsTable createAlias(String alias) {
+    return $SubdivisionApplicationsTable(attachedDatabase, alias);
+  }
+}
+
+class SubdivisionApplication extends DataClass
+    implements Insertable<SubdivisionApplication> {
+  final String clientId;
+  final int? serverId;
+  final String? applicationNumber;
+  final int zoneId;
+  final int localityId;
+  final String applicantId;
+  final int currentStep;
+  final String status;
+  final String? notes;
+  final bool uploaded;
+  final int? uploadedAt;
+  final int createdAt;
+  final int updatedAt;
+  const SubdivisionApplication({
+    required this.clientId,
+    this.serverId,
+    this.applicationNumber,
+    required this.zoneId,
+    required this.localityId,
+    required this.applicantId,
+    required this.currentStep,
+    required this.status,
+    this.notes,
+    required this.uploaded,
+    this.uploadedAt,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['client_id'] = Variable<String>(clientId);
+    if (!nullToAbsent || serverId != null) {
+      map['server_id'] = Variable<int>(serverId);
+    }
+    if (!nullToAbsent || applicationNumber != null) {
+      map['application_number'] = Variable<String>(applicationNumber);
+    }
+    map['zone_id'] = Variable<int>(zoneId);
+    map['locality_id'] = Variable<int>(localityId);
+    map['applicant_id'] = Variable<String>(applicantId);
+    map['current_step'] = Variable<int>(currentStep);
+    map['status'] = Variable<String>(status);
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    map['uploaded'] = Variable<bool>(uploaded);
+    if (!nullToAbsent || uploadedAt != null) {
+      map['uploaded_at'] = Variable<int>(uploadedAt);
+    }
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
+    return map;
+  }
+
+  SubdivisionApplicationsCompanion toCompanion(bool nullToAbsent) {
+    return SubdivisionApplicationsCompanion(
+      clientId: Value(clientId),
+      serverId:
+          serverId == null && nullToAbsent
+              ? const Value.absent()
+              : Value(serverId),
+      applicationNumber:
+          applicationNumber == null && nullToAbsent
+              ? const Value.absent()
+              : Value(applicationNumber),
+      zoneId: Value(zoneId),
+      localityId: Value(localityId),
+      applicantId: Value(applicantId),
+      currentStep: Value(currentStep),
+      status: Value(status),
+      notes:
+          notes == null && nullToAbsent ? const Value.absent() : Value(notes),
+      uploaded: Value(uploaded),
+      uploadedAt:
+          uploadedAt == null && nullToAbsent
+              ? const Value.absent()
+              : Value(uploadedAt),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory SubdivisionApplication.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SubdivisionApplication(
+      clientId: serializer.fromJson<String>(json['clientId']),
+      serverId: serializer.fromJson<int?>(json['serverId']),
+      applicationNumber: serializer.fromJson<String?>(
+        json['applicationNumber'],
+      ),
+      zoneId: serializer.fromJson<int>(json['zoneId']),
+      localityId: serializer.fromJson<int>(json['localityId']),
+      applicantId: serializer.fromJson<String>(json['applicantId']),
+      currentStep: serializer.fromJson<int>(json['currentStep']),
+      status: serializer.fromJson<String>(json['status']),
+      notes: serializer.fromJson<String?>(json['notes']),
+      uploaded: serializer.fromJson<bool>(json['uploaded']),
+      uploadedAt: serializer.fromJson<int?>(json['uploadedAt']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'clientId': serializer.toJson<String>(clientId),
+      'serverId': serializer.toJson<int?>(serverId),
+      'applicationNumber': serializer.toJson<String?>(applicationNumber),
+      'zoneId': serializer.toJson<int>(zoneId),
+      'localityId': serializer.toJson<int>(localityId),
+      'applicantId': serializer.toJson<String>(applicantId),
+      'currentStep': serializer.toJson<int>(currentStep),
+      'status': serializer.toJson<String>(status),
+      'notes': serializer.toJson<String?>(notes),
+      'uploaded': serializer.toJson<bool>(uploaded),
+      'uploadedAt': serializer.toJson<int?>(uploadedAt),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+    };
+  }
+
+  SubdivisionApplication copyWith({
+    String? clientId,
+    Value<int?> serverId = const Value.absent(),
+    Value<String?> applicationNumber = const Value.absent(),
+    int? zoneId,
+    int? localityId,
+    String? applicantId,
+    int? currentStep,
+    String? status,
+    Value<String?> notes = const Value.absent(),
+    bool? uploaded,
+    Value<int?> uploadedAt = const Value.absent(),
+    int? createdAt,
+    int? updatedAt,
+  }) => SubdivisionApplication(
+    clientId: clientId ?? this.clientId,
+    serverId: serverId.present ? serverId.value : this.serverId,
+    applicationNumber:
+        applicationNumber.present
+            ? applicationNumber.value
+            : this.applicationNumber,
+    zoneId: zoneId ?? this.zoneId,
+    localityId: localityId ?? this.localityId,
+    applicantId: applicantId ?? this.applicantId,
+    currentStep: currentStep ?? this.currentStep,
+    status: status ?? this.status,
+    notes: notes.present ? notes.value : this.notes,
+    uploaded: uploaded ?? this.uploaded,
+    uploadedAt: uploadedAt.present ? uploadedAt.value : this.uploadedAt,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  SubdivisionApplication copyWithCompanion(
+    SubdivisionApplicationsCompanion data,
+  ) {
+    return SubdivisionApplication(
+      clientId: data.clientId.present ? data.clientId.value : this.clientId,
+      serverId: data.serverId.present ? data.serverId.value : this.serverId,
+      applicationNumber:
+          data.applicationNumber.present
+              ? data.applicationNumber.value
+              : this.applicationNumber,
+      zoneId: data.zoneId.present ? data.zoneId.value : this.zoneId,
+      localityId:
+          data.localityId.present ? data.localityId.value : this.localityId,
+      applicantId:
+          data.applicantId.present ? data.applicantId.value : this.applicantId,
+      currentStep:
+          data.currentStep.present ? data.currentStep.value : this.currentStep,
+      status: data.status.present ? data.status.value : this.status,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      uploaded: data.uploaded.present ? data.uploaded.value : this.uploaded,
+      uploadedAt:
+          data.uploadedAt.present ? data.uploadedAt.value : this.uploadedAt,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SubdivisionApplication(')
+          ..write('clientId: $clientId, ')
+          ..write('serverId: $serverId, ')
+          ..write('applicationNumber: $applicationNumber, ')
+          ..write('zoneId: $zoneId, ')
+          ..write('localityId: $localityId, ')
+          ..write('applicantId: $applicantId, ')
+          ..write('currentStep: $currentStep, ')
+          ..write('status: $status, ')
+          ..write('notes: $notes, ')
+          ..write('uploaded: $uploaded, ')
+          ..write('uploadedAt: $uploadedAt, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    clientId,
+    serverId,
+    applicationNumber,
+    zoneId,
+    localityId,
+    applicantId,
+    currentStep,
+    status,
+    notes,
+    uploaded,
+    uploadedAt,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SubdivisionApplication &&
+          other.clientId == this.clientId &&
+          other.serverId == this.serverId &&
+          other.applicationNumber == this.applicationNumber &&
+          other.zoneId == this.zoneId &&
+          other.localityId == this.localityId &&
+          other.applicantId == this.applicantId &&
+          other.currentStep == this.currentStep &&
+          other.status == this.status &&
+          other.notes == this.notes &&
+          other.uploaded == this.uploaded &&
+          other.uploadedAt == this.uploadedAt &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class SubdivisionApplicationsCompanion
+    extends UpdateCompanion<SubdivisionApplication> {
+  final Value<String> clientId;
+  final Value<int?> serverId;
+  final Value<String?> applicationNumber;
+  final Value<int> zoneId;
+  final Value<int> localityId;
+  final Value<String> applicantId;
+  final Value<int> currentStep;
+  final Value<String> status;
+  final Value<String?> notes;
+  final Value<bool> uploaded;
+  final Value<int?> uploadedAt;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int> rowid;
+  const SubdivisionApplicationsCompanion({
+    this.clientId = const Value.absent(),
+    this.serverId = const Value.absent(),
+    this.applicationNumber = const Value.absent(),
+    this.zoneId = const Value.absent(),
+    this.localityId = const Value.absent(),
+    this.applicantId = const Value.absent(),
+    this.currentStep = const Value.absent(),
+    this.status = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.uploaded = const Value.absent(),
+    this.uploadedAt = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SubdivisionApplicationsCompanion.insert({
+    required String clientId,
+    this.serverId = const Value.absent(),
+    this.applicationNumber = const Value.absent(),
+    required int zoneId,
+    required int localityId,
+    required String applicantId,
+    this.currentStep = const Value.absent(),
+    this.status = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.uploaded = const Value.absent(),
+    this.uploadedAt = const Value.absent(),
+    required int createdAt,
+    required int updatedAt,
+    this.rowid = const Value.absent(),
+  }) : clientId = Value(clientId),
+       zoneId = Value(zoneId),
+       localityId = Value(localityId),
+       applicantId = Value(applicantId),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<SubdivisionApplication> custom({
+    Expression<String>? clientId,
+    Expression<int>? serverId,
+    Expression<String>? applicationNumber,
+    Expression<int>? zoneId,
+    Expression<int>? localityId,
+    Expression<String>? applicantId,
+    Expression<int>? currentStep,
+    Expression<String>? status,
+    Expression<String>? notes,
+    Expression<bool>? uploaded,
+    Expression<int>? uploadedAt,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (clientId != null) 'client_id': clientId,
+      if (serverId != null) 'server_id': serverId,
+      if (applicationNumber != null) 'application_number': applicationNumber,
+      if (zoneId != null) 'zone_id': zoneId,
+      if (localityId != null) 'locality_id': localityId,
+      if (applicantId != null) 'applicant_id': applicantId,
+      if (currentStep != null) 'current_step': currentStep,
+      if (status != null) 'status': status,
+      if (notes != null) 'notes': notes,
+      if (uploaded != null) 'uploaded': uploaded,
+      if (uploadedAt != null) 'uploaded_at': uploadedAt,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SubdivisionApplicationsCompanion copyWith({
+    Value<String>? clientId,
+    Value<int?>? serverId,
+    Value<String?>? applicationNumber,
+    Value<int>? zoneId,
+    Value<int>? localityId,
+    Value<String>? applicantId,
+    Value<int>? currentStep,
+    Value<String>? status,
+    Value<String?>? notes,
+    Value<bool>? uploaded,
+    Value<int?>? uploadedAt,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return SubdivisionApplicationsCompanion(
+      clientId: clientId ?? this.clientId,
+      serverId: serverId ?? this.serverId,
+      applicationNumber: applicationNumber ?? this.applicationNumber,
+      zoneId: zoneId ?? this.zoneId,
+      localityId: localityId ?? this.localityId,
+      applicantId: applicantId ?? this.applicantId,
+      currentStep: currentStep ?? this.currentStep,
+      status: status ?? this.status,
+      notes: notes ?? this.notes,
+      uploaded: uploaded ?? this.uploaded,
+      uploadedAt: uploadedAt ?? this.uploadedAt,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (clientId.present) {
+      map['client_id'] = Variable<String>(clientId.value);
+    }
+    if (serverId.present) {
+      map['server_id'] = Variable<int>(serverId.value);
+    }
+    if (applicationNumber.present) {
+      map['application_number'] = Variable<String>(applicationNumber.value);
+    }
+    if (zoneId.present) {
+      map['zone_id'] = Variable<int>(zoneId.value);
+    }
+    if (localityId.present) {
+      map['locality_id'] = Variable<int>(localityId.value);
+    }
+    if (applicantId.present) {
+      map['applicant_id'] = Variable<String>(applicantId.value);
+    }
+    if (currentStep.present) {
+      map['current_step'] = Variable<int>(currentStep.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (uploaded.present) {
+      map['uploaded'] = Variable<bool>(uploaded.value);
+    }
+    if (uploadedAt.present) {
+      map['uploaded_at'] = Variable<int>(uploadedAt.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SubdivisionApplicationsCompanion(')
+          ..write('clientId: $clientId, ')
+          ..write('serverId: $serverId, ')
+          ..write('applicationNumber: $applicationNumber, ')
+          ..write('zoneId: $zoneId, ')
+          ..write('localityId: $localityId, ')
+          ..write('applicantId: $applicantId, ')
+          ..write('currentStep: $currentStep, ')
+          ..write('status: $status, ')
+          ..write('notes: $notes, ')
+          ..write('uploaded: $uploaded, ')
+          ..write('uploadedAt: $uploadedAt, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $PartiesTable extends Parties with TableInfo<$PartiesTable, Party> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PartiesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _clientIdMeta = const VerificationMeta(
+    'clientId',
+  );
+  @override
+  late final GeneratedColumn<String> clientId = GeneratedColumn<String>(
+    'client_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _serverIdMeta = const VerificationMeta(
+    'serverId',
+  );
+  @override
+  late final GeneratedColumn<int> serverId = GeneratedColumn<int>(
+    'server_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _partyTypeMeta = const VerificationMeta(
+    'partyType',
+  );
+  @override
+  late final GeneratedColumn<String> partyType = GeneratedColumn<String>(
+    'party_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _firstNameMeta = const VerificationMeta(
+    'firstName',
+  );
+  @override
+  late final GeneratedColumn<String> firstName = GeneratedColumn<String>(
+    'first_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _middleNameMeta = const VerificationMeta(
+    'middleName',
+  );
+  @override
+  late final GeneratedColumn<String> middleName = GeneratedColumn<String>(
+    'middle_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastNameMeta = const VerificationMeta(
+    'lastName',
+  );
+  @override
+  late final GeneratedColumn<String> lastName = GeneratedColumn<String>(
+    'last_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _nidaNumberMeta = const VerificationMeta(
+    'nidaNumber',
+  );
+  @override
+  late final GeneratedColumn<String> nidaNumber = GeneratedColumn<String>(
+    'nida_number',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _phoneMeta = const VerificationMeta('phone');
+  @override
+  late final GeneratedColumn<String> phone = GeneratedColumn<String>(
+    'phone',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _emailMeta = const VerificationMeta('email');
+  @override
+  late final GeneratedColumn<String> email = GeneratedColumn<String>(
+    'email',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _genderMeta = const VerificationMeta('gender');
+  @override
+  late final GeneratedColumn<String> gender = GeneratedColumn<String>(
+    'gender',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _dateOfBirthMeta = const VerificationMeta(
+    'dateOfBirth',
+  );
+  @override
+  late final GeneratedColumn<String> dateOfBirth = GeneratedColumn<String>(
+    'date_of_birth',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isCitizenMeta = const VerificationMeta(
+    'isCitizen',
+  );
+  @override
+  late final GeneratedColumn<bool> isCitizen = GeneratedColumn<bool>(
+    'is_citizen',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_citizen" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _maritalStatusMeta = const VerificationMeta(
+    'maritalStatus',
+  );
+  @override
+  late final GeneratedColumn<String> maritalStatus = GeneratedColumn<String>(
+    'marital_status',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _occupationMeta = const VerificationMeta(
+    'occupation',
+  );
+  @override
+  late final GeneratedColumn<String> occupation = GeneratedColumn<String>(
+    'occupation',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _uploadedMeta = const VerificationMeta(
+    'uploaded',
+  );
+  @override
+  late final GeneratedColumn<bool> uploaded = GeneratedColumn<bool>(
+    'uploaded',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("uploaded" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _uploadedAtMeta = const VerificationMeta(
+    'uploadedAt',
+  );
+  @override
+  late final GeneratedColumn<int> uploadedAt = GeneratedColumn<int>(
+    'uploaded_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    clientId,
+    serverId,
+    partyType,
+    firstName,
+    middleName,
+    lastName,
+    nidaNumber,
+    phone,
+    email,
+    gender,
+    dateOfBirth,
+    isCitizen,
+    maritalStatus,
+    occupation,
+    uploaded,
+    uploadedAt,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'parties';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Party> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('client_id')) {
+      context.handle(
+        _clientIdMeta,
+        clientId.isAcceptableOrUnknown(data['client_id']!, _clientIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_clientIdMeta);
+    }
+    if (data.containsKey('server_id')) {
+      context.handle(
+        _serverIdMeta,
+        serverId.isAcceptableOrUnknown(data['server_id']!, _serverIdMeta),
+      );
+    }
+    if (data.containsKey('party_type')) {
+      context.handle(
+        _partyTypeMeta,
+        partyType.isAcceptableOrUnknown(data['party_type']!, _partyTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_partyTypeMeta);
+    }
+    if (data.containsKey('first_name')) {
+      context.handle(
+        _firstNameMeta,
+        firstName.isAcceptableOrUnknown(data['first_name']!, _firstNameMeta),
+      );
+    }
+    if (data.containsKey('middle_name')) {
+      context.handle(
+        _middleNameMeta,
+        middleName.isAcceptableOrUnknown(data['middle_name']!, _middleNameMeta),
+      );
+    }
+    if (data.containsKey('last_name')) {
+      context.handle(
+        _lastNameMeta,
+        lastName.isAcceptableOrUnknown(data['last_name']!, _lastNameMeta),
+      );
+    }
+    if (data.containsKey('nida_number')) {
+      context.handle(
+        _nidaNumberMeta,
+        nidaNumber.isAcceptableOrUnknown(data['nida_number']!, _nidaNumberMeta),
+      );
+    }
+    if (data.containsKey('phone')) {
+      context.handle(
+        _phoneMeta,
+        phone.isAcceptableOrUnknown(data['phone']!, _phoneMeta),
+      );
+    }
+    if (data.containsKey('email')) {
+      context.handle(
+        _emailMeta,
+        email.isAcceptableOrUnknown(data['email']!, _emailMeta),
+      );
+    }
+    if (data.containsKey('gender')) {
+      context.handle(
+        _genderMeta,
+        gender.isAcceptableOrUnknown(data['gender']!, _genderMeta),
+      );
+    }
+    if (data.containsKey('date_of_birth')) {
+      context.handle(
+        _dateOfBirthMeta,
+        dateOfBirth.isAcceptableOrUnknown(
+          data['date_of_birth']!,
+          _dateOfBirthMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_citizen')) {
+      context.handle(
+        _isCitizenMeta,
+        isCitizen.isAcceptableOrUnknown(data['is_citizen']!, _isCitizenMeta),
+      );
+    }
+    if (data.containsKey('marital_status')) {
+      context.handle(
+        _maritalStatusMeta,
+        maritalStatus.isAcceptableOrUnknown(
+          data['marital_status']!,
+          _maritalStatusMeta,
+        ),
+      );
+    }
+    if (data.containsKey('occupation')) {
+      context.handle(
+        _occupationMeta,
+        occupation.isAcceptableOrUnknown(data['occupation']!, _occupationMeta),
+      );
+    }
+    if (data.containsKey('uploaded')) {
+      context.handle(
+        _uploadedMeta,
+        uploaded.isAcceptableOrUnknown(data['uploaded']!, _uploadedMeta),
+      );
+    }
+    if (data.containsKey('uploaded_at')) {
+      context.handle(
+        _uploadedAtMeta,
+        uploadedAt.isAcceptableOrUnknown(data['uploaded_at']!, _uploadedAtMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {clientId};
+  @override
+  Party map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Party(
+      clientId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}client_id'],
+          )!,
+      serverId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}server_id'],
+      ),
+      partyType:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}party_type'],
+          )!,
+      firstName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}first_name'],
+      ),
+      middleName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}middle_name'],
+      ),
+      lastName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_name'],
+      ),
+      nidaNumber: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}nida_number'],
+      ),
+      phone: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}phone'],
+      ),
+      email: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}email'],
+      ),
+      gender: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}gender'],
+      ),
+      dateOfBirth: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}date_of_birth'],
+      ),
+      isCitizen:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}is_citizen'],
+          )!,
+      maritalStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}marital_status'],
+      ),
+      occupation: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}occupation'],
+      ),
+      uploaded:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}uploaded'],
+          )!,
+      uploadedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}uploaded_at'],
+      ),
+      createdAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}created_at'],
+          )!,
+      updatedAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}updated_at'],
+          )!,
+    );
+  }
+
+  @override
+  $PartiesTable createAlias(String alias) {
+    return $PartiesTable(attachedDatabase, alias);
+  }
+}
+
+class Party extends DataClass implements Insertable<Party> {
+  final String clientId;
+  final int? serverId;
+  final String partyType;
+  final String? firstName;
+  final String? middleName;
+  final String? lastName;
+  final String? nidaNumber;
+  final String? phone;
+  final String? email;
+  final String? gender;
+  final String? dateOfBirth;
+  final bool isCitizen;
+  final String? maritalStatus;
+  final String? occupation;
+  final bool uploaded;
+  final int? uploadedAt;
+  final int createdAt;
+  final int updatedAt;
+  const Party({
+    required this.clientId,
+    this.serverId,
+    required this.partyType,
+    this.firstName,
+    this.middleName,
+    this.lastName,
+    this.nidaNumber,
+    this.phone,
+    this.email,
+    this.gender,
+    this.dateOfBirth,
+    required this.isCitizen,
+    this.maritalStatus,
+    this.occupation,
+    required this.uploaded,
+    this.uploadedAt,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['client_id'] = Variable<String>(clientId);
+    if (!nullToAbsent || serverId != null) {
+      map['server_id'] = Variable<int>(serverId);
+    }
+    map['party_type'] = Variable<String>(partyType);
+    if (!nullToAbsent || firstName != null) {
+      map['first_name'] = Variable<String>(firstName);
+    }
+    if (!nullToAbsent || middleName != null) {
+      map['middle_name'] = Variable<String>(middleName);
+    }
+    if (!nullToAbsent || lastName != null) {
+      map['last_name'] = Variable<String>(lastName);
+    }
+    if (!nullToAbsent || nidaNumber != null) {
+      map['nida_number'] = Variable<String>(nidaNumber);
+    }
+    if (!nullToAbsent || phone != null) {
+      map['phone'] = Variable<String>(phone);
+    }
+    if (!nullToAbsent || email != null) {
+      map['email'] = Variable<String>(email);
+    }
+    if (!nullToAbsent || gender != null) {
+      map['gender'] = Variable<String>(gender);
+    }
+    if (!nullToAbsent || dateOfBirth != null) {
+      map['date_of_birth'] = Variable<String>(dateOfBirth);
+    }
+    map['is_citizen'] = Variable<bool>(isCitizen);
+    if (!nullToAbsent || maritalStatus != null) {
+      map['marital_status'] = Variable<String>(maritalStatus);
+    }
+    if (!nullToAbsent || occupation != null) {
+      map['occupation'] = Variable<String>(occupation);
+    }
+    map['uploaded'] = Variable<bool>(uploaded);
+    if (!nullToAbsent || uploadedAt != null) {
+      map['uploaded_at'] = Variable<int>(uploadedAt);
+    }
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
+    return map;
+  }
+
+  PartiesCompanion toCompanion(bool nullToAbsent) {
+    return PartiesCompanion(
+      clientId: Value(clientId),
+      serverId:
+          serverId == null && nullToAbsent
+              ? const Value.absent()
+              : Value(serverId),
+      partyType: Value(partyType),
+      firstName:
+          firstName == null && nullToAbsent
+              ? const Value.absent()
+              : Value(firstName),
+      middleName:
+          middleName == null && nullToAbsent
+              ? const Value.absent()
+              : Value(middleName),
+      lastName:
+          lastName == null && nullToAbsent
+              ? const Value.absent()
+              : Value(lastName),
+      nidaNumber:
+          nidaNumber == null && nullToAbsent
+              ? const Value.absent()
+              : Value(nidaNumber),
+      phone:
+          phone == null && nullToAbsent ? const Value.absent() : Value(phone),
+      email:
+          email == null && nullToAbsent ? const Value.absent() : Value(email),
+      gender:
+          gender == null && nullToAbsent ? const Value.absent() : Value(gender),
+      dateOfBirth:
+          dateOfBirth == null && nullToAbsent
+              ? const Value.absent()
+              : Value(dateOfBirth),
+      isCitizen: Value(isCitizen),
+      maritalStatus:
+          maritalStatus == null && nullToAbsent
+              ? const Value.absent()
+              : Value(maritalStatus),
+      occupation:
+          occupation == null && nullToAbsent
+              ? const Value.absent()
+              : Value(occupation),
+      uploaded: Value(uploaded),
+      uploadedAt:
+          uploadedAt == null && nullToAbsent
+              ? const Value.absent()
+              : Value(uploadedAt),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory Party.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Party(
+      clientId: serializer.fromJson<String>(json['clientId']),
+      serverId: serializer.fromJson<int?>(json['serverId']),
+      partyType: serializer.fromJson<String>(json['partyType']),
+      firstName: serializer.fromJson<String?>(json['firstName']),
+      middleName: serializer.fromJson<String?>(json['middleName']),
+      lastName: serializer.fromJson<String?>(json['lastName']),
+      nidaNumber: serializer.fromJson<String?>(json['nidaNumber']),
+      phone: serializer.fromJson<String?>(json['phone']),
+      email: serializer.fromJson<String?>(json['email']),
+      gender: serializer.fromJson<String?>(json['gender']),
+      dateOfBirth: serializer.fromJson<String?>(json['dateOfBirth']),
+      isCitizen: serializer.fromJson<bool>(json['isCitizen']),
+      maritalStatus: serializer.fromJson<String?>(json['maritalStatus']),
+      occupation: serializer.fromJson<String?>(json['occupation']),
+      uploaded: serializer.fromJson<bool>(json['uploaded']),
+      uploadedAt: serializer.fromJson<int?>(json['uploadedAt']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'clientId': serializer.toJson<String>(clientId),
+      'serverId': serializer.toJson<int?>(serverId),
+      'partyType': serializer.toJson<String>(partyType),
+      'firstName': serializer.toJson<String?>(firstName),
+      'middleName': serializer.toJson<String?>(middleName),
+      'lastName': serializer.toJson<String?>(lastName),
+      'nidaNumber': serializer.toJson<String?>(nidaNumber),
+      'phone': serializer.toJson<String?>(phone),
+      'email': serializer.toJson<String?>(email),
+      'gender': serializer.toJson<String?>(gender),
+      'dateOfBirth': serializer.toJson<String?>(dateOfBirth),
+      'isCitizen': serializer.toJson<bool>(isCitizen),
+      'maritalStatus': serializer.toJson<String?>(maritalStatus),
+      'occupation': serializer.toJson<String?>(occupation),
+      'uploaded': serializer.toJson<bool>(uploaded),
+      'uploadedAt': serializer.toJson<int?>(uploadedAt),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+    };
+  }
+
+  Party copyWith({
+    String? clientId,
+    Value<int?> serverId = const Value.absent(),
+    String? partyType,
+    Value<String?> firstName = const Value.absent(),
+    Value<String?> middleName = const Value.absent(),
+    Value<String?> lastName = const Value.absent(),
+    Value<String?> nidaNumber = const Value.absent(),
+    Value<String?> phone = const Value.absent(),
+    Value<String?> email = const Value.absent(),
+    Value<String?> gender = const Value.absent(),
+    Value<String?> dateOfBirth = const Value.absent(),
+    bool? isCitizen,
+    Value<String?> maritalStatus = const Value.absent(),
+    Value<String?> occupation = const Value.absent(),
+    bool? uploaded,
+    Value<int?> uploadedAt = const Value.absent(),
+    int? createdAt,
+    int? updatedAt,
+  }) => Party(
+    clientId: clientId ?? this.clientId,
+    serverId: serverId.present ? serverId.value : this.serverId,
+    partyType: partyType ?? this.partyType,
+    firstName: firstName.present ? firstName.value : this.firstName,
+    middleName: middleName.present ? middleName.value : this.middleName,
+    lastName: lastName.present ? lastName.value : this.lastName,
+    nidaNumber: nidaNumber.present ? nidaNumber.value : this.nidaNumber,
+    phone: phone.present ? phone.value : this.phone,
+    email: email.present ? email.value : this.email,
+    gender: gender.present ? gender.value : this.gender,
+    dateOfBirth: dateOfBirth.present ? dateOfBirth.value : this.dateOfBirth,
+    isCitizen: isCitizen ?? this.isCitizen,
+    maritalStatus:
+        maritalStatus.present ? maritalStatus.value : this.maritalStatus,
+    occupation: occupation.present ? occupation.value : this.occupation,
+    uploaded: uploaded ?? this.uploaded,
+    uploadedAt: uploadedAt.present ? uploadedAt.value : this.uploadedAt,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  Party copyWithCompanion(PartiesCompanion data) {
+    return Party(
+      clientId: data.clientId.present ? data.clientId.value : this.clientId,
+      serverId: data.serverId.present ? data.serverId.value : this.serverId,
+      partyType: data.partyType.present ? data.partyType.value : this.partyType,
+      firstName: data.firstName.present ? data.firstName.value : this.firstName,
+      middleName:
+          data.middleName.present ? data.middleName.value : this.middleName,
+      lastName: data.lastName.present ? data.lastName.value : this.lastName,
+      nidaNumber:
+          data.nidaNumber.present ? data.nidaNumber.value : this.nidaNumber,
+      phone: data.phone.present ? data.phone.value : this.phone,
+      email: data.email.present ? data.email.value : this.email,
+      gender: data.gender.present ? data.gender.value : this.gender,
+      dateOfBirth:
+          data.dateOfBirth.present ? data.dateOfBirth.value : this.dateOfBirth,
+      isCitizen: data.isCitizen.present ? data.isCitizen.value : this.isCitizen,
+      maritalStatus:
+          data.maritalStatus.present
+              ? data.maritalStatus.value
+              : this.maritalStatus,
+      occupation:
+          data.occupation.present ? data.occupation.value : this.occupation,
+      uploaded: data.uploaded.present ? data.uploaded.value : this.uploaded,
+      uploadedAt:
+          data.uploadedAt.present ? data.uploadedAt.value : this.uploadedAt,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Party(')
+          ..write('clientId: $clientId, ')
+          ..write('serverId: $serverId, ')
+          ..write('partyType: $partyType, ')
+          ..write('firstName: $firstName, ')
+          ..write('middleName: $middleName, ')
+          ..write('lastName: $lastName, ')
+          ..write('nidaNumber: $nidaNumber, ')
+          ..write('phone: $phone, ')
+          ..write('email: $email, ')
+          ..write('gender: $gender, ')
+          ..write('dateOfBirth: $dateOfBirth, ')
+          ..write('isCitizen: $isCitizen, ')
+          ..write('maritalStatus: $maritalStatus, ')
+          ..write('occupation: $occupation, ')
+          ..write('uploaded: $uploaded, ')
+          ..write('uploadedAt: $uploadedAt, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    clientId,
+    serverId,
+    partyType,
+    firstName,
+    middleName,
+    lastName,
+    nidaNumber,
+    phone,
+    email,
+    gender,
+    dateOfBirth,
+    isCitizen,
+    maritalStatus,
+    occupation,
+    uploaded,
+    uploadedAt,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Party &&
+          other.clientId == this.clientId &&
+          other.serverId == this.serverId &&
+          other.partyType == this.partyType &&
+          other.firstName == this.firstName &&
+          other.middleName == this.middleName &&
+          other.lastName == this.lastName &&
+          other.nidaNumber == this.nidaNumber &&
+          other.phone == this.phone &&
+          other.email == this.email &&
+          other.gender == this.gender &&
+          other.dateOfBirth == this.dateOfBirth &&
+          other.isCitizen == this.isCitizen &&
+          other.maritalStatus == this.maritalStatus &&
+          other.occupation == this.occupation &&
+          other.uploaded == this.uploaded &&
+          other.uploadedAt == this.uploadedAt &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class PartiesCompanion extends UpdateCompanion<Party> {
+  final Value<String> clientId;
+  final Value<int?> serverId;
+  final Value<String> partyType;
+  final Value<String?> firstName;
+  final Value<String?> middleName;
+  final Value<String?> lastName;
+  final Value<String?> nidaNumber;
+  final Value<String?> phone;
+  final Value<String?> email;
+  final Value<String?> gender;
+  final Value<String?> dateOfBirth;
+  final Value<bool> isCitizen;
+  final Value<String?> maritalStatus;
+  final Value<String?> occupation;
+  final Value<bool> uploaded;
+  final Value<int?> uploadedAt;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int> rowid;
+  const PartiesCompanion({
+    this.clientId = const Value.absent(),
+    this.serverId = const Value.absent(),
+    this.partyType = const Value.absent(),
+    this.firstName = const Value.absent(),
+    this.middleName = const Value.absent(),
+    this.lastName = const Value.absent(),
+    this.nidaNumber = const Value.absent(),
+    this.phone = const Value.absent(),
+    this.email = const Value.absent(),
+    this.gender = const Value.absent(),
+    this.dateOfBirth = const Value.absent(),
+    this.isCitizen = const Value.absent(),
+    this.maritalStatus = const Value.absent(),
+    this.occupation = const Value.absent(),
+    this.uploaded = const Value.absent(),
+    this.uploadedAt = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PartiesCompanion.insert({
+    required String clientId,
+    this.serverId = const Value.absent(),
+    required String partyType,
+    this.firstName = const Value.absent(),
+    this.middleName = const Value.absent(),
+    this.lastName = const Value.absent(),
+    this.nidaNumber = const Value.absent(),
+    this.phone = const Value.absent(),
+    this.email = const Value.absent(),
+    this.gender = const Value.absent(),
+    this.dateOfBirth = const Value.absent(),
+    this.isCitizen = const Value.absent(),
+    this.maritalStatus = const Value.absent(),
+    this.occupation = const Value.absent(),
+    this.uploaded = const Value.absent(),
+    this.uploadedAt = const Value.absent(),
+    required int createdAt,
+    required int updatedAt,
+    this.rowid = const Value.absent(),
+  }) : clientId = Value(clientId),
+       partyType = Value(partyType),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<Party> custom({
+    Expression<String>? clientId,
+    Expression<int>? serverId,
+    Expression<String>? partyType,
+    Expression<String>? firstName,
+    Expression<String>? middleName,
+    Expression<String>? lastName,
+    Expression<String>? nidaNumber,
+    Expression<String>? phone,
+    Expression<String>? email,
+    Expression<String>? gender,
+    Expression<String>? dateOfBirth,
+    Expression<bool>? isCitizen,
+    Expression<String>? maritalStatus,
+    Expression<String>? occupation,
+    Expression<bool>? uploaded,
+    Expression<int>? uploadedAt,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (clientId != null) 'client_id': clientId,
+      if (serverId != null) 'server_id': serverId,
+      if (partyType != null) 'party_type': partyType,
+      if (firstName != null) 'first_name': firstName,
+      if (middleName != null) 'middle_name': middleName,
+      if (lastName != null) 'last_name': lastName,
+      if (nidaNumber != null) 'nida_number': nidaNumber,
+      if (phone != null) 'phone': phone,
+      if (email != null) 'email': email,
+      if (gender != null) 'gender': gender,
+      if (dateOfBirth != null) 'date_of_birth': dateOfBirth,
+      if (isCitizen != null) 'is_citizen': isCitizen,
+      if (maritalStatus != null) 'marital_status': maritalStatus,
+      if (occupation != null) 'occupation': occupation,
+      if (uploaded != null) 'uploaded': uploaded,
+      if (uploadedAt != null) 'uploaded_at': uploadedAt,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PartiesCompanion copyWith({
+    Value<String>? clientId,
+    Value<int?>? serverId,
+    Value<String>? partyType,
+    Value<String?>? firstName,
+    Value<String?>? middleName,
+    Value<String?>? lastName,
+    Value<String?>? nidaNumber,
+    Value<String?>? phone,
+    Value<String?>? email,
+    Value<String?>? gender,
+    Value<String?>? dateOfBirth,
+    Value<bool>? isCitizen,
+    Value<String?>? maritalStatus,
+    Value<String?>? occupation,
+    Value<bool>? uploaded,
+    Value<int?>? uploadedAt,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return PartiesCompanion(
+      clientId: clientId ?? this.clientId,
+      serverId: serverId ?? this.serverId,
+      partyType: partyType ?? this.partyType,
+      firstName: firstName ?? this.firstName,
+      middleName: middleName ?? this.middleName,
+      lastName: lastName ?? this.lastName,
+      nidaNumber: nidaNumber ?? this.nidaNumber,
+      phone: phone ?? this.phone,
+      email: email ?? this.email,
+      gender: gender ?? this.gender,
+      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+      isCitizen: isCitizen ?? this.isCitizen,
+      maritalStatus: maritalStatus ?? this.maritalStatus,
+      occupation: occupation ?? this.occupation,
+      uploaded: uploaded ?? this.uploaded,
+      uploadedAt: uploadedAt ?? this.uploadedAt,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (clientId.present) {
+      map['client_id'] = Variable<String>(clientId.value);
+    }
+    if (serverId.present) {
+      map['server_id'] = Variable<int>(serverId.value);
+    }
+    if (partyType.present) {
+      map['party_type'] = Variable<String>(partyType.value);
+    }
+    if (firstName.present) {
+      map['first_name'] = Variable<String>(firstName.value);
+    }
+    if (middleName.present) {
+      map['middle_name'] = Variable<String>(middleName.value);
+    }
+    if (lastName.present) {
+      map['last_name'] = Variable<String>(lastName.value);
+    }
+    if (nidaNumber.present) {
+      map['nida_number'] = Variable<String>(nidaNumber.value);
+    }
+    if (phone.present) {
+      map['phone'] = Variable<String>(phone.value);
+    }
+    if (email.present) {
+      map['email'] = Variable<String>(email.value);
+    }
+    if (gender.present) {
+      map['gender'] = Variable<String>(gender.value);
+    }
+    if (dateOfBirth.present) {
+      map['date_of_birth'] = Variable<String>(dateOfBirth.value);
+    }
+    if (isCitizen.present) {
+      map['is_citizen'] = Variable<bool>(isCitizen.value);
+    }
+    if (maritalStatus.present) {
+      map['marital_status'] = Variable<String>(maritalStatus.value);
+    }
+    if (occupation.present) {
+      map['occupation'] = Variable<String>(occupation.value);
+    }
+    if (uploaded.present) {
+      map['uploaded'] = Variable<bool>(uploaded.value);
+    }
+    if (uploadedAt.present) {
+      map['uploaded_at'] = Variable<int>(uploadedAt.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PartiesCompanion(')
+          ..write('clientId: $clientId, ')
+          ..write('serverId: $serverId, ')
+          ..write('partyType: $partyType, ')
+          ..write('firstName: $firstName, ')
+          ..write('middleName: $middleName, ')
+          ..write('lastName: $lastName, ')
+          ..write('nidaNumber: $nidaNumber, ')
+          ..write('phone: $phone, ')
+          ..write('email: $email, ')
+          ..write('gender: $gender, ')
+          ..write('dateOfBirth: $dateOfBirth, ')
+          ..write('isCitizen: $isCitizen, ')
+          ..write('maritalStatus: $maritalStatus, ')
+          ..write('occupation: $occupation, ')
+          ..write('uploaded: $uploaded, ')
+          ..write('uploadedAt: $uploadedAt, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ParcelsTable extends Parcels with TableInfo<$ParcelsTable, Parcel> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ParcelsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _clientIdMeta = const VerificationMeta(
+    'clientId',
+  );
+  @override
+  late final GeneratedColumn<String> clientId = GeneratedColumn<String>(
+    'client_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _serverIdMeta = const VerificationMeta(
+    'serverId',
+  );
+  @override
+  late final GeneratedColumn<int> serverId = GeneratedColumn<int>(
+    'server_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _parcelNumberMeta = const VerificationMeta(
+    'parcelNumber',
+  );
+  @override
+  late final GeneratedColumn<String> parcelNumber = GeneratedColumn<String>(
+    'parcel_number',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _applicationIdMeta = const VerificationMeta(
+    'applicationId',
+  );
+  @override
+  late final GeneratedColumn<String> applicationId = GeneratedColumn<String>(
+    'application_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _zoneIdMeta = const VerificationMeta('zoneId');
+  @override
+  late final GeneratedColumn<int> zoneId = GeneratedColumn<int>(
+    'zone_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _localityIdMeta = const VerificationMeta(
+    'localityId',
+  );
+  @override
+  late final GeneratedColumn<int> localityId = GeneratedColumn<int>(
+    'locality_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _hamletIdMeta = const VerificationMeta(
+    'hamletId',
+  );
+  @override
+  late final GeneratedColumn<int> hamletId = GeneratedColumn<int>(
+    'hamlet_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _geomJsonMeta = const VerificationMeta(
+    'geomJson',
+  );
+  @override
+  late final GeneratedColumn<String> geomJson = GeneratedColumn<String>(
+    'geom_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _geometryTypeMeta = const VerificationMeta(
+    'geometryType',
+  );
+  @override
+  late final GeneratedColumn<String> geometryType = GeneratedColumn<String>(
+    'geometry_type',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _areaSqmMeta = const VerificationMeta(
+    'areaSqm',
+  );
+  @override
+  late final GeneratedColumn<double> areaSqm = GeneratedColumn<double>(
+    'area_sqm',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _northMeta = const VerificationMeta('north');
+  @override
+  late final GeneratedColumn<String> north = GeneratedColumn<String>(
+    'north',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _southMeta = const VerificationMeta('south');
+  @override
+  late final GeneratedColumn<String> south = GeneratedColumn<String>(
+    'south',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _eastMeta = const VerificationMeta('east');
+  @override
+  late final GeneratedColumn<String> east = GeneratedColumn<String>(
+    'east',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _westMeta = const VerificationMeta('west');
+  @override
+  late final GeneratedColumn<String> west = GeneratedColumn<String>(
+    'west',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _occupancyTypeMeta = const VerificationMeta(
+    'occupancyType',
+  );
+  @override
+  late final GeneratedColumn<int> occupancyType = GeneratedColumn<int>(
+    'occupancy_type',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _stageMeta = const VerificationMeta('stage');
+  @override
+  late final GeneratedColumn<String> stage = GeneratedColumn<String>(
+    'stage',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('draft'),
+  );
+  static const VerificationMeta _hasConflictsMeta = const VerificationMeta(
+    'hasConflicts',
+  );
+  @override
+  late final GeneratedColumn<bool> hasConflicts = GeneratedColumn<bool>(
+    'has_conflicts',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("has_conflicts" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _uploadedMeta = const VerificationMeta(
+    'uploaded',
+  );
+  @override
+  late final GeneratedColumn<bool> uploaded = GeneratedColumn<bool>(
+    'uploaded',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("uploaded" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _uploadedAtMeta = const VerificationMeta(
+    'uploadedAt',
+  );
+  @override
+  late final GeneratedColumn<int> uploadedAt = GeneratedColumn<int>(
+    'uploaded_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    clientId,
+    serverId,
+    parcelNumber,
+    applicationId,
+    zoneId,
+    localityId,
+    hamletId,
+    geomJson,
+    geometryType,
+    areaSqm,
+    north,
+    south,
+    east,
+    west,
+    occupancyType,
+    stage,
+    hasConflicts,
+    uploaded,
+    uploadedAt,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'parcels';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Parcel> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('client_id')) {
+      context.handle(
+        _clientIdMeta,
+        clientId.isAcceptableOrUnknown(data['client_id']!, _clientIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_clientIdMeta);
+    }
+    if (data.containsKey('server_id')) {
+      context.handle(
+        _serverIdMeta,
+        serverId.isAcceptableOrUnknown(data['server_id']!, _serverIdMeta),
+      );
+    }
+    if (data.containsKey('parcel_number')) {
+      context.handle(
+        _parcelNumberMeta,
+        parcelNumber.isAcceptableOrUnknown(
+          data['parcel_number']!,
+          _parcelNumberMeta,
+        ),
+      );
+    }
+    if (data.containsKey('application_id')) {
+      context.handle(
+        _applicationIdMeta,
+        applicationId.isAcceptableOrUnknown(
+          data['application_id']!,
+          _applicationIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_applicationIdMeta);
+    }
+    if (data.containsKey('zone_id')) {
+      context.handle(
+        _zoneIdMeta,
+        zoneId.isAcceptableOrUnknown(data['zone_id']!, _zoneIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_zoneIdMeta);
+    }
+    if (data.containsKey('locality_id')) {
+      context.handle(
+        _localityIdMeta,
+        localityId.isAcceptableOrUnknown(data['locality_id']!, _localityIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_localityIdMeta);
+    }
+    if (data.containsKey('hamlet_id')) {
+      context.handle(
+        _hamletIdMeta,
+        hamletId.isAcceptableOrUnknown(data['hamlet_id']!, _hamletIdMeta),
+      );
+    }
+    if (data.containsKey('geom_json')) {
+      context.handle(
+        _geomJsonMeta,
+        geomJson.isAcceptableOrUnknown(data['geom_json']!, _geomJsonMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_geomJsonMeta);
+    }
+    if (data.containsKey('geometry_type')) {
+      context.handle(
+        _geometryTypeMeta,
+        geometryType.isAcceptableOrUnknown(
+          data['geometry_type']!,
+          _geometryTypeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('area_sqm')) {
+      context.handle(
+        _areaSqmMeta,
+        areaSqm.isAcceptableOrUnknown(data['area_sqm']!, _areaSqmMeta),
+      );
+    }
+    if (data.containsKey('north')) {
+      context.handle(
+        _northMeta,
+        north.isAcceptableOrUnknown(data['north']!, _northMeta),
+      );
+    }
+    if (data.containsKey('south')) {
+      context.handle(
+        _southMeta,
+        south.isAcceptableOrUnknown(data['south']!, _southMeta),
+      );
+    }
+    if (data.containsKey('east')) {
+      context.handle(
+        _eastMeta,
+        east.isAcceptableOrUnknown(data['east']!, _eastMeta),
+      );
+    }
+    if (data.containsKey('west')) {
+      context.handle(
+        _westMeta,
+        west.isAcceptableOrUnknown(data['west']!, _westMeta),
+      );
+    }
+    if (data.containsKey('occupancy_type')) {
+      context.handle(
+        _occupancyTypeMeta,
+        occupancyType.isAcceptableOrUnknown(
+          data['occupancy_type']!,
+          _occupancyTypeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('stage')) {
+      context.handle(
+        _stageMeta,
+        stage.isAcceptableOrUnknown(data['stage']!, _stageMeta),
+      );
+    }
+    if (data.containsKey('has_conflicts')) {
+      context.handle(
+        _hasConflictsMeta,
+        hasConflicts.isAcceptableOrUnknown(
+          data['has_conflicts']!,
+          _hasConflictsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('uploaded')) {
+      context.handle(
+        _uploadedMeta,
+        uploaded.isAcceptableOrUnknown(data['uploaded']!, _uploadedMeta),
+      );
+    }
+    if (data.containsKey('uploaded_at')) {
+      context.handle(
+        _uploadedAtMeta,
+        uploadedAt.isAcceptableOrUnknown(data['uploaded_at']!, _uploadedAtMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {clientId};
+  @override
+  Parcel map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Parcel(
+      clientId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}client_id'],
+          )!,
+      serverId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}server_id'],
+      ),
+      parcelNumber: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}parcel_number'],
+      ),
+      applicationId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}application_id'],
+          )!,
+      zoneId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}zone_id'],
+          )!,
+      localityId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}locality_id'],
+          )!,
+      hamletId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}hamlet_id'],
+      ),
+      geomJson:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}geom_json'],
+          )!,
+      geometryType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}geometry_type'],
+      ),
+      areaSqm: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}area_sqm'],
+      ),
+      north: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}north'],
+      ),
+      south: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}south'],
+      ),
+      east: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}east'],
+      ),
+      west: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}west'],
+      ),
+      occupancyType: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}occupancy_type'],
+      ),
+      stage:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}stage'],
+          )!,
+      hasConflicts:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}has_conflicts'],
+          )!,
+      uploaded:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}uploaded'],
+          )!,
+      uploadedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}uploaded_at'],
+      ),
+      createdAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}created_at'],
+          )!,
+      updatedAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}updated_at'],
+          )!,
+    );
+  }
+
+  @override
+  $ParcelsTable createAlias(String alias) {
+    return $ParcelsTable(attachedDatabase, alias);
+  }
+}
+
+class Parcel extends DataClass implements Insertable<Parcel> {
+  final String clientId;
+  final int? serverId;
+  final String? parcelNumber;
+  final String applicationId;
+  final int zoneId;
+  final int localityId;
+  final int? hamletId;
+  final String geomJson;
+  final String? geometryType;
+  final double? areaSqm;
+  final String? north;
+  final String? south;
+  final String? east;
+  final String? west;
+  final int? occupancyType;
+  final String stage;
+  final bool hasConflicts;
+  final bool uploaded;
+  final int? uploadedAt;
+  final int createdAt;
+  final int updatedAt;
+  const Parcel({
+    required this.clientId,
+    this.serverId,
+    this.parcelNumber,
+    required this.applicationId,
+    required this.zoneId,
+    required this.localityId,
+    this.hamletId,
+    required this.geomJson,
+    this.geometryType,
+    this.areaSqm,
+    this.north,
+    this.south,
+    this.east,
+    this.west,
+    this.occupancyType,
+    required this.stage,
+    required this.hasConflicts,
+    required this.uploaded,
+    this.uploadedAt,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['client_id'] = Variable<String>(clientId);
+    if (!nullToAbsent || serverId != null) {
+      map['server_id'] = Variable<int>(serverId);
+    }
+    if (!nullToAbsent || parcelNumber != null) {
+      map['parcel_number'] = Variable<String>(parcelNumber);
+    }
+    map['application_id'] = Variable<String>(applicationId);
+    map['zone_id'] = Variable<int>(zoneId);
+    map['locality_id'] = Variable<int>(localityId);
+    if (!nullToAbsent || hamletId != null) {
+      map['hamlet_id'] = Variable<int>(hamletId);
+    }
+    map['geom_json'] = Variable<String>(geomJson);
+    if (!nullToAbsent || geometryType != null) {
+      map['geometry_type'] = Variable<String>(geometryType);
+    }
+    if (!nullToAbsent || areaSqm != null) {
+      map['area_sqm'] = Variable<double>(areaSqm);
+    }
+    if (!nullToAbsent || north != null) {
+      map['north'] = Variable<String>(north);
+    }
+    if (!nullToAbsent || south != null) {
+      map['south'] = Variable<String>(south);
+    }
+    if (!nullToAbsent || east != null) {
+      map['east'] = Variable<String>(east);
+    }
+    if (!nullToAbsent || west != null) {
+      map['west'] = Variable<String>(west);
+    }
+    if (!nullToAbsent || occupancyType != null) {
+      map['occupancy_type'] = Variable<int>(occupancyType);
+    }
+    map['stage'] = Variable<String>(stage);
+    map['has_conflicts'] = Variable<bool>(hasConflicts);
+    map['uploaded'] = Variable<bool>(uploaded);
+    if (!nullToAbsent || uploadedAt != null) {
+      map['uploaded_at'] = Variable<int>(uploadedAt);
+    }
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
+    return map;
+  }
+
+  ParcelsCompanion toCompanion(bool nullToAbsent) {
+    return ParcelsCompanion(
+      clientId: Value(clientId),
+      serverId:
+          serverId == null && nullToAbsent
+              ? const Value.absent()
+              : Value(serverId),
+      parcelNumber:
+          parcelNumber == null && nullToAbsent
+              ? const Value.absent()
+              : Value(parcelNumber),
+      applicationId: Value(applicationId),
+      zoneId: Value(zoneId),
+      localityId: Value(localityId),
+      hamletId:
+          hamletId == null && nullToAbsent
+              ? const Value.absent()
+              : Value(hamletId),
+      geomJson: Value(geomJson),
+      geometryType:
+          geometryType == null && nullToAbsent
+              ? const Value.absent()
+              : Value(geometryType),
+      areaSqm:
+          areaSqm == null && nullToAbsent
+              ? const Value.absent()
+              : Value(areaSqm),
+      north:
+          north == null && nullToAbsent ? const Value.absent() : Value(north),
+      south:
+          south == null && nullToAbsent ? const Value.absent() : Value(south),
+      east: east == null && nullToAbsent ? const Value.absent() : Value(east),
+      west: west == null && nullToAbsent ? const Value.absent() : Value(west),
+      occupancyType:
+          occupancyType == null && nullToAbsent
+              ? const Value.absent()
+              : Value(occupancyType),
+      stage: Value(stage),
+      hasConflicts: Value(hasConflicts),
+      uploaded: Value(uploaded),
+      uploadedAt:
+          uploadedAt == null && nullToAbsent
+              ? const Value.absent()
+              : Value(uploadedAt),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory Parcel.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Parcel(
+      clientId: serializer.fromJson<String>(json['clientId']),
+      serverId: serializer.fromJson<int?>(json['serverId']),
+      parcelNumber: serializer.fromJson<String?>(json['parcelNumber']),
+      applicationId: serializer.fromJson<String>(json['applicationId']),
+      zoneId: serializer.fromJson<int>(json['zoneId']),
+      localityId: serializer.fromJson<int>(json['localityId']),
+      hamletId: serializer.fromJson<int?>(json['hamletId']),
+      geomJson: serializer.fromJson<String>(json['geomJson']),
+      geometryType: serializer.fromJson<String?>(json['geometryType']),
+      areaSqm: serializer.fromJson<double?>(json['areaSqm']),
+      north: serializer.fromJson<String?>(json['north']),
+      south: serializer.fromJson<String?>(json['south']),
+      east: serializer.fromJson<String?>(json['east']),
+      west: serializer.fromJson<String?>(json['west']),
+      occupancyType: serializer.fromJson<int?>(json['occupancyType']),
+      stage: serializer.fromJson<String>(json['stage']),
+      hasConflicts: serializer.fromJson<bool>(json['hasConflicts']),
+      uploaded: serializer.fromJson<bool>(json['uploaded']),
+      uploadedAt: serializer.fromJson<int?>(json['uploadedAt']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'clientId': serializer.toJson<String>(clientId),
+      'serverId': serializer.toJson<int?>(serverId),
+      'parcelNumber': serializer.toJson<String?>(parcelNumber),
+      'applicationId': serializer.toJson<String>(applicationId),
+      'zoneId': serializer.toJson<int>(zoneId),
+      'localityId': serializer.toJson<int>(localityId),
+      'hamletId': serializer.toJson<int?>(hamletId),
+      'geomJson': serializer.toJson<String>(geomJson),
+      'geometryType': serializer.toJson<String?>(geometryType),
+      'areaSqm': serializer.toJson<double?>(areaSqm),
+      'north': serializer.toJson<String?>(north),
+      'south': serializer.toJson<String?>(south),
+      'east': serializer.toJson<String?>(east),
+      'west': serializer.toJson<String?>(west),
+      'occupancyType': serializer.toJson<int?>(occupancyType),
+      'stage': serializer.toJson<String>(stage),
+      'hasConflicts': serializer.toJson<bool>(hasConflicts),
+      'uploaded': serializer.toJson<bool>(uploaded),
+      'uploadedAt': serializer.toJson<int?>(uploadedAt),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+    };
+  }
+
+  Parcel copyWith({
+    String? clientId,
+    Value<int?> serverId = const Value.absent(),
+    Value<String?> parcelNumber = const Value.absent(),
+    String? applicationId,
+    int? zoneId,
+    int? localityId,
+    Value<int?> hamletId = const Value.absent(),
+    String? geomJson,
+    Value<String?> geometryType = const Value.absent(),
+    Value<double?> areaSqm = const Value.absent(),
+    Value<String?> north = const Value.absent(),
+    Value<String?> south = const Value.absent(),
+    Value<String?> east = const Value.absent(),
+    Value<String?> west = const Value.absent(),
+    Value<int?> occupancyType = const Value.absent(),
+    String? stage,
+    bool? hasConflicts,
+    bool? uploaded,
+    Value<int?> uploadedAt = const Value.absent(),
+    int? createdAt,
+    int? updatedAt,
+  }) => Parcel(
+    clientId: clientId ?? this.clientId,
+    serverId: serverId.present ? serverId.value : this.serverId,
+    parcelNumber: parcelNumber.present ? parcelNumber.value : this.parcelNumber,
+    applicationId: applicationId ?? this.applicationId,
+    zoneId: zoneId ?? this.zoneId,
+    localityId: localityId ?? this.localityId,
+    hamletId: hamletId.present ? hamletId.value : this.hamletId,
+    geomJson: geomJson ?? this.geomJson,
+    geometryType: geometryType.present ? geometryType.value : this.geometryType,
+    areaSqm: areaSqm.present ? areaSqm.value : this.areaSqm,
+    north: north.present ? north.value : this.north,
+    south: south.present ? south.value : this.south,
+    east: east.present ? east.value : this.east,
+    west: west.present ? west.value : this.west,
+    occupancyType:
+        occupancyType.present ? occupancyType.value : this.occupancyType,
+    stage: stage ?? this.stage,
+    hasConflicts: hasConflicts ?? this.hasConflicts,
+    uploaded: uploaded ?? this.uploaded,
+    uploadedAt: uploadedAt.present ? uploadedAt.value : this.uploadedAt,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  Parcel copyWithCompanion(ParcelsCompanion data) {
+    return Parcel(
+      clientId: data.clientId.present ? data.clientId.value : this.clientId,
+      serverId: data.serverId.present ? data.serverId.value : this.serverId,
+      parcelNumber:
+          data.parcelNumber.present
+              ? data.parcelNumber.value
+              : this.parcelNumber,
+      applicationId:
+          data.applicationId.present
+              ? data.applicationId.value
+              : this.applicationId,
+      zoneId: data.zoneId.present ? data.zoneId.value : this.zoneId,
+      localityId:
+          data.localityId.present ? data.localityId.value : this.localityId,
+      hamletId: data.hamletId.present ? data.hamletId.value : this.hamletId,
+      geomJson: data.geomJson.present ? data.geomJson.value : this.geomJson,
+      geometryType:
+          data.geometryType.present
+              ? data.geometryType.value
+              : this.geometryType,
+      areaSqm: data.areaSqm.present ? data.areaSqm.value : this.areaSqm,
+      north: data.north.present ? data.north.value : this.north,
+      south: data.south.present ? data.south.value : this.south,
+      east: data.east.present ? data.east.value : this.east,
+      west: data.west.present ? data.west.value : this.west,
+      occupancyType:
+          data.occupancyType.present
+              ? data.occupancyType.value
+              : this.occupancyType,
+      stage: data.stage.present ? data.stage.value : this.stage,
+      hasConflicts:
+          data.hasConflicts.present
+              ? data.hasConflicts.value
+              : this.hasConflicts,
+      uploaded: data.uploaded.present ? data.uploaded.value : this.uploaded,
+      uploadedAt:
+          data.uploadedAt.present ? data.uploadedAt.value : this.uploadedAt,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Parcel(')
+          ..write('clientId: $clientId, ')
+          ..write('serverId: $serverId, ')
+          ..write('parcelNumber: $parcelNumber, ')
+          ..write('applicationId: $applicationId, ')
+          ..write('zoneId: $zoneId, ')
+          ..write('localityId: $localityId, ')
+          ..write('hamletId: $hamletId, ')
+          ..write('geomJson: $geomJson, ')
+          ..write('geometryType: $geometryType, ')
+          ..write('areaSqm: $areaSqm, ')
+          ..write('north: $north, ')
+          ..write('south: $south, ')
+          ..write('east: $east, ')
+          ..write('west: $west, ')
+          ..write('occupancyType: $occupancyType, ')
+          ..write('stage: $stage, ')
+          ..write('hasConflicts: $hasConflicts, ')
+          ..write('uploaded: $uploaded, ')
+          ..write('uploadedAt: $uploadedAt, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hashAll([
+    clientId,
+    serverId,
+    parcelNumber,
+    applicationId,
+    zoneId,
+    localityId,
+    hamletId,
+    geomJson,
+    geometryType,
+    areaSqm,
+    north,
+    south,
+    east,
+    west,
+    occupancyType,
+    stage,
+    hasConflicts,
+    uploaded,
+    uploadedAt,
+    createdAt,
+    updatedAt,
+  ]);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Parcel &&
+          other.clientId == this.clientId &&
+          other.serverId == this.serverId &&
+          other.parcelNumber == this.parcelNumber &&
+          other.applicationId == this.applicationId &&
+          other.zoneId == this.zoneId &&
+          other.localityId == this.localityId &&
+          other.hamletId == this.hamletId &&
+          other.geomJson == this.geomJson &&
+          other.geometryType == this.geometryType &&
+          other.areaSqm == this.areaSqm &&
+          other.north == this.north &&
+          other.south == this.south &&
+          other.east == this.east &&
+          other.west == this.west &&
+          other.occupancyType == this.occupancyType &&
+          other.stage == this.stage &&
+          other.hasConflicts == this.hasConflicts &&
+          other.uploaded == this.uploaded &&
+          other.uploadedAt == this.uploadedAt &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class ParcelsCompanion extends UpdateCompanion<Parcel> {
+  final Value<String> clientId;
+  final Value<int?> serverId;
+  final Value<String?> parcelNumber;
+  final Value<String> applicationId;
+  final Value<int> zoneId;
+  final Value<int> localityId;
+  final Value<int?> hamletId;
+  final Value<String> geomJson;
+  final Value<String?> geometryType;
+  final Value<double?> areaSqm;
+  final Value<String?> north;
+  final Value<String?> south;
+  final Value<String?> east;
+  final Value<String?> west;
+  final Value<int?> occupancyType;
+  final Value<String> stage;
+  final Value<bool> hasConflicts;
+  final Value<bool> uploaded;
+  final Value<int?> uploadedAt;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int> rowid;
+  const ParcelsCompanion({
+    this.clientId = const Value.absent(),
+    this.serverId = const Value.absent(),
+    this.parcelNumber = const Value.absent(),
+    this.applicationId = const Value.absent(),
+    this.zoneId = const Value.absent(),
+    this.localityId = const Value.absent(),
+    this.hamletId = const Value.absent(),
+    this.geomJson = const Value.absent(),
+    this.geometryType = const Value.absent(),
+    this.areaSqm = const Value.absent(),
+    this.north = const Value.absent(),
+    this.south = const Value.absent(),
+    this.east = const Value.absent(),
+    this.west = const Value.absent(),
+    this.occupancyType = const Value.absent(),
+    this.stage = const Value.absent(),
+    this.hasConflicts = const Value.absent(),
+    this.uploaded = const Value.absent(),
+    this.uploadedAt = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ParcelsCompanion.insert({
+    required String clientId,
+    this.serverId = const Value.absent(),
+    this.parcelNumber = const Value.absent(),
+    required String applicationId,
+    required int zoneId,
+    required int localityId,
+    this.hamletId = const Value.absent(),
+    required String geomJson,
+    this.geometryType = const Value.absent(),
+    this.areaSqm = const Value.absent(),
+    this.north = const Value.absent(),
+    this.south = const Value.absent(),
+    this.east = const Value.absent(),
+    this.west = const Value.absent(),
+    this.occupancyType = const Value.absent(),
+    this.stage = const Value.absent(),
+    this.hasConflicts = const Value.absent(),
+    this.uploaded = const Value.absent(),
+    this.uploadedAt = const Value.absent(),
+    required int createdAt,
+    required int updatedAt,
+    this.rowid = const Value.absent(),
+  }) : clientId = Value(clientId),
+       applicationId = Value(applicationId),
+       zoneId = Value(zoneId),
+       localityId = Value(localityId),
+       geomJson = Value(geomJson),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<Parcel> custom({
+    Expression<String>? clientId,
+    Expression<int>? serverId,
+    Expression<String>? parcelNumber,
+    Expression<String>? applicationId,
+    Expression<int>? zoneId,
+    Expression<int>? localityId,
+    Expression<int>? hamletId,
+    Expression<String>? geomJson,
+    Expression<String>? geometryType,
+    Expression<double>? areaSqm,
+    Expression<String>? north,
+    Expression<String>? south,
+    Expression<String>? east,
+    Expression<String>? west,
+    Expression<int>? occupancyType,
+    Expression<String>? stage,
+    Expression<bool>? hasConflicts,
+    Expression<bool>? uploaded,
+    Expression<int>? uploadedAt,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (clientId != null) 'client_id': clientId,
+      if (serverId != null) 'server_id': serverId,
+      if (parcelNumber != null) 'parcel_number': parcelNumber,
+      if (applicationId != null) 'application_id': applicationId,
+      if (zoneId != null) 'zone_id': zoneId,
+      if (localityId != null) 'locality_id': localityId,
+      if (hamletId != null) 'hamlet_id': hamletId,
+      if (geomJson != null) 'geom_json': geomJson,
+      if (geometryType != null) 'geometry_type': geometryType,
+      if (areaSqm != null) 'area_sqm': areaSqm,
+      if (north != null) 'north': north,
+      if (south != null) 'south': south,
+      if (east != null) 'east': east,
+      if (west != null) 'west': west,
+      if (occupancyType != null) 'occupancy_type': occupancyType,
+      if (stage != null) 'stage': stage,
+      if (hasConflicts != null) 'has_conflicts': hasConflicts,
+      if (uploaded != null) 'uploaded': uploaded,
+      if (uploadedAt != null) 'uploaded_at': uploadedAt,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ParcelsCompanion copyWith({
+    Value<String>? clientId,
+    Value<int?>? serverId,
+    Value<String?>? parcelNumber,
+    Value<String>? applicationId,
+    Value<int>? zoneId,
+    Value<int>? localityId,
+    Value<int?>? hamletId,
+    Value<String>? geomJson,
+    Value<String?>? geometryType,
+    Value<double?>? areaSqm,
+    Value<String?>? north,
+    Value<String?>? south,
+    Value<String?>? east,
+    Value<String?>? west,
+    Value<int?>? occupancyType,
+    Value<String>? stage,
+    Value<bool>? hasConflicts,
+    Value<bool>? uploaded,
+    Value<int?>? uploadedAt,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return ParcelsCompanion(
+      clientId: clientId ?? this.clientId,
+      serverId: serverId ?? this.serverId,
+      parcelNumber: parcelNumber ?? this.parcelNumber,
+      applicationId: applicationId ?? this.applicationId,
+      zoneId: zoneId ?? this.zoneId,
+      localityId: localityId ?? this.localityId,
+      hamletId: hamletId ?? this.hamletId,
+      geomJson: geomJson ?? this.geomJson,
+      geometryType: geometryType ?? this.geometryType,
+      areaSqm: areaSqm ?? this.areaSqm,
+      north: north ?? this.north,
+      south: south ?? this.south,
+      east: east ?? this.east,
+      west: west ?? this.west,
+      occupancyType: occupancyType ?? this.occupancyType,
+      stage: stage ?? this.stage,
+      hasConflicts: hasConflicts ?? this.hasConflicts,
+      uploaded: uploaded ?? this.uploaded,
+      uploadedAt: uploadedAt ?? this.uploadedAt,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (clientId.present) {
+      map['client_id'] = Variable<String>(clientId.value);
+    }
+    if (serverId.present) {
+      map['server_id'] = Variable<int>(serverId.value);
+    }
+    if (parcelNumber.present) {
+      map['parcel_number'] = Variable<String>(parcelNumber.value);
+    }
+    if (applicationId.present) {
+      map['application_id'] = Variable<String>(applicationId.value);
+    }
+    if (zoneId.present) {
+      map['zone_id'] = Variable<int>(zoneId.value);
+    }
+    if (localityId.present) {
+      map['locality_id'] = Variable<int>(localityId.value);
+    }
+    if (hamletId.present) {
+      map['hamlet_id'] = Variable<int>(hamletId.value);
+    }
+    if (geomJson.present) {
+      map['geom_json'] = Variable<String>(geomJson.value);
+    }
+    if (geometryType.present) {
+      map['geometry_type'] = Variable<String>(geometryType.value);
+    }
+    if (areaSqm.present) {
+      map['area_sqm'] = Variable<double>(areaSqm.value);
+    }
+    if (north.present) {
+      map['north'] = Variable<String>(north.value);
+    }
+    if (south.present) {
+      map['south'] = Variable<String>(south.value);
+    }
+    if (east.present) {
+      map['east'] = Variable<String>(east.value);
+    }
+    if (west.present) {
+      map['west'] = Variable<String>(west.value);
+    }
+    if (occupancyType.present) {
+      map['occupancy_type'] = Variable<int>(occupancyType.value);
+    }
+    if (stage.present) {
+      map['stage'] = Variable<String>(stage.value);
+    }
+    if (hasConflicts.present) {
+      map['has_conflicts'] = Variable<bool>(hasConflicts.value);
+    }
+    if (uploaded.present) {
+      map['uploaded'] = Variable<bool>(uploaded.value);
+    }
+    if (uploadedAt.present) {
+      map['uploaded_at'] = Variable<int>(uploadedAt.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ParcelsCompanion(')
+          ..write('clientId: $clientId, ')
+          ..write('serverId: $serverId, ')
+          ..write('parcelNumber: $parcelNumber, ')
+          ..write('applicationId: $applicationId, ')
+          ..write('zoneId: $zoneId, ')
+          ..write('localityId: $localityId, ')
+          ..write('hamletId: $hamletId, ')
+          ..write('geomJson: $geomJson, ')
+          ..write('geometryType: $geometryType, ')
+          ..write('areaSqm: $areaSqm, ')
+          ..write('north: $north, ')
+          ..write('south: $south, ')
+          ..write('east: $east, ')
+          ..write('west: $west, ')
+          ..write('occupancyType: $occupancyType, ')
+          ..write('stage: $stage, ')
+          ..write('hasConflicts: $hasConflicts, ')
+          ..write('uploaded: $uploaded, ')
+          ..write('uploadedAt: $uploadedAt, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ParcelDraftsTable extends ParcelDrafts
+    with TableInfo<$ParcelDraftsTable, ParcelDraftData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ParcelDraftsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _clientIdMeta = const VerificationMeta(
+    'clientId',
+  );
+  @override
+  late final GeneratedColumn<String> clientId = GeneratedColumn<String>(
+    'client_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _applicationIdMeta = const VerificationMeta(
+    'applicationId',
+  );
+  @override
+  late final GeneratedColumn<String> applicationId = GeneratedColumn<String>(
+    'application_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _zoneIdMeta = const VerificationMeta('zoneId');
+  @override
+  late final GeneratedColumn<int> zoneId = GeneratedColumn<int>(
+    'zone_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _localityIdMeta = const VerificationMeta(
+    'localityId',
+  );
+  @override
+  late final GeneratedColumn<int> localityId = GeneratedColumn<int>(
+    'locality_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _coordsJsonMeta = const VerificationMeta(
+    'coordsJson',
+  );
+  @override
+  late final GeneratedColumn<String> coordsJson = GeneratedColumn<String>(
+    'coords_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _inputMethodMeta = const VerificationMeta(
+    'inputMethod',
+  );
+  @override
+  late final GeneratedColumn<String> inputMethod = GeneratedColumn<String>(
+    'input_method',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('tapping'),
+  );
+  static const VerificationMeta _areaSqmMeta = const VerificationMeta(
+    'areaSqm',
+  );
+  @override
+  late final GeneratedColumn<double> areaSqm = GeneratedColumn<double>(
+    'area_sqm',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    clientId,
+    applicationId,
+    zoneId,
+    localityId,
+    coordsJson,
+    inputMethod,
+    areaSqm,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'parcel_drafts';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ParcelDraftData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('client_id')) {
+      context.handle(
+        _clientIdMeta,
+        clientId.isAcceptableOrUnknown(data['client_id']!, _clientIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_clientIdMeta);
+    }
+    if (data.containsKey('application_id')) {
+      context.handle(
+        _applicationIdMeta,
+        applicationId.isAcceptableOrUnknown(
+          data['application_id']!,
+          _applicationIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_applicationIdMeta);
+    }
+    if (data.containsKey('zone_id')) {
+      context.handle(
+        _zoneIdMeta,
+        zoneId.isAcceptableOrUnknown(data['zone_id']!, _zoneIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_zoneIdMeta);
+    }
+    if (data.containsKey('locality_id')) {
+      context.handle(
+        _localityIdMeta,
+        localityId.isAcceptableOrUnknown(data['locality_id']!, _localityIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_localityIdMeta);
+    }
+    if (data.containsKey('coords_json')) {
+      context.handle(
+        _coordsJsonMeta,
+        coordsJson.isAcceptableOrUnknown(data['coords_json']!, _coordsJsonMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_coordsJsonMeta);
+    }
+    if (data.containsKey('input_method')) {
+      context.handle(
+        _inputMethodMeta,
+        inputMethod.isAcceptableOrUnknown(
+          data['input_method']!,
+          _inputMethodMeta,
+        ),
+      );
+    }
+    if (data.containsKey('area_sqm')) {
+      context.handle(
+        _areaSqmMeta,
+        areaSqm.isAcceptableOrUnknown(data['area_sqm']!, _areaSqmMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {clientId};
+  @override
+  ParcelDraftData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ParcelDraftData(
+      clientId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}client_id'],
+          )!,
+      applicationId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}application_id'],
+          )!,
+      zoneId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}zone_id'],
+          )!,
+      localityId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}locality_id'],
+          )!,
+      coordsJson:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}coords_json'],
+          )!,
+      inputMethod:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}input_method'],
+          )!,
+      areaSqm: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}area_sqm'],
+      ),
+      createdAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}created_at'],
+          )!,
+      updatedAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}updated_at'],
+          )!,
+    );
+  }
+
+  @override
+  $ParcelDraftsTable createAlias(String alias) {
+    return $ParcelDraftsTable(attachedDatabase, alias);
+  }
+}
+
+class ParcelDraftData extends DataClass implements Insertable<ParcelDraftData> {
+  final String clientId;
+  final String applicationId;
+  final int zoneId;
+  final int localityId;
+  final String coordsJson;
+  final String inputMethod;
+  final double? areaSqm;
+  final int createdAt;
+  final int updatedAt;
+  const ParcelDraftData({
+    required this.clientId,
+    required this.applicationId,
+    required this.zoneId,
+    required this.localityId,
+    required this.coordsJson,
+    required this.inputMethod,
+    this.areaSqm,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['client_id'] = Variable<String>(clientId);
+    map['application_id'] = Variable<String>(applicationId);
+    map['zone_id'] = Variable<int>(zoneId);
+    map['locality_id'] = Variable<int>(localityId);
+    map['coords_json'] = Variable<String>(coordsJson);
+    map['input_method'] = Variable<String>(inputMethod);
+    if (!nullToAbsent || areaSqm != null) {
+      map['area_sqm'] = Variable<double>(areaSqm);
+    }
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
+    return map;
+  }
+
+  ParcelDraftsCompanion toCompanion(bool nullToAbsent) {
+    return ParcelDraftsCompanion(
+      clientId: Value(clientId),
+      applicationId: Value(applicationId),
+      zoneId: Value(zoneId),
+      localityId: Value(localityId),
+      coordsJson: Value(coordsJson),
+      inputMethod: Value(inputMethod),
+      areaSqm:
+          areaSqm == null && nullToAbsent
+              ? const Value.absent()
+              : Value(areaSqm),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory ParcelDraftData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ParcelDraftData(
+      clientId: serializer.fromJson<String>(json['clientId']),
+      applicationId: serializer.fromJson<String>(json['applicationId']),
+      zoneId: serializer.fromJson<int>(json['zoneId']),
+      localityId: serializer.fromJson<int>(json['localityId']),
+      coordsJson: serializer.fromJson<String>(json['coordsJson']),
+      inputMethod: serializer.fromJson<String>(json['inputMethod']),
+      areaSqm: serializer.fromJson<double?>(json['areaSqm']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'clientId': serializer.toJson<String>(clientId),
+      'applicationId': serializer.toJson<String>(applicationId),
+      'zoneId': serializer.toJson<int>(zoneId),
+      'localityId': serializer.toJson<int>(localityId),
+      'coordsJson': serializer.toJson<String>(coordsJson),
+      'inputMethod': serializer.toJson<String>(inputMethod),
+      'areaSqm': serializer.toJson<double?>(areaSqm),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+    };
+  }
+
+  ParcelDraftData copyWith({
+    String? clientId,
+    String? applicationId,
+    int? zoneId,
+    int? localityId,
+    String? coordsJson,
+    String? inputMethod,
+    Value<double?> areaSqm = const Value.absent(),
+    int? createdAt,
+    int? updatedAt,
+  }) => ParcelDraftData(
+    clientId: clientId ?? this.clientId,
+    applicationId: applicationId ?? this.applicationId,
+    zoneId: zoneId ?? this.zoneId,
+    localityId: localityId ?? this.localityId,
+    coordsJson: coordsJson ?? this.coordsJson,
+    inputMethod: inputMethod ?? this.inputMethod,
+    areaSqm: areaSqm.present ? areaSqm.value : this.areaSqm,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  ParcelDraftData copyWithCompanion(ParcelDraftsCompanion data) {
+    return ParcelDraftData(
+      clientId: data.clientId.present ? data.clientId.value : this.clientId,
+      applicationId:
+          data.applicationId.present
+              ? data.applicationId.value
+              : this.applicationId,
+      zoneId: data.zoneId.present ? data.zoneId.value : this.zoneId,
+      localityId:
+          data.localityId.present ? data.localityId.value : this.localityId,
+      coordsJson:
+          data.coordsJson.present ? data.coordsJson.value : this.coordsJson,
+      inputMethod:
+          data.inputMethod.present ? data.inputMethod.value : this.inputMethod,
+      areaSqm: data.areaSqm.present ? data.areaSqm.value : this.areaSqm,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ParcelDraftData(')
+          ..write('clientId: $clientId, ')
+          ..write('applicationId: $applicationId, ')
+          ..write('zoneId: $zoneId, ')
+          ..write('localityId: $localityId, ')
+          ..write('coordsJson: $coordsJson, ')
+          ..write('inputMethod: $inputMethod, ')
+          ..write('areaSqm: $areaSqm, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    clientId,
+    applicationId,
+    zoneId,
+    localityId,
+    coordsJson,
+    inputMethod,
+    areaSqm,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ParcelDraftData &&
+          other.clientId == this.clientId &&
+          other.applicationId == this.applicationId &&
+          other.zoneId == this.zoneId &&
+          other.localityId == this.localityId &&
+          other.coordsJson == this.coordsJson &&
+          other.inputMethod == this.inputMethod &&
+          other.areaSqm == this.areaSqm &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class ParcelDraftsCompanion extends UpdateCompanion<ParcelDraftData> {
+  final Value<String> clientId;
+  final Value<String> applicationId;
+  final Value<int> zoneId;
+  final Value<int> localityId;
+  final Value<String> coordsJson;
+  final Value<String> inputMethod;
+  final Value<double?> areaSqm;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int> rowid;
+  const ParcelDraftsCompanion({
+    this.clientId = const Value.absent(),
+    this.applicationId = const Value.absent(),
+    this.zoneId = const Value.absent(),
+    this.localityId = const Value.absent(),
+    this.coordsJson = const Value.absent(),
+    this.inputMethod = const Value.absent(),
+    this.areaSqm = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ParcelDraftsCompanion.insert({
+    required String clientId,
+    required String applicationId,
+    required int zoneId,
+    required int localityId,
+    required String coordsJson,
+    this.inputMethod = const Value.absent(),
+    this.areaSqm = const Value.absent(),
+    required int createdAt,
+    required int updatedAt,
+    this.rowid = const Value.absent(),
+  }) : clientId = Value(clientId),
+       applicationId = Value(applicationId),
+       zoneId = Value(zoneId),
+       localityId = Value(localityId),
+       coordsJson = Value(coordsJson),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<ParcelDraftData> custom({
+    Expression<String>? clientId,
+    Expression<String>? applicationId,
+    Expression<int>? zoneId,
+    Expression<int>? localityId,
+    Expression<String>? coordsJson,
+    Expression<String>? inputMethod,
+    Expression<double>? areaSqm,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (clientId != null) 'client_id': clientId,
+      if (applicationId != null) 'application_id': applicationId,
+      if (zoneId != null) 'zone_id': zoneId,
+      if (localityId != null) 'locality_id': localityId,
+      if (coordsJson != null) 'coords_json': coordsJson,
+      if (inputMethod != null) 'input_method': inputMethod,
+      if (areaSqm != null) 'area_sqm': areaSqm,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ParcelDraftsCompanion copyWith({
+    Value<String>? clientId,
+    Value<String>? applicationId,
+    Value<int>? zoneId,
+    Value<int>? localityId,
+    Value<String>? coordsJson,
+    Value<String>? inputMethod,
+    Value<double?>? areaSqm,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return ParcelDraftsCompanion(
+      clientId: clientId ?? this.clientId,
+      applicationId: applicationId ?? this.applicationId,
+      zoneId: zoneId ?? this.zoneId,
+      localityId: localityId ?? this.localityId,
+      coordsJson: coordsJson ?? this.coordsJson,
+      inputMethod: inputMethod ?? this.inputMethod,
+      areaSqm: areaSqm ?? this.areaSqm,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (clientId.present) {
+      map['client_id'] = Variable<String>(clientId.value);
+    }
+    if (applicationId.present) {
+      map['application_id'] = Variable<String>(applicationId.value);
+    }
+    if (zoneId.present) {
+      map['zone_id'] = Variable<int>(zoneId.value);
+    }
+    if (localityId.present) {
+      map['locality_id'] = Variable<int>(localityId.value);
+    }
+    if (coordsJson.present) {
+      map['coords_json'] = Variable<String>(coordsJson.value);
+    }
+    if (inputMethod.present) {
+      map['input_method'] = Variable<String>(inputMethod.value);
+    }
+    if (areaSqm.present) {
+      map['area_sqm'] = Variable<double>(areaSqm.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ParcelDraftsCompanion(')
+          ..write('clientId: $clientId, ')
+          ..write('applicationId: $applicationId, ')
+          ..write('zoneId: $zoneId, ')
+          ..write('localityId: $localityId, ')
+          ..write('coordsJson: $coordsJson, ')
+          ..write('inputMethod: $inputMethod, ')
+          ..write('areaSqm: $areaSqm, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $AllocationsTable extends Allocations
+    with TableInfo<$AllocationsTable, Allocation> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AllocationsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _clientIdMeta = const VerificationMeta(
+    'clientId',
+  );
+  @override
+  late final GeneratedColumn<String> clientId = GeneratedColumn<String>(
+    'client_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _serverIdMeta = const VerificationMeta(
+    'serverId',
+  );
+  @override
+  late final GeneratedColumn<int> serverId = GeneratedColumn<int>(
+    'server_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _parcelIdMeta = const VerificationMeta(
+    'parcelId',
+  );
+  @override
+  late final GeneratedColumn<String> parcelId = GeneratedColumn<String>(
+    'parcel_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _partyIdMeta = const VerificationMeta(
+    'partyId',
+  );
+  @override
+  late final GeneratedColumn<String> partyId = GeneratedColumn<String>(
+    'party_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _partyNameMeta = const VerificationMeta(
+    'partyName',
+  );
+  @override
+  late final GeneratedColumn<String> partyName = GeneratedColumn<String>(
+    'party_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _phoneNumberMeta = const VerificationMeta(
+    'phoneNumber',
+  );
+  @override
+  late final GeneratedColumn<String> phoneNumber = GeneratedColumn<String>(
+    'phone_number',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _nidaNumberMeta = const VerificationMeta(
+    'nidaNumber',
+  );
+  @override
+  late final GeneratedColumn<String> nidaNumber = GeneratedColumn<String>(
+    'nida_number',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _proposedShareMeta = const VerificationMeta(
+    'proposedShare',
+  );
+  @override
+  late final GeneratedColumn<double> proposedShare = GeneratedColumn<double>(
+    'proposed_share',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _proposedRightTypeMeta = const VerificationMeta(
+    'proposedRightType',
+  );
+  @override
+  late final GeneratedColumn<String> proposedRightType =
+      GeneratedColumn<String>(
+        'proposed_right_type',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('customary'),
+      );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('proposed'),
+  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _uploadedMeta = const VerificationMeta(
+    'uploaded',
+  );
+  @override
+  late final GeneratedColumn<bool> uploaded = GeneratedColumn<bool>(
+    'uploaded',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("uploaded" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _uploadedAtMeta = const VerificationMeta(
+    'uploadedAt',
+  );
+  @override
+  late final GeneratedColumn<int> uploadedAt = GeneratedColumn<int>(
+    'uploaded_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    clientId,
+    serverId,
+    parcelId,
+    partyId,
+    partyName,
+    phoneNumber,
+    nidaNumber,
+    proposedShare,
+    proposedRightType,
+    status,
+    notes,
+    uploaded,
+    uploadedAt,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'allocations';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Allocation> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('client_id')) {
+      context.handle(
+        _clientIdMeta,
+        clientId.isAcceptableOrUnknown(data['client_id']!, _clientIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_clientIdMeta);
+    }
+    if (data.containsKey('server_id')) {
+      context.handle(
+        _serverIdMeta,
+        serverId.isAcceptableOrUnknown(data['server_id']!, _serverIdMeta),
+      );
+    }
+    if (data.containsKey('parcel_id')) {
+      context.handle(
+        _parcelIdMeta,
+        parcelId.isAcceptableOrUnknown(data['parcel_id']!, _parcelIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_parcelIdMeta);
+    }
+    if (data.containsKey('party_id')) {
+      context.handle(
+        _partyIdMeta,
+        partyId.isAcceptableOrUnknown(data['party_id']!, _partyIdMeta),
+      );
+    }
+    if (data.containsKey('party_name')) {
+      context.handle(
+        _partyNameMeta,
+        partyName.isAcceptableOrUnknown(data['party_name']!, _partyNameMeta),
+      );
+    }
+    if (data.containsKey('phone_number')) {
+      context.handle(
+        _phoneNumberMeta,
+        phoneNumber.isAcceptableOrUnknown(
+          data['phone_number']!,
+          _phoneNumberMeta,
+        ),
+      );
+    }
+    if (data.containsKey('nida_number')) {
+      context.handle(
+        _nidaNumberMeta,
+        nidaNumber.isAcceptableOrUnknown(data['nida_number']!, _nidaNumberMeta),
+      );
+    }
+    if (data.containsKey('proposed_share')) {
+      context.handle(
+        _proposedShareMeta,
+        proposedShare.isAcceptableOrUnknown(
+          data['proposed_share']!,
+          _proposedShareMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_proposedShareMeta);
+    }
+    if (data.containsKey('proposed_right_type')) {
+      context.handle(
+        _proposedRightTypeMeta,
+        proposedRightType.isAcceptableOrUnknown(
+          data['proposed_right_type']!,
+          _proposedRightTypeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    }
+    if (data.containsKey('uploaded')) {
+      context.handle(
+        _uploadedMeta,
+        uploaded.isAcceptableOrUnknown(data['uploaded']!, _uploadedMeta),
+      );
+    }
+    if (data.containsKey('uploaded_at')) {
+      context.handle(
+        _uploadedAtMeta,
+        uploadedAt.isAcceptableOrUnknown(data['uploaded_at']!, _uploadedAtMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {clientId};
+  @override
+  Allocation map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Allocation(
+      clientId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}client_id'],
+          )!,
+      serverId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}server_id'],
+      ),
+      parcelId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}parcel_id'],
+          )!,
+      partyId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}party_id'],
+      ),
+      partyName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}party_name'],
+      ),
+      phoneNumber: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}phone_number'],
+      ),
+      nidaNumber: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}nida_number'],
+      ),
+      proposedShare:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.double,
+            data['${effectivePrefix}proposed_share'],
+          )!,
+      proposedRightType:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}proposed_right_type'],
+          )!,
+      status:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}status'],
+          )!,
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      ),
+      uploaded:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}uploaded'],
+          )!,
+      uploadedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}uploaded_at'],
+      ),
+      createdAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}created_at'],
+          )!,
+      updatedAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}updated_at'],
+          )!,
+    );
+  }
+
+  @override
+  $AllocationsTable createAlias(String alias) {
+    return $AllocationsTable(attachedDatabase, alias);
+  }
+}
+
+class Allocation extends DataClass implements Insertable<Allocation> {
+  final String clientId;
+  final int? serverId;
+  final String parcelId;
+  final String? partyId;
+  final String? partyName;
+  final String? phoneNumber;
+  final String? nidaNumber;
+  final double proposedShare;
+  final String proposedRightType;
+  final String status;
+  final String? notes;
+  final bool uploaded;
+  final int? uploadedAt;
+  final int createdAt;
+  final int updatedAt;
+  const Allocation({
+    required this.clientId,
+    this.serverId,
+    required this.parcelId,
+    this.partyId,
+    this.partyName,
+    this.phoneNumber,
+    this.nidaNumber,
+    required this.proposedShare,
+    required this.proposedRightType,
+    required this.status,
+    this.notes,
+    required this.uploaded,
+    this.uploadedAt,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['client_id'] = Variable<String>(clientId);
+    if (!nullToAbsent || serverId != null) {
+      map['server_id'] = Variable<int>(serverId);
+    }
+    map['parcel_id'] = Variable<String>(parcelId);
+    if (!nullToAbsent || partyId != null) {
+      map['party_id'] = Variable<String>(partyId);
+    }
+    if (!nullToAbsent || partyName != null) {
+      map['party_name'] = Variable<String>(partyName);
+    }
+    if (!nullToAbsent || phoneNumber != null) {
+      map['phone_number'] = Variable<String>(phoneNumber);
+    }
+    if (!nullToAbsent || nidaNumber != null) {
+      map['nida_number'] = Variable<String>(nidaNumber);
+    }
+    map['proposed_share'] = Variable<double>(proposedShare);
+    map['proposed_right_type'] = Variable<String>(proposedRightType);
+    map['status'] = Variable<String>(status);
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    map['uploaded'] = Variable<bool>(uploaded);
+    if (!nullToAbsent || uploadedAt != null) {
+      map['uploaded_at'] = Variable<int>(uploadedAt);
+    }
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
+    return map;
+  }
+
+  AllocationsCompanion toCompanion(bool nullToAbsent) {
+    return AllocationsCompanion(
+      clientId: Value(clientId),
+      serverId:
+          serverId == null && nullToAbsent
+              ? const Value.absent()
+              : Value(serverId),
+      parcelId: Value(parcelId),
+      partyId:
+          partyId == null && nullToAbsent
+              ? const Value.absent()
+              : Value(partyId),
+      partyName:
+          partyName == null && nullToAbsent
+              ? const Value.absent()
+              : Value(partyName),
+      phoneNumber:
+          phoneNumber == null && nullToAbsent
+              ? const Value.absent()
+              : Value(phoneNumber),
+      nidaNumber:
+          nidaNumber == null && nullToAbsent
+              ? const Value.absent()
+              : Value(nidaNumber),
+      proposedShare: Value(proposedShare),
+      proposedRightType: Value(proposedRightType),
+      status: Value(status),
+      notes:
+          notes == null && nullToAbsent ? const Value.absent() : Value(notes),
+      uploaded: Value(uploaded),
+      uploadedAt:
+          uploadedAt == null && nullToAbsent
+              ? const Value.absent()
+              : Value(uploadedAt),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory Allocation.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Allocation(
+      clientId: serializer.fromJson<String>(json['clientId']),
+      serverId: serializer.fromJson<int?>(json['serverId']),
+      parcelId: serializer.fromJson<String>(json['parcelId']),
+      partyId: serializer.fromJson<String?>(json['partyId']),
+      partyName: serializer.fromJson<String?>(json['partyName']),
+      phoneNumber: serializer.fromJson<String?>(json['phoneNumber']),
+      nidaNumber: serializer.fromJson<String?>(json['nidaNumber']),
+      proposedShare: serializer.fromJson<double>(json['proposedShare']),
+      proposedRightType: serializer.fromJson<String>(json['proposedRightType']),
+      status: serializer.fromJson<String>(json['status']),
+      notes: serializer.fromJson<String?>(json['notes']),
+      uploaded: serializer.fromJson<bool>(json['uploaded']),
+      uploadedAt: serializer.fromJson<int?>(json['uploadedAt']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'clientId': serializer.toJson<String>(clientId),
+      'serverId': serializer.toJson<int?>(serverId),
+      'parcelId': serializer.toJson<String>(parcelId),
+      'partyId': serializer.toJson<String?>(partyId),
+      'partyName': serializer.toJson<String?>(partyName),
+      'phoneNumber': serializer.toJson<String?>(phoneNumber),
+      'nidaNumber': serializer.toJson<String?>(nidaNumber),
+      'proposedShare': serializer.toJson<double>(proposedShare),
+      'proposedRightType': serializer.toJson<String>(proposedRightType),
+      'status': serializer.toJson<String>(status),
+      'notes': serializer.toJson<String?>(notes),
+      'uploaded': serializer.toJson<bool>(uploaded),
+      'uploadedAt': serializer.toJson<int?>(uploadedAt),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+    };
+  }
+
+  Allocation copyWith({
+    String? clientId,
+    Value<int?> serverId = const Value.absent(),
+    String? parcelId,
+    Value<String?> partyId = const Value.absent(),
+    Value<String?> partyName = const Value.absent(),
+    Value<String?> phoneNumber = const Value.absent(),
+    Value<String?> nidaNumber = const Value.absent(),
+    double? proposedShare,
+    String? proposedRightType,
+    String? status,
+    Value<String?> notes = const Value.absent(),
+    bool? uploaded,
+    Value<int?> uploadedAt = const Value.absent(),
+    int? createdAt,
+    int? updatedAt,
+  }) => Allocation(
+    clientId: clientId ?? this.clientId,
+    serverId: serverId.present ? serverId.value : this.serverId,
+    parcelId: parcelId ?? this.parcelId,
+    partyId: partyId.present ? partyId.value : this.partyId,
+    partyName: partyName.present ? partyName.value : this.partyName,
+    phoneNumber: phoneNumber.present ? phoneNumber.value : this.phoneNumber,
+    nidaNumber: nidaNumber.present ? nidaNumber.value : this.nidaNumber,
+    proposedShare: proposedShare ?? this.proposedShare,
+    proposedRightType: proposedRightType ?? this.proposedRightType,
+    status: status ?? this.status,
+    notes: notes.present ? notes.value : this.notes,
+    uploaded: uploaded ?? this.uploaded,
+    uploadedAt: uploadedAt.present ? uploadedAt.value : this.uploadedAt,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  Allocation copyWithCompanion(AllocationsCompanion data) {
+    return Allocation(
+      clientId: data.clientId.present ? data.clientId.value : this.clientId,
+      serverId: data.serverId.present ? data.serverId.value : this.serverId,
+      parcelId: data.parcelId.present ? data.parcelId.value : this.parcelId,
+      partyId: data.partyId.present ? data.partyId.value : this.partyId,
+      partyName: data.partyName.present ? data.partyName.value : this.partyName,
+      phoneNumber:
+          data.phoneNumber.present ? data.phoneNumber.value : this.phoneNumber,
+      nidaNumber:
+          data.nidaNumber.present ? data.nidaNumber.value : this.nidaNumber,
+      proposedShare:
+          data.proposedShare.present
+              ? data.proposedShare.value
+              : this.proposedShare,
+      proposedRightType:
+          data.proposedRightType.present
+              ? data.proposedRightType.value
+              : this.proposedRightType,
+      status: data.status.present ? data.status.value : this.status,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      uploaded: data.uploaded.present ? data.uploaded.value : this.uploaded,
+      uploadedAt:
+          data.uploadedAt.present ? data.uploadedAt.value : this.uploadedAt,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Allocation(')
+          ..write('clientId: $clientId, ')
+          ..write('serverId: $serverId, ')
+          ..write('parcelId: $parcelId, ')
+          ..write('partyId: $partyId, ')
+          ..write('partyName: $partyName, ')
+          ..write('phoneNumber: $phoneNumber, ')
+          ..write('nidaNumber: $nidaNumber, ')
+          ..write('proposedShare: $proposedShare, ')
+          ..write('proposedRightType: $proposedRightType, ')
+          ..write('status: $status, ')
+          ..write('notes: $notes, ')
+          ..write('uploaded: $uploaded, ')
+          ..write('uploadedAt: $uploadedAt, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    clientId,
+    serverId,
+    parcelId,
+    partyId,
+    partyName,
+    phoneNumber,
+    nidaNumber,
+    proposedShare,
+    proposedRightType,
+    status,
+    notes,
+    uploaded,
+    uploadedAt,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Allocation &&
+          other.clientId == this.clientId &&
+          other.serverId == this.serverId &&
+          other.parcelId == this.parcelId &&
+          other.partyId == this.partyId &&
+          other.partyName == this.partyName &&
+          other.phoneNumber == this.phoneNumber &&
+          other.nidaNumber == this.nidaNumber &&
+          other.proposedShare == this.proposedShare &&
+          other.proposedRightType == this.proposedRightType &&
+          other.status == this.status &&
+          other.notes == this.notes &&
+          other.uploaded == this.uploaded &&
+          other.uploadedAt == this.uploadedAt &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class AllocationsCompanion extends UpdateCompanion<Allocation> {
+  final Value<String> clientId;
+  final Value<int?> serverId;
+  final Value<String> parcelId;
+  final Value<String?> partyId;
+  final Value<String?> partyName;
+  final Value<String?> phoneNumber;
+  final Value<String?> nidaNumber;
+  final Value<double> proposedShare;
+  final Value<String> proposedRightType;
+  final Value<String> status;
+  final Value<String?> notes;
+  final Value<bool> uploaded;
+  final Value<int?> uploadedAt;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int> rowid;
+  const AllocationsCompanion({
+    this.clientId = const Value.absent(),
+    this.serverId = const Value.absent(),
+    this.parcelId = const Value.absent(),
+    this.partyId = const Value.absent(),
+    this.partyName = const Value.absent(),
+    this.phoneNumber = const Value.absent(),
+    this.nidaNumber = const Value.absent(),
+    this.proposedShare = const Value.absent(),
+    this.proposedRightType = const Value.absent(),
+    this.status = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.uploaded = const Value.absent(),
+    this.uploadedAt = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  AllocationsCompanion.insert({
+    required String clientId,
+    this.serverId = const Value.absent(),
+    required String parcelId,
+    this.partyId = const Value.absent(),
+    this.partyName = const Value.absent(),
+    this.phoneNumber = const Value.absent(),
+    this.nidaNumber = const Value.absent(),
+    required double proposedShare,
+    this.proposedRightType = const Value.absent(),
+    this.status = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.uploaded = const Value.absent(),
+    this.uploadedAt = const Value.absent(),
+    required int createdAt,
+    required int updatedAt,
+    this.rowid = const Value.absent(),
+  }) : clientId = Value(clientId),
+       parcelId = Value(parcelId),
+       proposedShare = Value(proposedShare),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<Allocation> custom({
+    Expression<String>? clientId,
+    Expression<int>? serverId,
+    Expression<String>? parcelId,
+    Expression<String>? partyId,
+    Expression<String>? partyName,
+    Expression<String>? phoneNumber,
+    Expression<String>? nidaNumber,
+    Expression<double>? proposedShare,
+    Expression<String>? proposedRightType,
+    Expression<String>? status,
+    Expression<String>? notes,
+    Expression<bool>? uploaded,
+    Expression<int>? uploadedAt,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (clientId != null) 'client_id': clientId,
+      if (serverId != null) 'server_id': serverId,
+      if (parcelId != null) 'parcel_id': parcelId,
+      if (partyId != null) 'party_id': partyId,
+      if (partyName != null) 'party_name': partyName,
+      if (phoneNumber != null) 'phone_number': phoneNumber,
+      if (nidaNumber != null) 'nida_number': nidaNumber,
+      if (proposedShare != null) 'proposed_share': proposedShare,
+      if (proposedRightType != null) 'proposed_right_type': proposedRightType,
+      if (status != null) 'status': status,
+      if (notes != null) 'notes': notes,
+      if (uploaded != null) 'uploaded': uploaded,
+      if (uploadedAt != null) 'uploaded_at': uploadedAt,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  AllocationsCompanion copyWith({
+    Value<String>? clientId,
+    Value<int?>? serverId,
+    Value<String>? parcelId,
+    Value<String?>? partyId,
+    Value<String?>? partyName,
+    Value<String?>? phoneNumber,
+    Value<String?>? nidaNumber,
+    Value<double>? proposedShare,
+    Value<String>? proposedRightType,
+    Value<String>? status,
+    Value<String?>? notes,
+    Value<bool>? uploaded,
+    Value<int?>? uploadedAt,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return AllocationsCompanion(
+      clientId: clientId ?? this.clientId,
+      serverId: serverId ?? this.serverId,
+      parcelId: parcelId ?? this.parcelId,
+      partyId: partyId ?? this.partyId,
+      partyName: partyName ?? this.partyName,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      nidaNumber: nidaNumber ?? this.nidaNumber,
+      proposedShare: proposedShare ?? this.proposedShare,
+      proposedRightType: proposedRightType ?? this.proposedRightType,
+      status: status ?? this.status,
+      notes: notes ?? this.notes,
+      uploaded: uploaded ?? this.uploaded,
+      uploadedAt: uploadedAt ?? this.uploadedAt,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (clientId.present) {
+      map['client_id'] = Variable<String>(clientId.value);
+    }
+    if (serverId.present) {
+      map['server_id'] = Variable<int>(serverId.value);
+    }
+    if (parcelId.present) {
+      map['parcel_id'] = Variable<String>(parcelId.value);
+    }
+    if (partyId.present) {
+      map['party_id'] = Variable<String>(partyId.value);
+    }
+    if (partyName.present) {
+      map['party_name'] = Variable<String>(partyName.value);
+    }
+    if (phoneNumber.present) {
+      map['phone_number'] = Variable<String>(phoneNumber.value);
+    }
+    if (nidaNumber.present) {
+      map['nida_number'] = Variable<String>(nidaNumber.value);
+    }
+    if (proposedShare.present) {
+      map['proposed_share'] = Variable<double>(proposedShare.value);
+    }
+    if (proposedRightType.present) {
+      map['proposed_right_type'] = Variable<String>(proposedRightType.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (uploaded.present) {
+      map['uploaded'] = Variable<bool>(uploaded.value);
+    }
+    if (uploadedAt.present) {
+      map['uploaded_at'] = Variable<int>(uploadedAt.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AllocationsCompanion(')
+          ..write('clientId: $clientId, ')
+          ..write('serverId: $serverId, ')
+          ..write('parcelId: $parcelId, ')
+          ..write('partyId: $partyId, ')
+          ..write('partyName: $partyName, ')
+          ..write('phoneNumber: $phoneNumber, ')
+          ..write('nidaNumber: $nidaNumber, ')
+          ..write('proposedShare: $proposedShare, ')
+          ..write('proposedRightType: $proposedRightType, ')
+          ..write('status: $status, ')
+          ..write('notes: $notes, ')
+          ..write('uploaded: $uploaded, ')
+          ..write('uploadedAt: $uploadedAt, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ParcelPhotosTable extends ParcelPhotos
+    with TableInfo<$ParcelPhotosTable, ParcelPhoto> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ParcelPhotosTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _clientIdMeta = const VerificationMeta(
+    'clientId',
+  );
+  @override
+  late final GeneratedColumn<String> clientId = GeneratedColumn<String>(
+    'client_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _serverIdMeta = const VerificationMeta(
+    'serverId',
+  );
+  @override
+  late final GeneratedColumn<int> serverId = GeneratedColumn<int>(
+    'server_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _parcelIdMeta = const VerificationMeta(
+    'parcelId',
+  );
+  @override
+  late final GeneratedColumn<String> parcelId = GeneratedColumn<String>(
+    'parcel_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _photoPathMeta = const VerificationMeta(
+    'photoPath',
+  );
+  @override
+  late final GeneratedColumn<String> photoPath = GeneratedColumn<String>(
+    'photo_path',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _photoUrlMeta = const VerificationMeta(
+    'photoUrl',
+  );
+  @override
+  late final GeneratedColumn<String> photoUrl = GeneratedColumn<String>(
+    'photo_url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _photoTypeMeta = const VerificationMeta(
+    'photoType',
+  );
+  @override
+  late final GeneratedColumn<String> photoType = GeneratedColumn<String>(
+    'photo_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('site'),
+  );
+  static const VerificationMeta _captionMeta = const VerificationMeta(
+    'caption',
+  );
+  @override
+  late final GeneratedColumn<String> caption = GeneratedColumn<String>(
+    'caption',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _capturedAtMeta = const VerificationMeta(
+    'capturedAt',
+  );
+  @override
+  late final GeneratedColumn<int> capturedAt = GeneratedColumn<int>(
+    'captured_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _uploadedMeta = const VerificationMeta(
+    'uploaded',
+  );
+  @override
+  late final GeneratedColumn<bool> uploaded = GeneratedColumn<bool>(
+    'uploaded',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("uploaded" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _uploadedAtMeta = const VerificationMeta(
+    'uploadedAt',
+  );
+  @override
+  late final GeneratedColumn<int> uploadedAt = GeneratedColumn<int>(
+    'uploaded_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    clientId,
+    serverId,
+    parcelId,
+    photoPath,
+    photoUrl,
+    photoType,
+    caption,
+    capturedAt,
+    uploaded,
+    uploadedAt,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'parcel_photos';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ParcelPhoto> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('client_id')) {
+      context.handle(
+        _clientIdMeta,
+        clientId.isAcceptableOrUnknown(data['client_id']!, _clientIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_clientIdMeta);
+    }
+    if (data.containsKey('server_id')) {
+      context.handle(
+        _serverIdMeta,
+        serverId.isAcceptableOrUnknown(data['server_id']!, _serverIdMeta),
+      );
+    }
+    if (data.containsKey('parcel_id')) {
+      context.handle(
+        _parcelIdMeta,
+        parcelId.isAcceptableOrUnknown(data['parcel_id']!, _parcelIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_parcelIdMeta);
+    }
+    if (data.containsKey('photo_path')) {
+      context.handle(
+        _photoPathMeta,
+        photoPath.isAcceptableOrUnknown(data['photo_path']!, _photoPathMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_photoPathMeta);
+    }
+    if (data.containsKey('photo_url')) {
+      context.handle(
+        _photoUrlMeta,
+        photoUrl.isAcceptableOrUnknown(data['photo_url']!, _photoUrlMeta),
+      );
+    }
+    if (data.containsKey('photo_type')) {
+      context.handle(
+        _photoTypeMeta,
+        photoType.isAcceptableOrUnknown(data['photo_type']!, _photoTypeMeta),
+      );
+    }
+    if (data.containsKey('caption')) {
+      context.handle(
+        _captionMeta,
+        caption.isAcceptableOrUnknown(data['caption']!, _captionMeta),
+      );
+    }
+    if (data.containsKey('captured_at')) {
+      context.handle(
+        _capturedAtMeta,
+        capturedAt.isAcceptableOrUnknown(data['captured_at']!, _capturedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_capturedAtMeta);
+    }
+    if (data.containsKey('uploaded')) {
+      context.handle(
+        _uploadedMeta,
+        uploaded.isAcceptableOrUnknown(data['uploaded']!, _uploadedMeta),
+      );
+    }
+    if (data.containsKey('uploaded_at')) {
+      context.handle(
+        _uploadedAtMeta,
+        uploadedAt.isAcceptableOrUnknown(data['uploaded_at']!, _uploadedAtMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {clientId};
+  @override
+  ParcelPhoto map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ParcelPhoto(
+      clientId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}client_id'],
+          )!,
+      serverId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}server_id'],
+      ),
+      parcelId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}parcel_id'],
+          )!,
+      photoPath:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}photo_path'],
+          )!,
+      photoUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}photo_url'],
+      ),
+      photoType:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}photo_type'],
+          )!,
+      caption: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}caption'],
+      ),
+      capturedAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}captured_at'],
+          )!,
+      uploaded:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}uploaded'],
+          )!,
+      uploadedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}uploaded_at'],
+      ),
+      createdAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}created_at'],
+          )!,
+      updatedAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}updated_at'],
+          )!,
+    );
+  }
+
+  @override
+  $ParcelPhotosTable createAlias(String alias) {
+    return $ParcelPhotosTable(attachedDatabase, alias);
+  }
+}
+
+class ParcelPhoto extends DataClass implements Insertable<ParcelPhoto> {
+  final String clientId;
+  final int? serverId;
+  final String parcelId;
+  final String photoPath;
+  final String? photoUrl;
+  final String photoType;
+  final String? caption;
+  final int capturedAt;
+  final bool uploaded;
+  final int? uploadedAt;
+  final int createdAt;
+  final int updatedAt;
+  const ParcelPhoto({
+    required this.clientId,
+    this.serverId,
+    required this.parcelId,
+    required this.photoPath,
+    this.photoUrl,
+    required this.photoType,
+    this.caption,
+    required this.capturedAt,
+    required this.uploaded,
+    this.uploadedAt,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['client_id'] = Variable<String>(clientId);
+    if (!nullToAbsent || serverId != null) {
+      map['server_id'] = Variable<int>(serverId);
+    }
+    map['parcel_id'] = Variable<String>(parcelId);
+    map['photo_path'] = Variable<String>(photoPath);
+    if (!nullToAbsent || photoUrl != null) {
+      map['photo_url'] = Variable<String>(photoUrl);
+    }
+    map['photo_type'] = Variable<String>(photoType);
+    if (!nullToAbsent || caption != null) {
+      map['caption'] = Variable<String>(caption);
+    }
+    map['captured_at'] = Variable<int>(capturedAt);
+    map['uploaded'] = Variable<bool>(uploaded);
+    if (!nullToAbsent || uploadedAt != null) {
+      map['uploaded_at'] = Variable<int>(uploadedAt);
+    }
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
+    return map;
+  }
+
+  ParcelPhotosCompanion toCompanion(bool nullToAbsent) {
+    return ParcelPhotosCompanion(
+      clientId: Value(clientId),
+      serverId:
+          serverId == null && nullToAbsent
+              ? const Value.absent()
+              : Value(serverId),
+      parcelId: Value(parcelId),
+      photoPath: Value(photoPath),
+      photoUrl:
+          photoUrl == null && nullToAbsent
+              ? const Value.absent()
+              : Value(photoUrl),
+      photoType: Value(photoType),
+      caption:
+          caption == null && nullToAbsent
+              ? const Value.absent()
+              : Value(caption),
+      capturedAt: Value(capturedAt),
+      uploaded: Value(uploaded),
+      uploadedAt:
+          uploadedAt == null && nullToAbsent
+              ? const Value.absent()
+              : Value(uploadedAt),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory ParcelPhoto.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ParcelPhoto(
+      clientId: serializer.fromJson<String>(json['clientId']),
+      serverId: serializer.fromJson<int?>(json['serverId']),
+      parcelId: serializer.fromJson<String>(json['parcelId']),
+      photoPath: serializer.fromJson<String>(json['photoPath']),
+      photoUrl: serializer.fromJson<String?>(json['photoUrl']),
+      photoType: serializer.fromJson<String>(json['photoType']),
+      caption: serializer.fromJson<String?>(json['caption']),
+      capturedAt: serializer.fromJson<int>(json['capturedAt']),
+      uploaded: serializer.fromJson<bool>(json['uploaded']),
+      uploadedAt: serializer.fromJson<int?>(json['uploadedAt']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'clientId': serializer.toJson<String>(clientId),
+      'serverId': serializer.toJson<int?>(serverId),
+      'parcelId': serializer.toJson<String>(parcelId),
+      'photoPath': serializer.toJson<String>(photoPath),
+      'photoUrl': serializer.toJson<String?>(photoUrl),
+      'photoType': serializer.toJson<String>(photoType),
+      'caption': serializer.toJson<String?>(caption),
+      'capturedAt': serializer.toJson<int>(capturedAt),
+      'uploaded': serializer.toJson<bool>(uploaded),
+      'uploadedAt': serializer.toJson<int?>(uploadedAt),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+    };
+  }
+
+  ParcelPhoto copyWith({
+    String? clientId,
+    Value<int?> serverId = const Value.absent(),
+    String? parcelId,
+    String? photoPath,
+    Value<String?> photoUrl = const Value.absent(),
+    String? photoType,
+    Value<String?> caption = const Value.absent(),
+    int? capturedAt,
+    bool? uploaded,
+    Value<int?> uploadedAt = const Value.absent(),
+    int? createdAt,
+    int? updatedAt,
+  }) => ParcelPhoto(
+    clientId: clientId ?? this.clientId,
+    serverId: serverId.present ? serverId.value : this.serverId,
+    parcelId: parcelId ?? this.parcelId,
+    photoPath: photoPath ?? this.photoPath,
+    photoUrl: photoUrl.present ? photoUrl.value : this.photoUrl,
+    photoType: photoType ?? this.photoType,
+    caption: caption.present ? caption.value : this.caption,
+    capturedAt: capturedAt ?? this.capturedAt,
+    uploaded: uploaded ?? this.uploaded,
+    uploadedAt: uploadedAt.present ? uploadedAt.value : this.uploadedAt,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  ParcelPhoto copyWithCompanion(ParcelPhotosCompanion data) {
+    return ParcelPhoto(
+      clientId: data.clientId.present ? data.clientId.value : this.clientId,
+      serverId: data.serverId.present ? data.serverId.value : this.serverId,
+      parcelId: data.parcelId.present ? data.parcelId.value : this.parcelId,
+      photoPath: data.photoPath.present ? data.photoPath.value : this.photoPath,
+      photoUrl: data.photoUrl.present ? data.photoUrl.value : this.photoUrl,
+      photoType: data.photoType.present ? data.photoType.value : this.photoType,
+      caption: data.caption.present ? data.caption.value : this.caption,
+      capturedAt:
+          data.capturedAt.present ? data.capturedAt.value : this.capturedAt,
+      uploaded: data.uploaded.present ? data.uploaded.value : this.uploaded,
+      uploadedAt:
+          data.uploadedAt.present ? data.uploadedAt.value : this.uploadedAt,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ParcelPhoto(')
+          ..write('clientId: $clientId, ')
+          ..write('serverId: $serverId, ')
+          ..write('parcelId: $parcelId, ')
+          ..write('photoPath: $photoPath, ')
+          ..write('photoUrl: $photoUrl, ')
+          ..write('photoType: $photoType, ')
+          ..write('caption: $caption, ')
+          ..write('capturedAt: $capturedAt, ')
+          ..write('uploaded: $uploaded, ')
+          ..write('uploadedAt: $uploadedAt, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    clientId,
+    serverId,
+    parcelId,
+    photoPath,
+    photoUrl,
+    photoType,
+    caption,
+    capturedAt,
+    uploaded,
+    uploadedAt,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ParcelPhoto &&
+          other.clientId == this.clientId &&
+          other.serverId == this.serverId &&
+          other.parcelId == this.parcelId &&
+          other.photoPath == this.photoPath &&
+          other.photoUrl == this.photoUrl &&
+          other.photoType == this.photoType &&
+          other.caption == this.caption &&
+          other.capturedAt == this.capturedAt &&
+          other.uploaded == this.uploaded &&
+          other.uploadedAt == this.uploadedAt &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class ParcelPhotosCompanion extends UpdateCompanion<ParcelPhoto> {
+  final Value<String> clientId;
+  final Value<int?> serverId;
+  final Value<String> parcelId;
+  final Value<String> photoPath;
+  final Value<String?> photoUrl;
+  final Value<String> photoType;
+  final Value<String?> caption;
+  final Value<int> capturedAt;
+  final Value<bool> uploaded;
+  final Value<int?> uploadedAt;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int> rowid;
+  const ParcelPhotosCompanion({
+    this.clientId = const Value.absent(),
+    this.serverId = const Value.absent(),
+    this.parcelId = const Value.absent(),
+    this.photoPath = const Value.absent(),
+    this.photoUrl = const Value.absent(),
+    this.photoType = const Value.absent(),
+    this.caption = const Value.absent(),
+    this.capturedAt = const Value.absent(),
+    this.uploaded = const Value.absent(),
+    this.uploadedAt = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ParcelPhotosCompanion.insert({
+    required String clientId,
+    this.serverId = const Value.absent(),
+    required String parcelId,
+    required String photoPath,
+    this.photoUrl = const Value.absent(),
+    this.photoType = const Value.absent(),
+    this.caption = const Value.absent(),
+    required int capturedAt,
+    this.uploaded = const Value.absent(),
+    this.uploadedAt = const Value.absent(),
+    required int createdAt,
+    required int updatedAt,
+    this.rowid = const Value.absent(),
+  }) : clientId = Value(clientId),
+       parcelId = Value(parcelId),
+       photoPath = Value(photoPath),
+       capturedAt = Value(capturedAt),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<ParcelPhoto> custom({
+    Expression<String>? clientId,
+    Expression<int>? serverId,
+    Expression<String>? parcelId,
+    Expression<String>? photoPath,
+    Expression<String>? photoUrl,
+    Expression<String>? photoType,
+    Expression<String>? caption,
+    Expression<int>? capturedAt,
+    Expression<bool>? uploaded,
+    Expression<int>? uploadedAt,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (clientId != null) 'client_id': clientId,
+      if (serverId != null) 'server_id': serverId,
+      if (parcelId != null) 'parcel_id': parcelId,
+      if (photoPath != null) 'photo_path': photoPath,
+      if (photoUrl != null) 'photo_url': photoUrl,
+      if (photoType != null) 'photo_type': photoType,
+      if (caption != null) 'caption': caption,
+      if (capturedAt != null) 'captured_at': capturedAt,
+      if (uploaded != null) 'uploaded': uploaded,
+      if (uploadedAt != null) 'uploaded_at': uploadedAt,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ParcelPhotosCompanion copyWith({
+    Value<String>? clientId,
+    Value<int?>? serverId,
+    Value<String>? parcelId,
+    Value<String>? photoPath,
+    Value<String?>? photoUrl,
+    Value<String>? photoType,
+    Value<String?>? caption,
+    Value<int>? capturedAt,
+    Value<bool>? uploaded,
+    Value<int?>? uploadedAt,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return ParcelPhotosCompanion(
+      clientId: clientId ?? this.clientId,
+      serverId: serverId ?? this.serverId,
+      parcelId: parcelId ?? this.parcelId,
+      photoPath: photoPath ?? this.photoPath,
+      photoUrl: photoUrl ?? this.photoUrl,
+      photoType: photoType ?? this.photoType,
+      caption: caption ?? this.caption,
+      capturedAt: capturedAt ?? this.capturedAt,
+      uploaded: uploaded ?? this.uploaded,
+      uploadedAt: uploadedAt ?? this.uploadedAt,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (clientId.present) {
+      map['client_id'] = Variable<String>(clientId.value);
+    }
+    if (serverId.present) {
+      map['server_id'] = Variable<int>(serverId.value);
+    }
+    if (parcelId.present) {
+      map['parcel_id'] = Variable<String>(parcelId.value);
+    }
+    if (photoPath.present) {
+      map['photo_path'] = Variable<String>(photoPath.value);
+    }
+    if (photoUrl.present) {
+      map['photo_url'] = Variable<String>(photoUrl.value);
+    }
+    if (photoType.present) {
+      map['photo_type'] = Variable<String>(photoType.value);
+    }
+    if (caption.present) {
+      map['caption'] = Variable<String>(caption.value);
+    }
+    if (capturedAt.present) {
+      map['captured_at'] = Variable<int>(capturedAt.value);
+    }
+    if (uploaded.present) {
+      map['uploaded'] = Variable<bool>(uploaded.value);
+    }
+    if (uploadedAt.present) {
+      map['uploaded_at'] = Variable<int>(uploadedAt.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ParcelPhotosCompanion(')
+          ..write('clientId: $clientId, ')
+          ..write('serverId: $serverId, ')
+          ..write('parcelId: $parcelId, ')
+          ..write('photoPath: $photoPath, ')
+          ..write('photoUrl: $photoUrl, ')
+          ..write('photoType: $photoType, ')
+          ..write('caption: $caption, ')
+          ..write('capturedAt: $capturedAt, ')
+          ..write('uploaded: $uploaded, ')
+          ..write('uploadedAt: $uploadedAt, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $MvtTilesetsTable extends MvtTilesets
     with TableInfo<$MvtTilesetsTable, MvtTileset> {
   @override
@@ -9521,6 +15349,16 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   );
   late final $LandUsesTable landUses = $LandUsesTable(this);
   late final $AppSettingsTable appSettings = $AppSettingsTable(this);
+  late final $SubdivisionZonesTable subdivisionZones = $SubdivisionZonesTable(
+    this,
+  );
+  late final $SubdivisionApplicationsTable subdivisionApplications =
+      $SubdivisionApplicationsTable(this);
+  late final $PartiesTable parties = $PartiesTable(this);
+  late final $ParcelsTable parcels = $ParcelsTable(this);
+  late final $ParcelDraftsTable parcelDrafts = $ParcelDraftsTable(this);
+  late final $AllocationsTable allocations = $AllocationsTable(this);
+  late final $ParcelPhotosTable parcelPhotos = $ParcelPhotosTable(this);
   late final $MvtTilesetsTable mvtTilesets = $MvtTilesetsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
@@ -9543,6 +15381,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     manualZoneDrafts,
     landUses,
     appSettings,
+    subdivisionZones,
+    subdivisionApplications,
+    parties,
+    parcels,
+    parcelDrafts,
+    allocations,
+    parcelPhotos,
     mvtTilesets,
   ];
 }
@@ -14107,6 +19952,2737 @@ typedef $$AppSettingsTableProcessedTableManager =
       AppSetting,
       PrefetchHooks Function()
     >;
+typedef $$SubdivisionZonesTableCreateCompanionBuilder =
+    SubdivisionZonesCompanion Function({
+      Value<int> id,
+      required String zoneName,
+      required int localityId,
+      required String localityName,
+      Value<String?> landUseName,
+      Value<bool> canBeSubdivided,
+      Value<double?> areaSqm,
+      Value<String?> geomJson,
+      required int downloadedAt,
+      required int updatedAt,
+    });
+typedef $$SubdivisionZonesTableUpdateCompanionBuilder =
+    SubdivisionZonesCompanion Function({
+      Value<int> id,
+      Value<String> zoneName,
+      Value<int> localityId,
+      Value<String> localityName,
+      Value<String?> landUseName,
+      Value<bool> canBeSubdivided,
+      Value<double?> areaSqm,
+      Value<String?> geomJson,
+      Value<int> downloadedAt,
+      Value<int> updatedAt,
+    });
+
+class $$SubdivisionZonesTableFilterComposer
+    extends Composer<_$AppDatabase, $SubdivisionZonesTable> {
+  $$SubdivisionZonesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get zoneName => $composableBuilder(
+    column: $table.zoneName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get localityId => $composableBuilder(
+    column: $table.localityId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get localityName => $composableBuilder(
+    column: $table.localityName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get landUseName => $composableBuilder(
+    column: $table.landUseName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get canBeSubdivided => $composableBuilder(
+    column: $table.canBeSubdivided,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get areaSqm => $composableBuilder(
+    column: $table.areaSqm,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get geomJson => $composableBuilder(
+    column: $table.geomJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get downloadedAt => $composableBuilder(
+    column: $table.downloadedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SubdivisionZonesTableOrderingComposer
+    extends Composer<_$AppDatabase, $SubdivisionZonesTable> {
+  $$SubdivisionZonesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get zoneName => $composableBuilder(
+    column: $table.zoneName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get localityId => $composableBuilder(
+    column: $table.localityId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get localityName => $composableBuilder(
+    column: $table.localityName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get landUseName => $composableBuilder(
+    column: $table.landUseName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get canBeSubdivided => $composableBuilder(
+    column: $table.canBeSubdivided,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get areaSqm => $composableBuilder(
+    column: $table.areaSqm,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get geomJson => $composableBuilder(
+    column: $table.geomJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get downloadedAt => $composableBuilder(
+    column: $table.downloadedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SubdivisionZonesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SubdivisionZonesTable> {
+  $$SubdivisionZonesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get zoneName =>
+      $composableBuilder(column: $table.zoneName, builder: (column) => column);
+
+  GeneratedColumn<int> get localityId => $composableBuilder(
+    column: $table.localityId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get localityName => $composableBuilder(
+    column: $table.localityName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get landUseName => $composableBuilder(
+    column: $table.landUseName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get canBeSubdivided => $composableBuilder(
+    column: $table.canBeSubdivided,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get areaSqm =>
+      $composableBuilder(column: $table.areaSqm, builder: (column) => column);
+
+  GeneratedColumn<String> get geomJson =>
+      $composableBuilder(column: $table.geomJson, builder: (column) => column);
+
+  GeneratedColumn<int> get downloadedAt => $composableBuilder(
+    column: $table.downloadedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$SubdivisionZonesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SubdivisionZonesTable,
+          SubdivisionZone,
+          $$SubdivisionZonesTableFilterComposer,
+          $$SubdivisionZonesTableOrderingComposer,
+          $$SubdivisionZonesTableAnnotationComposer,
+          $$SubdivisionZonesTableCreateCompanionBuilder,
+          $$SubdivisionZonesTableUpdateCompanionBuilder,
+          (
+            SubdivisionZone,
+            BaseReferences<
+              _$AppDatabase,
+              $SubdivisionZonesTable,
+              SubdivisionZone
+            >,
+          ),
+          SubdivisionZone,
+          PrefetchHooks Function()
+        > {
+  $$SubdivisionZonesTableTableManager(
+    _$AppDatabase db,
+    $SubdivisionZonesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer:
+              () =>
+                  $$SubdivisionZonesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer:
+              () => $$SubdivisionZonesTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer:
+              () => $$SubdivisionZonesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> zoneName = const Value.absent(),
+                Value<int> localityId = const Value.absent(),
+                Value<String> localityName = const Value.absent(),
+                Value<String?> landUseName = const Value.absent(),
+                Value<bool> canBeSubdivided = const Value.absent(),
+                Value<double?> areaSqm = const Value.absent(),
+                Value<String?> geomJson = const Value.absent(),
+                Value<int> downloadedAt = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+              }) => SubdivisionZonesCompanion(
+                id: id,
+                zoneName: zoneName,
+                localityId: localityId,
+                localityName: localityName,
+                landUseName: landUseName,
+                canBeSubdivided: canBeSubdivided,
+                areaSqm: areaSqm,
+                geomJson: geomJson,
+                downloadedAt: downloadedAt,
+                updatedAt: updatedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String zoneName,
+                required int localityId,
+                required String localityName,
+                Value<String?> landUseName = const Value.absent(),
+                Value<bool> canBeSubdivided = const Value.absent(),
+                Value<double?> areaSqm = const Value.absent(),
+                Value<String?> geomJson = const Value.absent(),
+                required int downloadedAt,
+                required int updatedAt,
+              }) => SubdivisionZonesCompanion.insert(
+                id: id,
+                zoneName: zoneName,
+                localityId: localityId,
+                localityName: localityName,
+                landUseName: landUseName,
+                canBeSubdivided: canBeSubdivided,
+                areaSqm: areaSqm,
+                geomJson: geomJson,
+                downloadedAt: downloadedAt,
+                updatedAt: updatedAt,
+              ),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          BaseReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SubdivisionZonesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SubdivisionZonesTable,
+      SubdivisionZone,
+      $$SubdivisionZonesTableFilterComposer,
+      $$SubdivisionZonesTableOrderingComposer,
+      $$SubdivisionZonesTableAnnotationComposer,
+      $$SubdivisionZonesTableCreateCompanionBuilder,
+      $$SubdivisionZonesTableUpdateCompanionBuilder,
+      (
+        SubdivisionZone,
+        BaseReferences<_$AppDatabase, $SubdivisionZonesTable, SubdivisionZone>,
+      ),
+      SubdivisionZone,
+      PrefetchHooks Function()
+    >;
+typedef $$SubdivisionApplicationsTableCreateCompanionBuilder =
+    SubdivisionApplicationsCompanion Function({
+      required String clientId,
+      Value<int?> serverId,
+      Value<String?> applicationNumber,
+      required int zoneId,
+      required int localityId,
+      required String applicantId,
+      Value<int> currentStep,
+      Value<String> status,
+      Value<String?> notes,
+      Value<bool> uploaded,
+      Value<int?> uploadedAt,
+      required int createdAt,
+      required int updatedAt,
+      Value<int> rowid,
+    });
+typedef $$SubdivisionApplicationsTableUpdateCompanionBuilder =
+    SubdivisionApplicationsCompanion Function({
+      Value<String> clientId,
+      Value<int?> serverId,
+      Value<String?> applicationNumber,
+      Value<int> zoneId,
+      Value<int> localityId,
+      Value<String> applicantId,
+      Value<int> currentStep,
+      Value<String> status,
+      Value<String?> notes,
+      Value<bool> uploaded,
+      Value<int?> uploadedAt,
+      Value<int> createdAt,
+      Value<int> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$SubdivisionApplicationsTableFilterComposer
+    extends Composer<_$AppDatabase, $SubdivisionApplicationsTable> {
+  $$SubdivisionApplicationsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get clientId => $composableBuilder(
+    column: $table.clientId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get applicationNumber => $composableBuilder(
+    column: $table.applicationNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get zoneId => $composableBuilder(
+    column: $table.zoneId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get localityId => $composableBuilder(
+    column: $table.localityId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get applicantId => $composableBuilder(
+    column: $table.applicantId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get currentStep => $composableBuilder(
+    column: $table.currentStep,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get uploaded => $composableBuilder(
+    column: $table.uploaded,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get uploadedAt => $composableBuilder(
+    column: $table.uploadedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SubdivisionApplicationsTableOrderingComposer
+    extends Composer<_$AppDatabase, $SubdivisionApplicationsTable> {
+  $$SubdivisionApplicationsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get clientId => $composableBuilder(
+    column: $table.clientId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get applicationNumber => $composableBuilder(
+    column: $table.applicationNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get zoneId => $composableBuilder(
+    column: $table.zoneId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get localityId => $composableBuilder(
+    column: $table.localityId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get applicantId => $composableBuilder(
+    column: $table.applicantId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get currentStep => $composableBuilder(
+    column: $table.currentStep,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get uploaded => $composableBuilder(
+    column: $table.uploaded,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get uploadedAt => $composableBuilder(
+    column: $table.uploadedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SubdivisionApplicationsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SubdivisionApplicationsTable> {
+  $$SubdivisionApplicationsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get clientId =>
+      $composableBuilder(column: $table.clientId, builder: (column) => column);
+
+  GeneratedColumn<int> get serverId =>
+      $composableBuilder(column: $table.serverId, builder: (column) => column);
+
+  GeneratedColumn<String> get applicationNumber => $composableBuilder(
+    column: $table.applicationNumber,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get zoneId =>
+      $composableBuilder(column: $table.zoneId, builder: (column) => column);
+
+  GeneratedColumn<int> get localityId => $composableBuilder(
+    column: $table.localityId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get applicantId => $composableBuilder(
+    column: $table.applicantId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get currentStep => $composableBuilder(
+    column: $table.currentStep,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<bool> get uploaded =>
+      $composableBuilder(column: $table.uploaded, builder: (column) => column);
+
+  GeneratedColumn<int> get uploadedAt => $composableBuilder(
+    column: $table.uploadedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$SubdivisionApplicationsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SubdivisionApplicationsTable,
+          SubdivisionApplication,
+          $$SubdivisionApplicationsTableFilterComposer,
+          $$SubdivisionApplicationsTableOrderingComposer,
+          $$SubdivisionApplicationsTableAnnotationComposer,
+          $$SubdivisionApplicationsTableCreateCompanionBuilder,
+          $$SubdivisionApplicationsTableUpdateCompanionBuilder,
+          (
+            SubdivisionApplication,
+            BaseReferences<
+              _$AppDatabase,
+              $SubdivisionApplicationsTable,
+              SubdivisionApplication
+            >,
+          ),
+          SubdivisionApplication,
+          PrefetchHooks Function()
+        > {
+  $$SubdivisionApplicationsTableTableManager(
+    _$AppDatabase db,
+    $SubdivisionApplicationsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer:
+              () => $$SubdivisionApplicationsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer:
+              () => $$SubdivisionApplicationsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer:
+              () => $$SubdivisionApplicationsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> clientId = const Value.absent(),
+                Value<int?> serverId = const Value.absent(),
+                Value<String?> applicationNumber = const Value.absent(),
+                Value<int> zoneId = const Value.absent(),
+                Value<int> localityId = const Value.absent(),
+                Value<String> applicantId = const Value.absent(),
+                Value<int> currentStep = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<bool> uploaded = const Value.absent(),
+                Value<int?> uploadedAt = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SubdivisionApplicationsCompanion(
+                clientId: clientId,
+                serverId: serverId,
+                applicationNumber: applicationNumber,
+                zoneId: zoneId,
+                localityId: localityId,
+                applicantId: applicantId,
+                currentStep: currentStep,
+                status: status,
+                notes: notes,
+                uploaded: uploaded,
+                uploadedAt: uploadedAt,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String clientId,
+                Value<int?> serverId = const Value.absent(),
+                Value<String?> applicationNumber = const Value.absent(),
+                required int zoneId,
+                required int localityId,
+                required String applicantId,
+                Value<int> currentStep = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<bool> uploaded = const Value.absent(),
+                Value<int?> uploadedAt = const Value.absent(),
+                required int createdAt,
+                required int updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => SubdivisionApplicationsCompanion.insert(
+                clientId: clientId,
+                serverId: serverId,
+                applicationNumber: applicationNumber,
+                zoneId: zoneId,
+                localityId: localityId,
+                applicantId: applicantId,
+                currentStep: currentStep,
+                status: status,
+                notes: notes,
+                uploaded: uploaded,
+                uploadedAt: uploadedAt,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          BaseReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SubdivisionApplicationsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SubdivisionApplicationsTable,
+      SubdivisionApplication,
+      $$SubdivisionApplicationsTableFilterComposer,
+      $$SubdivisionApplicationsTableOrderingComposer,
+      $$SubdivisionApplicationsTableAnnotationComposer,
+      $$SubdivisionApplicationsTableCreateCompanionBuilder,
+      $$SubdivisionApplicationsTableUpdateCompanionBuilder,
+      (
+        SubdivisionApplication,
+        BaseReferences<
+          _$AppDatabase,
+          $SubdivisionApplicationsTable,
+          SubdivisionApplication
+        >,
+      ),
+      SubdivisionApplication,
+      PrefetchHooks Function()
+    >;
+typedef $$PartiesTableCreateCompanionBuilder =
+    PartiesCompanion Function({
+      required String clientId,
+      Value<int?> serverId,
+      required String partyType,
+      Value<String?> firstName,
+      Value<String?> middleName,
+      Value<String?> lastName,
+      Value<String?> nidaNumber,
+      Value<String?> phone,
+      Value<String?> email,
+      Value<String?> gender,
+      Value<String?> dateOfBirth,
+      Value<bool> isCitizen,
+      Value<String?> maritalStatus,
+      Value<String?> occupation,
+      Value<bool> uploaded,
+      Value<int?> uploadedAt,
+      required int createdAt,
+      required int updatedAt,
+      Value<int> rowid,
+    });
+typedef $$PartiesTableUpdateCompanionBuilder =
+    PartiesCompanion Function({
+      Value<String> clientId,
+      Value<int?> serverId,
+      Value<String> partyType,
+      Value<String?> firstName,
+      Value<String?> middleName,
+      Value<String?> lastName,
+      Value<String?> nidaNumber,
+      Value<String?> phone,
+      Value<String?> email,
+      Value<String?> gender,
+      Value<String?> dateOfBirth,
+      Value<bool> isCitizen,
+      Value<String?> maritalStatus,
+      Value<String?> occupation,
+      Value<bool> uploaded,
+      Value<int?> uploadedAt,
+      Value<int> createdAt,
+      Value<int> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$PartiesTableFilterComposer
+    extends Composer<_$AppDatabase, $PartiesTable> {
+  $$PartiesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get clientId => $composableBuilder(
+    column: $table.clientId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get partyType => $composableBuilder(
+    column: $table.partyType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get firstName => $composableBuilder(
+    column: $table.firstName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get middleName => $composableBuilder(
+    column: $table.middleName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastName => $composableBuilder(
+    column: $table.lastName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nidaNumber => $composableBuilder(
+    column: $table.nidaNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get phone => $composableBuilder(
+    column: $table.phone,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get email => $composableBuilder(
+    column: $table.email,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get gender => $composableBuilder(
+    column: $table.gender,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get dateOfBirth => $composableBuilder(
+    column: $table.dateOfBirth,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isCitizen => $composableBuilder(
+    column: $table.isCitizen,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get maritalStatus => $composableBuilder(
+    column: $table.maritalStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get occupation => $composableBuilder(
+    column: $table.occupation,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get uploaded => $composableBuilder(
+    column: $table.uploaded,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get uploadedAt => $composableBuilder(
+    column: $table.uploadedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PartiesTableOrderingComposer
+    extends Composer<_$AppDatabase, $PartiesTable> {
+  $$PartiesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get clientId => $composableBuilder(
+    column: $table.clientId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get partyType => $composableBuilder(
+    column: $table.partyType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get firstName => $composableBuilder(
+    column: $table.firstName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get middleName => $composableBuilder(
+    column: $table.middleName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastName => $composableBuilder(
+    column: $table.lastName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nidaNumber => $composableBuilder(
+    column: $table.nidaNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get phone => $composableBuilder(
+    column: $table.phone,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get email => $composableBuilder(
+    column: $table.email,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get gender => $composableBuilder(
+    column: $table.gender,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get dateOfBirth => $composableBuilder(
+    column: $table.dateOfBirth,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isCitizen => $composableBuilder(
+    column: $table.isCitizen,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get maritalStatus => $composableBuilder(
+    column: $table.maritalStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get occupation => $composableBuilder(
+    column: $table.occupation,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get uploaded => $composableBuilder(
+    column: $table.uploaded,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get uploadedAt => $composableBuilder(
+    column: $table.uploadedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PartiesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PartiesTable> {
+  $$PartiesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get clientId =>
+      $composableBuilder(column: $table.clientId, builder: (column) => column);
+
+  GeneratedColumn<int> get serverId =>
+      $composableBuilder(column: $table.serverId, builder: (column) => column);
+
+  GeneratedColumn<String> get partyType =>
+      $composableBuilder(column: $table.partyType, builder: (column) => column);
+
+  GeneratedColumn<String> get firstName =>
+      $composableBuilder(column: $table.firstName, builder: (column) => column);
+
+  GeneratedColumn<String> get middleName => $composableBuilder(
+    column: $table.middleName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastName =>
+      $composableBuilder(column: $table.lastName, builder: (column) => column);
+
+  GeneratedColumn<String> get nidaNumber => $composableBuilder(
+    column: $table.nidaNumber,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get phone =>
+      $composableBuilder(column: $table.phone, builder: (column) => column);
+
+  GeneratedColumn<String> get email =>
+      $composableBuilder(column: $table.email, builder: (column) => column);
+
+  GeneratedColumn<String> get gender =>
+      $composableBuilder(column: $table.gender, builder: (column) => column);
+
+  GeneratedColumn<String> get dateOfBirth => $composableBuilder(
+    column: $table.dateOfBirth,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isCitizen =>
+      $composableBuilder(column: $table.isCitizen, builder: (column) => column);
+
+  GeneratedColumn<String> get maritalStatus => $composableBuilder(
+    column: $table.maritalStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get occupation => $composableBuilder(
+    column: $table.occupation,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get uploaded =>
+      $composableBuilder(column: $table.uploaded, builder: (column) => column);
+
+  GeneratedColumn<int> get uploadedAt => $composableBuilder(
+    column: $table.uploadedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$PartiesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PartiesTable,
+          Party,
+          $$PartiesTableFilterComposer,
+          $$PartiesTableOrderingComposer,
+          $$PartiesTableAnnotationComposer,
+          $$PartiesTableCreateCompanionBuilder,
+          $$PartiesTableUpdateCompanionBuilder,
+          (Party, BaseReferences<_$AppDatabase, $PartiesTable, Party>),
+          Party,
+          PrefetchHooks Function()
+        > {
+  $$PartiesTableTableManager(_$AppDatabase db, $PartiesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer:
+              () => $$PartiesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer:
+              () => $$PartiesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer:
+              () => $$PartiesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> clientId = const Value.absent(),
+                Value<int?> serverId = const Value.absent(),
+                Value<String> partyType = const Value.absent(),
+                Value<String?> firstName = const Value.absent(),
+                Value<String?> middleName = const Value.absent(),
+                Value<String?> lastName = const Value.absent(),
+                Value<String?> nidaNumber = const Value.absent(),
+                Value<String?> phone = const Value.absent(),
+                Value<String?> email = const Value.absent(),
+                Value<String?> gender = const Value.absent(),
+                Value<String?> dateOfBirth = const Value.absent(),
+                Value<bool> isCitizen = const Value.absent(),
+                Value<String?> maritalStatus = const Value.absent(),
+                Value<String?> occupation = const Value.absent(),
+                Value<bool> uploaded = const Value.absent(),
+                Value<int?> uploadedAt = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PartiesCompanion(
+                clientId: clientId,
+                serverId: serverId,
+                partyType: partyType,
+                firstName: firstName,
+                middleName: middleName,
+                lastName: lastName,
+                nidaNumber: nidaNumber,
+                phone: phone,
+                email: email,
+                gender: gender,
+                dateOfBirth: dateOfBirth,
+                isCitizen: isCitizen,
+                maritalStatus: maritalStatus,
+                occupation: occupation,
+                uploaded: uploaded,
+                uploadedAt: uploadedAt,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String clientId,
+                Value<int?> serverId = const Value.absent(),
+                required String partyType,
+                Value<String?> firstName = const Value.absent(),
+                Value<String?> middleName = const Value.absent(),
+                Value<String?> lastName = const Value.absent(),
+                Value<String?> nidaNumber = const Value.absent(),
+                Value<String?> phone = const Value.absent(),
+                Value<String?> email = const Value.absent(),
+                Value<String?> gender = const Value.absent(),
+                Value<String?> dateOfBirth = const Value.absent(),
+                Value<bool> isCitizen = const Value.absent(),
+                Value<String?> maritalStatus = const Value.absent(),
+                Value<String?> occupation = const Value.absent(),
+                Value<bool> uploaded = const Value.absent(),
+                Value<int?> uploadedAt = const Value.absent(),
+                required int createdAt,
+                required int updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => PartiesCompanion.insert(
+                clientId: clientId,
+                serverId: serverId,
+                partyType: partyType,
+                firstName: firstName,
+                middleName: middleName,
+                lastName: lastName,
+                nidaNumber: nidaNumber,
+                phone: phone,
+                email: email,
+                gender: gender,
+                dateOfBirth: dateOfBirth,
+                isCitizen: isCitizen,
+                maritalStatus: maritalStatus,
+                occupation: occupation,
+                uploaded: uploaded,
+                uploadedAt: uploadedAt,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          BaseReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PartiesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PartiesTable,
+      Party,
+      $$PartiesTableFilterComposer,
+      $$PartiesTableOrderingComposer,
+      $$PartiesTableAnnotationComposer,
+      $$PartiesTableCreateCompanionBuilder,
+      $$PartiesTableUpdateCompanionBuilder,
+      (Party, BaseReferences<_$AppDatabase, $PartiesTable, Party>),
+      Party,
+      PrefetchHooks Function()
+    >;
+typedef $$ParcelsTableCreateCompanionBuilder =
+    ParcelsCompanion Function({
+      required String clientId,
+      Value<int?> serverId,
+      Value<String?> parcelNumber,
+      required String applicationId,
+      required int zoneId,
+      required int localityId,
+      Value<int?> hamletId,
+      required String geomJson,
+      Value<String?> geometryType,
+      Value<double?> areaSqm,
+      Value<String?> north,
+      Value<String?> south,
+      Value<String?> east,
+      Value<String?> west,
+      Value<int?> occupancyType,
+      Value<String> stage,
+      Value<bool> hasConflicts,
+      Value<bool> uploaded,
+      Value<int?> uploadedAt,
+      required int createdAt,
+      required int updatedAt,
+      Value<int> rowid,
+    });
+typedef $$ParcelsTableUpdateCompanionBuilder =
+    ParcelsCompanion Function({
+      Value<String> clientId,
+      Value<int?> serverId,
+      Value<String?> parcelNumber,
+      Value<String> applicationId,
+      Value<int> zoneId,
+      Value<int> localityId,
+      Value<int?> hamletId,
+      Value<String> geomJson,
+      Value<String?> geometryType,
+      Value<double?> areaSqm,
+      Value<String?> north,
+      Value<String?> south,
+      Value<String?> east,
+      Value<String?> west,
+      Value<int?> occupancyType,
+      Value<String> stage,
+      Value<bool> hasConflicts,
+      Value<bool> uploaded,
+      Value<int?> uploadedAt,
+      Value<int> createdAt,
+      Value<int> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$ParcelsTableFilterComposer
+    extends Composer<_$AppDatabase, $ParcelsTable> {
+  $$ParcelsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get clientId => $composableBuilder(
+    column: $table.clientId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get parcelNumber => $composableBuilder(
+    column: $table.parcelNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get applicationId => $composableBuilder(
+    column: $table.applicationId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get zoneId => $composableBuilder(
+    column: $table.zoneId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get localityId => $composableBuilder(
+    column: $table.localityId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get hamletId => $composableBuilder(
+    column: $table.hamletId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get geomJson => $composableBuilder(
+    column: $table.geomJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get geometryType => $composableBuilder(
+    column: $table.geometryType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get areaSqm => $composableBuilder(
+    column: $table.areaSqm,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get north => $composableBuilder(
+    column: $table.north,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get south => $composableBuilder(
+    column: $table.south,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get east => $composableBuilder(
+    column: $table.east,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get west => $composableBuilder(
+    column: $table.west,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get occupancyType => $composableBuilder(
+    column: $table.occupancyType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get stage => $composableBuilder(
+    column: $table.stage,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get hasConflicts => $composableBuilder(
+    column: $table.hasConflicts,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get uploaded => $composableBuilder(
+    column: $table.uploaded,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get uploadedAt => $composableBuilder(
+    column: $table.uploadedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ParcelsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ParcelsTable> {
+  $$ParcelsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get clientId => $composableBuilder(
+    column: $table.clientId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get parcelNumber => $composableBuilder(
+    column: $table.parcelNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get applicationId => $composableBuilder(
+    column: $table.applicationId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get zoneId => $composableBuilder(
+    column: $table.zoneId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get localityId => $composableBuilder(
+    column: $table.localityId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get hamletId => $composableBuilder(
+    column: $table.hamletId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get geomJson => $composableBuilder(
+    column: $table.geomJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get geometryType => $composableBuilder(
+    column: $table.geometryType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get areaSqm => $composableBuilder(
+    column: $table.areaSqm,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get north => $composableBuilder(
+    column: $table.north,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get south => $composableBuilder(
+    column: $table.south,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get east => $composableBuilder(
+    column: $table.east,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get west => $composableBuilder(
+    column: $table.west,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get occupancyType => $composableBuilder(
+    column: $table.occupancyType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get stage => $composableBuilder(
+    column: $table.stage,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get hasConflicts => $composableBuilder(
+    column: $table.hasConflicts,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get uploaded => $composableBuilder(
+    column: $table.uploaded,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get uploadedAt => $composableBuilder(
+    column: $table.uploadedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ParcelsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ParcelsTable> {
+  $$ParcelsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get clientId =>
+      $composableBuilder(column: $table.clientId, builder: (column) => column);
+
+  GeneratedColumn<int> get serverId =>
+      $composableBuilder(column: $table.serverId, builder: (column) => column);
+
+  GeneratedColumn<String> get parcelNumber => $composableBuilder(
+    column: $table.parcelNumber,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get applicationId => $composableBuilder(
+    column: $table.applicationId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get zoneId =>
+      $composableBuilder(column: $table.zoneId, builder: (column) => column);
+
+  GeneratedColumn<int> get localityId => $composableBuilder(
+    column: $table.localityId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get hamletId =>
+      $composableBuilder(column: $table.hamletId, builder: (column) => column);
+
+  GeneratedColumn<String> get geomJson =>
+      $composableBuilder(column: $table.geomJson, builder: (column) => column);
+
+  GeneratedColumn<String> get geometryType => $composableBuilder(
+    column: $table.geometryType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get areaSqm =>
+      $composableBuilder(column: $table.areaSqm, builder: (column) => column);
+
+  GeneratedColumn<String> get north =>
+      $composableBuilder(column: $table.north, builder: (column) => column);
+
+  GeneratedColumn<String> get south =>
+      $composableBuilder(column: $table.south, builder: (column) => column);
+
+  GeneratedColumn<String> get east =>
+      $composableBuilder(column: $table.east, builder: (column) => column);
+
+  GeneratedColumn<String> get west =>
+      $composableBuilder(column: $table.west, builder: (column) => column);
+
+  GeneratedColumn<int> get occupancyType => $composableBuilder(
+    column: $table.occupancyType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get stage =>
+      $composableBuilder(column: $table.stage, builder: (column) => column);
+
+  GeneratedColumn<bool> get hasConflicts => $composableBuilder(
+    column: $table.hasConflicts,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get uploaded =>
+      $composableBuilder(column: $table.uploaded, builder: (column) => column);
+
+  GeneratedColumn<int> get uploadedAt => $composableBuilder(
+    column: $table.uploadedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$ParcelsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ParcelsTable,
+          Parcel,
+          $$ParcelsTableFilterComposer,
+          $$ParcelsTableOrderingComposer,
+          $$ParcelsTableAnnotationComposer,
+          $$ParcelsTableCreateCompanionBuilder,
+          $$ParcelsTableUpdateCompanionBuilder,
+          (Parcel, BaseReferences<_$AppDatabase, $ParcelsTable, Parcel>),
+          Parcel,
+          PrefetchHooks Function()
+        > {
+  $$ParcelsTableTableManager(_$AppDatabase db, $ParcelsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer:
+              () => $$ParcelsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer:
+              () => $$ParcelsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer:
+              () => $$ParcelsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> clientId = const Value.absent(),
+                Value<int?> serverId = const Value.absent(),
+                Value<String?> parcelNumber = const Value.absent(),
+                Value<String> applicationId = const Value.absent(),
+                Value<int> zoneId = const Value.absent(),
+                Value<int> localityId = const Value.absent(),
+                Value<int?> hamletId = const Value.absent(),
+                Value<String> geomJson = const Value.absent(),
+                Value<String?> geometryType = const Value.absent(),
+                Value<double?> areaSqm = const Value.absent(),
+                Value<String?> north = const Value.absent(),
+                Value<String?> south = const Value.absent(),
+                Value<String?> east = const Value.absent(),
+                Value<String?> west = const Value.absent(),
+                Value<int?> occupancyType = const Value.absent(),
+                Value<String> stage = const Value.absent(),
+                Value<bool> hasConflicts = const Value.absent(),
+                Value<bool> uploaded = const Value.absent(),
+                Value<int?> uploadedAt = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ParcelsCompanion(
+                clientId: clientId,
+                serverId: serverId,
+                parcelNumber: parcelNumber,
+                applicationId: applicationId,
+                zoneId: zoneId,
+                localityId: localityId,
+                hamletId: hamletId,
+                geomJson: geomJson,
+                geometryType: geometryType,
+                areaSqm: areaSqm,
+                north: north,
+                south: south,
+                east: east,
+                west: west,
+                occupancyType: occupancyType,
+                stage: stage,
+                hasConflicts: hasConflicts,
+                uploaded: uploaded,
+                uploadedAt: uploadedAt,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String clientId,
+                Value<int?> serverId = const Value.absent(),
+                Value<String?> parcelNumber = const Value.absent(),
+                required String applicationId,
+                required int zoneId,
+                required int localityId,
+                Value<int?> hamletId = const Value.absent(),
+                required String geomJson,
+                Value<String?> geometryType = const Value.absent(),
+                Value<double?> areaSqm = const Value.absent(),
+                Value<String?> north = const Value.absent(),
+                Value<String?> south = const Value.absent(),
+                Value<String?> east = const Value.absent(),
+                Value<String?> west = const Value.absent(),
+                Value<int?> occupancyType = const Value.absent(),
+                Value<String> stage = const Value.absent(),
+                Value<bool> hasConflicts = const Value.absent(),
+                Value<bool> uploaded = const Value.absent(),
+                Value<int?> uploadedAt = const Value.absent(),
+                required int createdAt,
+                required int updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => ParcelsCompanion.insert(
+                clientId: clientId,
+                serverId: serverId,
+                parcelNumber: parcelNumber,
+                applicationId: applicationId,
+                zoneId: zoneId,
+                localityId: localityId,
+                hamletId: hamletId,
+                geomJson: geomJson,
+                geometryType: geometryType,
+                areaSqm: areaSqm,
+                north: north,
+                south: south,
+                east: east,
+                west: west,
+                occupancyType: occupancyType,
+                stage: stage,
+                hasConflicts: hasConflicts,
+                uploaded: uploaded,
+                uploadedAt: uploadedAt,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          BaseReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ParcelsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ParcelsTable,
+      Parcel,
+      $$ParcelsTableFilterComposer,
+      $$ParcelsTableOrderingComposer,
+      $$ParcelsTableAnnotationComposer,
+      $$ParcelsTableCreateCompanionBuilder,
+      $$ParcelsTableUpdateCompanionBuilder,
+      (Parcel, BaseReferences<_$AppDatabase, $ParcelsTable, Parcel>),
+      Parcel,
+      PrefetchHooks Function()
+    >;
+typedef $$ParcelDraftsTableCreateCompanionBuilder =
+    ParcelDraftsCompanion Function({
+      required String clientId,
+      required String applicationId,
+      required int zoneId,
+      required int localityId,
+      required String coordsJson,
+      Value<String> inputMethod,
+      Value<double?> areaSqm,
+      required int createdAt,
+      required int updatedAt,
+      Value<int> rowid,
+    });
+typedef $$ParcelDraftsTableUpdateCompanionBuilder =
+    ParcelDraftsCompanion Function({
+      Value<String> clientId,
+      Value<String> applicationId,
+      Value<int> zoneId,
+      Value<int> localityId,
+      Value<String> coordsJson,
+      Value<String> inputMethod,
+      Value<double?> areaSqm,
+      Value<int> createdAt,
+      Value<int> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$ParcelDraftsTableFilterComposer
+    extends Composer<_$AppDatabase, $ParcelDraftsTable> {
+  $$ParcelDraftsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get clientId => $composableBuilder(
+    column: $table.clientId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get applicationId => $composableBuilder(
+    column: $table.applicationId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get zoneId => $composableBuilder(
+    column: $table.zoneId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get localityId => $composableBuilder(
+    column: $table.localityId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get coordsJson => $composableBuilder(
+    column: $table.coordsJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get inputMethod => $composableBuilder(
+    column: $table.inputMethod,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get areaSqm => $composableBuilder(
+    column: $table.areaSqm,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ParcelDraftsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ParcelDraftsTable> {
+  $$ParcelDraftsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get clientId => $composableBuilder(
+    column: $table.clientId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get applicationId => $composableBuilder(
+    column: $table.applicationId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get zoneId => $composableBuilder(
+    column: $table.zoneId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get localityId => $composableBuilder(
+    column: $table.localityId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get coordsJson => $composableBuilder(
+    column: $table.coordsJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get inputMethod => $composableBuilder(
+    column: $table.inputMethod,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get areaSqm => $composableBuilder(
+    column: $table.areaSqm,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ParcelDraftsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ParcelDraftsTable> {
+  $$ParcelDraftsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get clientId =>
+      $composableBuilder(column: $table.clientId, builder: (column) => column);
+
+  GeneratedColumn<String> get applicationId => $composableBuilder(
+    column: $table.applicationId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get zoneId =>
+      $composableBuilder(column: $table.zoneId, builder: (column) => column);
+
+  GeneratedColumn<int> get localityId => $composableBuilder(
+    column: $table.localityId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get coordsJson => $composableBuilder(
+    column: $table.coordsJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get inputMethod => $composableBuilder(
+    column: $table.inputMethod,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get areaSqm =>
+      $composableBuilder(column: $table.areaSqm, builder: (column) => column);
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$ParcelDraftsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ParcelDraftsTable,
+          ParcelDraftData,
+          $$ParcelDraftsTableFilterComposer,
+          $$ParcelDraftsTableOrderingComposer,
+          $$ParcelDraftsTableAnnotationComposer,
+          $$ParcelDraftsTableCreateCompanionBuilder,
+          $$ParcelDraftsTableUpdateCompanionBuilder,
+          (
+            ParcelDraftData,
+            BaseReferences<_$AppDatabase, $ParcelDraftsTable, ParcelDraftData>,
+          ),
+          ParcelDraftData,
+          PrefetchHooks Function()
+        > {
+  $$ParcelDraftsTableTableManager(_$AppDatabase db, $ParcelDraftsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer:
+              () => $$ParcelDraftsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer:
+              () => $$ParcelDraftsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer:
+              () =>
+                  $$ParcelDraftsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> clientId = const Value.absent(),
+                Value<String> applicationId = const Value.absent(),
+                Value<int> zoneId = const Value.absent(),
+                Value<int> localityId = const Value.absent(),
+                Value<String> coordsJson = const Value.absent(),
+                Value<String> inputMethod = const Value.absent(),
+                Value<double?> areaSqm = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ParcelDraftsCompanion(
+                clientId: clientId,
+                applicationId: applicationId,
+                zoneId: zoneId,
+                localityId: localityId,
+                coordsJson: coordsJson,
+                inputMethod: inputMethod,
+                areaSqm: areaSqm,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String clientId,
+                required String applicationId,
+                required int zoneId,
+                required int localityId,
+                required String coordsJson,
+                Value<String> inputMethod = const Value.absent(),
+                Value<double?> areaSqm = const Value.absent(),
+                required int createdAt,
+                required int updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => ParcelDraftsCompanion.insert(
+                clientId: clientId,
+                applicationId: applicationId,
+                zoneId: zoneId,
+                localityId: localityId,
+                coordsJson: coordsJson,
+                inputMethod: inputMethod,
+                areaSqm: areaSqm,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          BaseReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ParcelDraftsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ParcelDraftsTable,
+      ParcelDraftData,
+      $$ParcelDraftsTableFilterComposer,
+      $$ParcelDraftsTableOrderingComposer,
+      $$ParcelDraftsTableAnnotationComposer,
+      $$ParcelDraftsTableCreateCompanionBuilder,
+      $$ParcelDraftsTableUpdateCompanionBuilder,
+      (
+        ParcelDraftData,
+        BaseReferences<_$AppDatabase, $ParcelDraftsTable, ParcelDraftData>,
+      ),
+      ParcelDraftData,
+      PrefetchHooks Function()
+    >;
+typedef $$AllocationsTableCreateCompanionBuilder =
+    AllocationsCompanion Function({
+      required String clientId,
+      Value<int?> serverId,
+      required String parcelId,
+      Value<String?> partyId,
+      Value<String?> partyName,
+      Value<String?> phoneNumber,
+      Value<String?> nidaNumber,
+      required double proposedShare,
+      Value<String> proposedRightType,
+      Value<String> status,
+      Value<String?> notes,
+      Value<bool> uploaded,
+      Value<int?> uploadedAt,
+      required int createdAt,
+      required int updatedAt,
+      Value<int> rowid,
+    });
+typedef $$AllocationsTableUpdateCompanionBuilder =
+    AllocationsCompanion Function({
+      Value<String> clientId,
+      Value<int?> serverId,
+      Value<String> parcelId,
+      Value<String?> partyId,
+      Value<String?> partyName,
+      Value<String?> phoneNumber,
+      Value<String?> nidaNumber,
+      Value<double> proposedShare,
+      Value<String> proposedRightType,
+      Value<String> status,
+      Value<String?> notes,
+      Value<bool> uploaded,
+      Value<int?> uploadedAt,
+      Value<int> createdAt,
+      Value<int> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$AllocationsTableFilterComposer
+    extends Composer<_$AppDatabase, $AllocationsTable> {
+  $$AllocationsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get clientId => $composableBuilder(
+    column: $table.clientId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get parcelId => $composableBuilder(
+    column: $table.parcelId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get partyId => $composableBuilder(
+    column: $table.partyId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get partyName => $composableBuilder(
+    column: $table.partyName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get phoneNumber => $composableBuilder(
+    column: $table.phoneNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nidaNumber => $composableBuilder(
+    column: $table.nidaNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get proposedShare => $composableBuilder(
+    column: $table.proposedShare,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get proposedRightType => $composableBuilder(
+    column: $table.proposedRightType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get uploaded => $composableBuilder(
+    column: $table.uploaded,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get uploadedAt => $composableBuilder(
+    column: $table.uploadedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$AllocationsTableOrderingComposer
+    extends Composer<_$AppDatabase, $AllocationsTable> {
+  $$AllocationsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get clientId => $composableBuilder(
+    column: $table.clientId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get parcelId => $composableBuilder(
+    column: $table.parcelId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get partyId => $composableBuilder(
+    column: $table.partyId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get partyName => $composableBuilder(
+    column: $table.partyName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get phoneNumber => $composableBuilder(
+    column: $table.phoneNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nidaNumber => $composableBuilder(
+    column: $table.nidaNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get proposedShare => $composableBuilder(
+    column: $table.proposedShare,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get proposedRightType => $composableBuilder(
+    column: $table.proposedRightType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get uploaded => $composableBuilder(
+    column: $table.uploaded,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get uploadedAt => $composableBuilder(
+    column: $table.uploadedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$AllocationsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $AllocationsTable> {
+  $$AllocationsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get clientId =>
+      $composableBuilder(column: $table.clientId, builder: (column) => column);
+
+  GeneratedColumn<int> get serverId =>
+      $composableBuilder(column: $table.serverId, builder: (column) => column);
+
+  GeneratedColumn<String> get parcelId =>
+      $composableBuilder(column: $table.parcelId, builder: (column) => column);
+
+  GeneratedColumn<String> get partyId =>
+      $composableBuilder(column: $table.partyId, builder: (column) => column);
+
+  GeneratedColumn<String> get partyName =>
+      $composableBuilder(column: $table.partyName, builder: (column) => column);
+
+  GeneratedColumn<String> get phoneNumber => $composableBuilder(
+    column: $table.phoneNumber,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get nidaNumber => $composableBuilder(
+    column: $table.nidaNumber,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get proposedShare => $composableBuilder(
+    column: $table.proposedShare,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get proposedRightType => $composableBuilder(
+    column: $table.proposedRightType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<bool> get uploaded =>
+      $composableBuilder(column: $table.uploaded, builder: (column) => column);
+
+  GeneratedColumn<int> get uploadedAt => $composableBuilder(
+    column: $table.uploadedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$AllocationsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $AllocationsTable,
+          Allocation,
+          $$AllocationsTableFilterComposer,
+          $$AllocationsTableOrderingComposer,
+          $$AllocationsTableAnnotationComposer,
+          $$AllocationsTableCreateCompanionBuilder,
+          $$AllocationsTableUpdateCompanionBuilder,
+          (
+            Allocation,
+            BaseReferences<_$AppDatabase, $AllocationsTable, Allocation>,
+          ),
+          Allocation,
+          PrefetchHooks Function()
+        > {
+  $$AllocationsTableTableManager(_$AppDatabase db, $AllocationsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer:
+              () => $$AllocationsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer:
+              () => $$AllocationsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer:
+              () =>
+                  $$AllocationsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> clientId = const Value.absent(),
+                Value<int?> serverId = const Value.absent(),
+                Value<String> parcelId = const Value.absent(),
+                Value<String?> partyId = const Value.absent(),
+                Value<String?> partyName = const Value.absent(),
+                Value<String?> phoneNumber = const Value.absent(),
+                Value<String?> nidaNumber = const Value.absent(),
+                Value<double> proposedShare = const Value.absent(),
+                Value<String> proposedRightType = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<bool> uploaded = const Value.absent(),
+                Value<int?> uploadedAt = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => AllocationsCompanion(
+                clientId: clientId,
+                serverId: serverId,
+                parcelId: parcelId,
+                partyId: partyId,
+                partyName: partyName,
+                phoneNumber: phoneNumber,
+                nidaNumber: nidaNumber,
+                proposedShare: proposedShare,
+                proposedRightType: proposedRightType,
+                status: status,
+                notes: notes,
+                uploaded: uploaded,
+                uploadedAt: uploadedAt,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String clientId,
+                Value<int?> serverId = const Value.absent(),
+                required String parcelId,
+                Value<String?> partyId = const Value.absent(),
+                Value<String?> partyName = const Value.absent(),
+                Value<String?> phoneNumber = const Value.absent(),
+                Value<String?> nidaNumber = const Value.absent(),
+                required double proposedShare,
+                Value<String> proposedRightType = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<bool> uploaded = const Value.absent(),
+                Value<int?> uploadedAt = const Value.absent(),
+                required int createdAt,
+                required int updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => AllocationsCompanion.insert(
+                clientId: clientId,
+                serverId: serverId,
+                parcelId: parcelId,
+                partyId: partyId,
+                partyName: partyName,
+                phoneNumber: phoneNumber,
+                nidaNumber: nidaNumber,
+                proposedShare: proposedShare,
+                proposedRightType: proposedRightType,
+                status: status,
+                notes: notes,
+                uploaded: uploaded,
+                uploadedAt: uploadedAt,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          BaseReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$AllocationsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $AllocationsTable,
+      Allocation,
+      $$AllocationsTableFilterComposer,
+      $$AllocationsTableOrderingComposer,
+      $$AllocationsTableAnnotationComposer,
+      $$AllocationsTableCreateCompanionBuilder,
+      $$AllocationsTableUpdateCompanionBuilder,
+      (
+        Allocation,
+        BaseReferences<_$AppDatabase, $AllocationsTable, Allocation>,
+      ),
+      Allocation,
+      PrefetchHooks Function()
+    >;
+typedef $$ParcelPhotosTableCreateCompanionBuilder =
+    ParcelPhotosCompanion Function({
+      required String clientId,
+      Value<int?> serverId,
+      required String parcelId,
+      required String photoPath,
+      Value<String?> photoUrl,
+      Value<String> photoType,
+      Value<String?> caption,
+      required int capturedAt,
+      Value<bool> uploaded,
+      Value<int?> uploadedAt,
+      required int createdAt,
+      required int updatedAt,
+      Value<int> rowid,
+    });
+typedef $$ParcelPhotosTableUpdateCompanionBuilder =
+    ParcelPhotosCompanion Function({
+      Value<String> clientId,
+      Value<int?> serverId,
+      Value<String> parcelId,
+      Value<String> photoPath,
+      Value<String?> photoUrl,
+      Value<String> photoType,
+      Value<String?> caption,
+      Value<int> capturedAt,
+      Value<bool> uploaded,
+      Value<int?> uploadedAt,
+      Value<int> createdAt,
+      Value<int> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$ParcelPhotosTableFilterComposer
+    extends Composer<_$AppDatabase, $ParcelPhotosTable> {
+  $$ParcelPhotosTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get clientId => $composableBuilder(
+    column: $table.clientId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get parcelId => $composableBuilder(
+    column: $table.parcelId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get photoPath => $composableBuilder(
+    column: $table.photoPath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get photoUrl => $composableBuilder(
+    column: $table.photoUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get photoType => $composableBuilder(
+    column: $table.photoType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get caption => $composableBuilder(
+    column: $table.caption,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get capturedAt => $composableBuilder(
+    column: $table.capturedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get uploaded => $composableBuilder(
+    column: $table.uploaded,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get uploadedAt => $composableBuilder(
+    column: $table.uploadedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ParcelPhotosTableOrderingComposer
+    extends Composer<_$AppDatabase, $ParcelPhotosTable> {
+  $$ParcelPhotosTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get clientId => $composableBuilder(
+    column: $table.clientId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get parcelId => $composableBuilder(
+    column: $table.parcelId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get photoPath => $composableBuilder(
+    column: $table.photoPath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get photoUrl => $composableBuilder(
+    column: $table.photoUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get photoType => $composableBuilder(
+    column: $table.photoType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get caption => $composableBuilder(
+    column: $table.caption,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get capturedAt => $composableBuilder(
+    column: $table.capturedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get uploaded => $composableBuilder(
+    column: $table.uploaded,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get uploadedAt => $composableBuilder(
+    column: $table.uploadedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ParcelPhotosTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ParcelPhotosTable> {
+  $$ParcelPhotosTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get clientId =>
+      $composableBuilder(column: $table.clientId, builder: (column) => column);
+
+  GeneratedColumn<int> get serverId =>
+      $composableBuilder(column: $table.serverId, builder: (column) => column);
+
+  GeneratedColumn<String> get parcelId =>
+      $composableBuilder(column: $table.parcelId, builder: (column) => column);
+
+  GeneratedColumn<String> get photoPath =>
+      $composableBuilder(column: $table.photoPath, builder: (column) => column);
+
+  GeneratedColumn<String> get photoUrl =>
+      $composableBuilder(column: $table.photoUrl, builder: (column) => column);
+
+  GeneratedColumn<String> get photoType =>
+      $composableBuilder(column: $table.photoType, builder: (column) => column);
+
+  GeneratedColumn<String> get caption =>
+      $composableBuilder(column: $table.caption, builder: (column) => column);
+
+  GeneratedColumn<int> get capturedAt => $composableBuilder(
+    column: $table.capturedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get uploaded =>
+      $composableBuilder(column: $table.uploaded, builder: (column) => column);
+
+  GeneratedColumn<int> get uploadedAt => $composableBuilder(
+    column: $table.uploadedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$ParcelPhotosTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ParcelPhotosTable,
+          ParcelPhoto,
+          $$ParcelPhotosTableFilterComposer,
+          $$ParcelPhotosTableOrderingComposer,
+          $$ParcelPhotosTableAnnotationComposer,
+          $$ParcelPhotosTableCreateCompanionBuilder,
+          $$ParcelPhotosTableUpdateCompanionBuilder,
+          (
+            ParcelPhoto,
+            BaseReferences<_$AppDatabase, $ParcelPhotosTable, ParcelPhoto>,
+          ),
+          ParcelPhoto,
+          PrefetchHooks Function()
+        > {
+  $$ParcelPhotosTableTableManager(_$AppDatabase db, $ParcelPhotosTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer:
+              () => $$ParcelPhotosTableFilterComposer($db: db, $table: table),
+          createOrderingComposer:
+              () => $$ParcelPhotosTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer:
+              () =>
+                  $$ParcelPhotosTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> clientId = const Value.absent(),
+                Value<int?> serverId = const Value.absent(),
+                Value<String> parcelId = const Value.absent(),
+                Value<String> photoPath = const Value.absent(),
+                Value<String?> photoUrl = const Value.absent(),
+                Value<String> photoType = const Value.absent(),
+                Value<String?> caption = const Value.absent(),
+                Value<int> capturedAt = const Value.absent(),
+                Value<bool> uploaded = const Value.absent(),
+                Value<int?> uploadedAt = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ParcelPhotosCompanion(
+                clientId: clientId,
+                serverId: serverId,
+                parcelId: parcelId,
+                photoPath: photoPath,
+                photoUrl: photoUrl,
+                photoType: photoType,
+                caption: caption,
+                capturedAt: capturedAt,
+                uploaded: uploaded,
+                uploadedAt: uploadedAt,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String clientId,
+                Value<int?> serverId = const Value.absent(),
+                required String parcelId,
+                required String photoPath,
+                Value<String?> photoUrl = const Value.absent(),
+                Value<String> photoType = const Value.absent(),
+                Value<String?> caption = const Value.absent(),
+                required int capturedAt,
+                Value<bool> uploaded = const Value.absent(),
+                Value<int?> uploadedAt = const Value.absent(),
+                required int createdAt,
+                required int updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => ParcelPhotosCompanion.insert(
+                clientId: clientId,
+                serverId: serverId,
+                parcelId: parcelId,
+                photoPath: photoPath,
+                photoUrl: photoUrl,
+                photoType: photoType,
+                caption: caption,
+                capturedAt: capturedAt,
+                uploaded: uploaded,
+                uploadedAt: uploadedAt,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          BaseReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ParcelPhotosTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ParcelPhotosTable,
+      ParcelPhoto,
+      $$ParcelPhotosTableFilterComposer,
+      $$ParcelPhotosTableOrderingComposer,
+      $$ParcelPhotosTableAnnotationComposer,
+      $$ParcelPhotosTableCreateCompanionBuilder,
+      $$ParcelPhotosTableUpdateCompanionBuilder,
+      (
+        ParcelPhoto,
+        BaseReferences<_$AppDatabase, $ParcelPhotosTable, ParcelPhoto>,
+      ),
+      ParcelPhoto,
+      PrefetchHooks Function()
+    >;
 typedef $$MvtTilesetsTableCreateCompanionBuilder =
     MvtTilesetsCompanion Function({
       Value<int> localityId,
@@ -14431,6 +23007,23 @@ class $AppDatabaseManager {
       $$LandUsesTableTableManager(_db, _db.landUses);
   $$AppSettingsTableTableManager get appSettings =>
       $$AppSettingsTableTableManager(_db, _db.appSettings);
+  $$SubdivisionZonesTableTableManager get subdivisionZones =>
+      $$SubdivisionZonesTableTableManager(_db, _db.subdivisionZones);
+  $$SubdivisionApplicationsTableTableManager get subdivisionApplications =>
+      $$SubdivisionApplicationsTableTableManager(
+        _db,
+        _db.subdivisionApplications,
+      );
+  $$PartiesTableTableManager get parties =>
+      $$PartiesTableTableManager(_db, _db.parties);
+  $$ParcelsTableTableManager get parcels =>
+      $$ParcelsTableTableManager(_db, _db.parcels);
+  $$ParcelDraftsTableTableManager get parcelDrafts =>
+      $$ParcelDraftsTableTableManager(_db, _db.parcelDrafts);
+  $$AllocationsTableTableManager get allocations =>
+      $$AllocationsTableTableManager(_db, _db.allocations);
+  $$ParcelPhotosTableTableManager get parcelPhotos =>
+      $$ParcelPhotosTableTableManager(_db, _db.parcelPhotos);
   $$MvtTilesetsTableTableManager get mvtTilesets =>
       $$MvtTilesetsTableTableManager(_db, _db.mvtTilesets);
 }
