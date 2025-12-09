@@ -112,14 +112,11 @@ class _MadodosoTabBar extends StatelessWidget implements PreferredSizeWidget {
 
     return TabBar(
       isScrollable: true,
-      tabAlignment: TabAlignment.start,
-      labelColor: isDark ? AppColors.darkPrimary : AppColors.primaryDark,
+      tabAlignment: TabAlignment.center,
+      labelColor: isDark ? AppColors.darkPrimary : AppColors.primary,
       unselectedLabelColor:
           isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
       dividerColor: isDark ? AppColors.darkDivider : AppColors.divider,
-      indicatorColor: isDark ? AppColors.darkPrimary : AppColors.primaryDark,
-      indicatorWeight: 3,
-      indicatorSize: TabBarIndicatorSize.tab,
       padding: const EdgeInsets.symmetric(horizontal: AppConstants.spacingSm),
       tabs: [
         buildTab('Rasimu', counts.$1, AppColors.warning),
@@ -276,7 +273,8 @@ class _MadodosoCard extends StatelessWidget {
 
     // Progress bar only for draft, progress percentage for draft and completed
     final showProgressBar = status == MadodosoStatus.draft;
-    final showProgress = status == MadodosoStatus.draft || status == MadodosoStatus.completed;
+    final showProgress =
+        status == MadodosoStatus.draft || status == MadodosoStatus.completed;
 
     return StatusCard(
       title: entry.questionnaireName,
