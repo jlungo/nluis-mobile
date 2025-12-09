@@ -1,21 +1,27 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../env/env.dart';
 import '../utils/logger.dart';
 import '../../shared/constants/app_constants.dart';
+import '../../features/auth/data/datasources/token_manager.dart';
 import 'network_info.dart';
 
 class DioClient {
   late final Dio _dio;
   final FlutterSecureStorage secureStorage;
   final NetworkInfo networkInfo;
+  final SharedPreferences sharedPreferences;
+  late final TokenManager tokenManager;
   final Future<void> Function()? onTokenRefreshFailedWhileOnline;
 
   DioClient({
     required this.secureStorage,
     required this.networkInfo,
+    required this.sharedPreferences,
     this.onTokenRefreshFailedWhileOnline,
   }) {
+    tokenManager = TokenManager(sharedPreferences);
     _dio = Dio(
       BaseOptions(
         baseUrl: Env.baseUrl,
@@ -127,10 +133,28 @@ class DioClient {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
+          // Check if token is expired or expiring soon
+          final isExpired = await tokenManager.isTokenExpired();
+          final isExpiringSoon = await tokenManager.isTokenExpiringSoon();
+
+          // If token is expired or expiring soon, try to refresh proactively
+          if (isExpired || isExpiringSoon) {
+            AppLogger.info('Token expired or expiring soon, attempting refresh...');
+            final refreshed = await _refreshToken();
+            
+            if (!refreshed && isExpired) {
+              // Token is expired and refresh failed
+              final isOnline = await networkInfo.isConnected;
+              if (isOnline && onTokenRefreshFailedWhileOnline != null) {
+                AppLogger.warning('Token expired and refresh failed while online. Triggering logout...');
+                onTokenRefreshFailedWhileOnline!();
+              }
+              // Let the request proceed - it will fail with 401 and be handled in onError
+            }
+          }
+
           // Add auth token to requests
-          final token = await secureStorage.read(
-            key: AppConstants.keyAccessToken,
-          );
+          final token = await tokenManager.getAccessToken();
 
           if (token != null && token.isNotEmpty) {
             options.headers['Authorization'] = 'Bearer $token';
@@ -216,11 +240,10 @@ class DioClient {
 
   Future<bool> _refreshToken() async {
     try {
-      final refreshToken = await secureStorage.read(
-        key: AppConstants.keyRefreshToken,
-      );
+      final refreshToken = await tokenManager.getRefreshToken();
 
       if (refreshToken == null || refreshToken.isEmpty) {
+        AppLogger.warning('No refresh token available');
         return false;
       }
 
@@ -231,13 +254,17 @@ class DioClient {
 
       if (response.statusCode == 200) {
         final newAccessToken = response.data['access'] as String;
-        await secureStorage.write(
-          key: AppConstants.keyAccessToken,
-          value: newAccessToken,
+        
+        // Update access token (expiration is read from JWT)
+        await tokenManager.updateAccessToken(
+          accessToken: newAccessToken,
         );
+        
+        AppLogger.info('Token refreshed successfully');
         return true;
       }
 
+      AppLogger.warning('Token refresh failed with status: ${response.statusCode}');
       return false;
     } catch (e) {
       AppLogger.error('Token refresh failed', e);
