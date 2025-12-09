@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class AppConstants {
-  
   // Colors (Light Theme)
   static const Color primaryColor = Color(0xFF2196F3);
   static const Color textPrimary = Color(0xFF212121);
@@ -14,7 +13,7 @@ class AppConstants {
   static const Color darkTextSecondary = Color(0xFFB0B0B0);
   static const Color darkSurface = Color(0xFF1E1E1E);
   static const Color darkBorder = Color(0xFF424242);
-  
+
   // Spacing
   static const double spacingXs = 4.0;
   static const double spacingSm = 8.0;
@@ -75,13 +74,17 @@ class AppConstants {
   static const double mapBoundaryFitPadding = 50.0;
   static const int mapTileCacheDurationDays = 30;
   static const int mapMaxTileCacheSize = 500; // MB
-  
+
   // Map Tile URLs
-  static const String mapTileStandard = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
-  static const String mapTileSatellite = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
-  static const String mapTileDark = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png';
-  static const String mapTileLabels = 'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}';
-  
+  static const String mapTileStandard =
+      'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+  static const String mapTileSatellite =
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+  static const String mapTileDark =
+      'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png';
+  static const String mapTileLabels =
+      'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}';
+
   // Map UI
   static const double mapControlSize = 48.0;
   static const double mapLocationIndicatorSize = 56.0;
@@ -96,13 +99,13 @@ class AppConstants {
 
 class ModuleType {
   static const int landUse = 1;
-  static const int landSubDivision = 2;
-  static const int monitoringAndEvaluation = 3;
-  static const int compliance = 4;
+  static const int landSubDivision = 3;
+  static const int monitoringAndEvaluation = 4;
+  static const int compliance = 6;
 
   static const Map<int, String> labels = {
     landUse: "Land Use",
-    landSubDivision: "Land Sub Division",
+    landSubDivision: "Adjudication",
     monitoringAndEvaluation: "Monitoring & Evaluation",
     compliance: "Compliance",
   };
