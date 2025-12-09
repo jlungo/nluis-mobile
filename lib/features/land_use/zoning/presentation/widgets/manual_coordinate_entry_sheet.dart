@@ -7,13 +7,19 @@ import '../../../../../shared/theme/app_colors.dart';
 import '../../../../../shared/widgets/app_bottom_sheet.dart';
 import '../../../../../shared/widgets/app_button.dart';
 import '../../../../../shared/widgets/toggle_card_widget.dart';
-import '../../data/services/coordinate_converter.dart';
+import '../../../../spatial/data/services/coordinate_converter.dart';
 import '../../domain/entities/zoning_feature.dart';
 
 /// Fullscreen bottom sheet for manual coordinate entry
 class ManualCoordinateEntrySheet extends StatefulWidget {
   final ZoningFeatureType featureType;
-  final Function(String zoneName, int srid, List<List<double>> coordinates, bool isDraft) onSave;
+  final Function(
+    String zoneName,
+    int srid,
+    List<List<double>> coordinates,
+    bool isDraft,
+  )
+  onSave;
   final VoidCallback onCancel;
 
   const ManualCoordinateEntrySheet({
@@ -78,10 +84,11 @@ class _ManualCoordinateEntrySheetState
   void _addCoordinate() async {
     final result = await showDialog<Map<String, double>>(
       context: context,
-      builder: (context) => _CoordinateInputDialog(
-        srid: _selectedSrid,
-        pointNumber: _coordinates.length + 1,
-      ),
+      builder:
+          (context) => _CoordinateInputDialog(
+            srid: _selectedSrid,
+            pointNumber: _coordinates.length + 1,
+          ),
     );
 
     if (result != null) {
@@ -96,12 +103,13 @@ class _ManualCoordinateEntrySheetState
     final coord = _coordinates[index];
     final result = await showDialog<Map<String, double>>(
       context: context,
-      builder: (context) => _CoordinateInputDialog(
-        srid: _selectedSrid,
-        pointNumber: index + 1,
-        initialX: coord[0],
-        initialY: coord[1],
-      ),
+      builder:
+          (context) => _CoordinateInputDialog(
+            srid: _selectedSrid,
+            pointNumber: index + 1,
+            initialX: coord[0],
+            initialY: coord[1],
+          ),
     );
 
     if (result != null) {
@@ -134,13 +142,14 @@ class _ManualCoordinateEntrySheetState
     if (_coordinates.isEmpty || !_showMap) return;
 
     try {
-      final wgs84Points = _coordinates.map((point) {
-        return CoordinateConverter.toWGS84(
-          x: point[0],
-          y: point[1],
-          fromSrid: _selectedSrid,
-        );
-      }).toList();
+      final wgs84Points =
+          _coordinates.map((point) {
+            return CoordinateConverter.toWGS84(
+              x: point[0],
+              y: point[1],
+              fromSrid: _selectedSrid,
+            );
+          }).toList();
 
       if (wgs84Points.isNotEmpty) {
         final lats = wgs84Points.map((p) => p.latitude).toList();
@@ -214,9 +223,10 @@ class _ManualCoordinateEntrySheetState
               horizontal: AppConstants.spacingMd,
               vertical: AppConstants.spacingSm,
             ),
-            color: _hasMinPoints
-                ? AppColors.success.withValues(alpha: 0.1)
-                : AppColors.warning.withValues(alpha: 0.1),
+            color:
+                _hasMinPoints
+                    ? AppColors.success.withValues(alpha: 0.1)
+                    : AppColors.warning.withValues(alpha: 0.1),
             child: Row(
               children: [
                 Icon(
@@ -228,7 +238,8 @@ class _ManualCoordinateEntrySheetState
                 Text(
                   'Coordinates: ${_coordinates.length} / $_minPointsRequired ${_hasMinPoints ? "✓" : ""}',
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: _hasMinPoints ? AppColors.success : AppColors.warning,
+                    color:
+                        _hasMinPoints ? AppColors.success : AppColors.warning,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -238,7 +249,10 @@ class _ManualCoordinateEntrySheetState
 
           // Content
           Expanded(
-            child: _showMap ? _buildMapView(isDark) : _buildFormView(theme, isDark),
+            child:
+                _showMap
+                    ? _buildMapView(isDark)
+                    : _buildFormView(theme, isDark),
           ),
 
           // Bottom Actions
@@ -339,48 +353,50 @@ class _ManualCoordinateEntrySheetState
               ),
               isExpanded: true,
               menuMaxHeight: 300,
-              items: CoordinateConverter.getSupportedSrids().map((sridInfo) {
-                return DropdownMenuItem<int>(
-                  value: sridInfo.srid,
-                  child: Container(
-                    constraints: const BoxConstraints(maxHeight: 48),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          sridInfo.name,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 13,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
+              items:
+                  CoordinateConverter.getSupportedSrids().map((sridInfo) {
+                    return DropdownMenuItem<int>(
+                      value: sridInfo.srid,
+                      child: Container(
+                        constraints: const BoxConstraints(maxHeight: 48),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              sridInfo.name,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                            // Text(
+                            //   sridInfo.description,
+                            //   style: theme.textTheme.bodySmall?.copyWith(
+                            //     color: isDark
+                            //         ? AppColors.darkTextSecondary
+                            //         : AppColors.textSecondary,
+                            //     fontSize: 11,
+                            //   ),
+                            //   overflow: TextOverflow.ellipsis,
+                            //   maxLines: 1,
+                            // ),
+                          ],
                         ),
-                        Text(
-                          sridInfo.description,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: isDark
-                                ? AppColors.darkTextSecondary
-                                : AppColors.textSecondary,
-                            fontSize: 11,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }).toList(),
-              onChanged: _coordinates.isEmpty
-                  ? (value) {
-                      if (value != null) {
-                        setState(() => _selectedSrid = value);
+                      ),
+                    );
+                  }).toList(),
+              onChanged:
+                  _coordinates.isEmpty
+                      ? (value) {
+                        if (value != null) {
+                          setState(() => _selectedSrid = value);
+                        }
                       }
-                    }
-                  : null,
+                      : null,
               hint: const Text('Chagua mfumo wa coordinate'),
             ),
             if (_coordinates.isNotEmpty)
@@ -391,7 +407,11 @@ class _ManualCoordinateEntrySheetState
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.info_outline, size: 16, color: Colors.orange),
+                    const Icon(
+                      Icons.info_outline,
+                      size: 16,
+                      color: Colors.orange,
+                    ),
                     const SizedBox(width: AppConstants.spacingXs),
                     Expanded(
                       child: Text(
@@ -426,25 +446,28 @@ class _ManualCoordinateEntrySheetState
                       Icon(
                         Icons.add_location_alt_outlined,
                         size: 48,
-                        color: isDark
-                            ? AppColors.darkTextSecondary
-                            : AppColors.textSecondary,
+                        color:
+                            isDark
+                                ? AppColors.darkTextSecondary
+                                : AppColors.textSecondary,
                       ),
                       const SizedBox(height: AppConstants.spacingSm),
                       Text(
                         'Hakuna coordinates zilizoongezwa',
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          color: isDark
-                              ? AppColors.darkTextSecondary
-                              : AppColors.textSecondary,
+                          color:
+                              isDark
+                                  ? AppColors.darkTextSecondary
+                                  : AppColors.textSecondary,
                         ),
                       ),
                       Text(
                         'Bonyeza "Ingiza Coordinates" kuanza',
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: isDark
-                              ? AppColors.darkTextSecondary
-                              : AppColors.textSecondary,
+                          color:
+                              isDark
+                                  ? AppColors.darkTextSecondary
+                                  : AppColors.textSecondary,
                         ),
                       ),
                     ],
@@ -462,13 +485,13 @@ class _ManualCoordinateEntrySheetState
                   final isMetric = _selectedSrid != 4326;
                   return Card(
                     key: ValueKey(index),
-                    margin:
-                        const EdgeInsets.only(bottom: AppConstants.spacingSm),
+                    margin: const EdgeInsets.only(
+                      bottom: AppConstants.spacingSm,
+                    ),
                     child: ListTile(
                       leading: CircleAvatar(
-                        backgroundColor: isDark
-                            ? AppColors.darkPrimary
-                            : AppColors.primary,
+                        backgroundColor:
+                            isDark ? AppColors.darkPrimary : AppColors.primary,
                         child: Text(
                           '${index + 1}',
                           style: const TextStyle(
@@ -494,9 +517,10 @@ class _ManualCoordinateEntrySheetState
                           IconButton(
                             icon: const Icon(Icons.edit, size: 20),
                             onPressed: () => _editCoordinate(index),
-                            color: isDark
-                                ? AppColors.darkPrimary
-                                : AppColors.primary,
+                            color:
+                                isDark
+                                    ? AppColors.darkPrimary
+                                    : AppColors.primary,
                           ),
                           IconButton(
                             icon: const Icon(Icons.delete, size: 20),
@@ -526,7 +550,9 @@ class _ManualCoordinateEntrySheetState
               Icons.map_outlined,
               size: 64,
               color:
-                  isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                  isDark
+                      ? AppColors.darkTextSecondary
+                      : AppColors.textSecondary,
             ),
             const SizedBox(height: AppConstants.spacingMd),
             const Text('Ongeza coordinates kuona kwenye ramani'),
@@ -536,20 +562,18 @@ class _ManualCoordinateEntrySheetState
     }
 
     try {
-      final wgs84Points = _coordinates.map((point) {
-        return CoordinateConverter.toWGS84(
-          x: point[0],
-          y: point[1],
-          fromSrid: _selectedSrid,
-        );
-      }).toList();
+      final wgs84Points =
+          _coordinates.map((point) {
+            return CoordinateConverter.toWGS84(
+              x: point[0],
+              y: point[1],
+              fromSrid: _selectedSrid,
+            );
+          }).toList();
 
       return FlutterMap(
         mapController: _mapController,
-        options: MapOptions(
-          initialCenter: wgs84Points.first,
-          initialZoom: 15,
-        ),
+        options: MapOptions(initialCenter: wgs84Points.first, initialZoom: 15),
         children: [
           TileLayer(
             urlTemplate: AppConstants.mapTileStandard,
@@ -581,34 +605,39 @@ class _ManualCoordinateEntrySheetState
               ],
             ),
           MarkerLayer(
-            markers: wgs84Points.asMap().entries.map((entry) {
-              return Marker(
-                point: entry.value,
-                width: 40,
-                height: 40,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color:
-                          isDark ? AppColors.darkPrimary : AppColors.primary,
-                      width: 3,
-                    ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      '${entry.key + 1}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color:
-                            isDark ? AppColors.darkPrimary : AppColors.primary,
+            markers:
+                wgs84Points.asMap().entries.map((entry) {
+                  return Marker(
+                    point: entry.value,
+                    width: 40,
+                    height: 40,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color:
+                              isDark
+                                  ? AppColors.darkPrimary
+                                  : AppColors.primary,
+                          width: 3,
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          '${entry.key + 1}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color:
+                                isDark
+                                    ? AppColors.darkPrimary
+                                    : AppColors.primary,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-              );
-            }).toList(),
+                  );
+                }).toList(),
           ),
         ],
       );
@@ -688,13 +717,16 @@ class _CoordinateInputDialogState extends State<_CoordinateInputDialog> {
       return;
     }
 
-    final valid = CoordinateConverter.validateCoordinate(
-      x: x,
-      y: y,
-      srid: widget.srid,
+    // Validate X coordinate
+    final xError = CoordinateConverter.validateCoordinate(
+      x,
+      widget.srid,
+      false,
     );
+    // Validate Y coordinate
+    final yError = CoordinateConverter.validateCoordinate(y, widget.srid, true);
 
-    setState(() => _isValid = valid);
+    setState(() => _isValid = xError == null && yError == null);
   }
 
   String _getCoordinateLabel(String axis) {
@@ -725,33 +757,43 @@ class _CoordinateInputDialogState extends State<_CoordinateInputDialog> {
             const SizedBox(height: AppConstants.spacingMd),
             TextFormField(
               controller: _xController,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true, signed: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+                signed: true,
+              ),
               decoration: InputDecoration(
                 labelText: _getCoordinateLabel('X'),
                 border: const OutlineInputBorder(),
               ),
               inputFormatters: [
                 // Allow digits, decimal point, and minus sign (for negative numbers)
-                FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*\.?[0-9]*')),
+                FilteringTextInputFormatter.allow(
+                  RegExp(r'^-?[0-9]*\.?[0-9]*'),
+                ),
               ],
             ),
             const SizedBox(height: AppConstants.spacingSm),
             TextFormField(
               controller: _yController,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true, signed: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+                signed: true,
+              ),
               decoration: InputDecoration(
                 labelText: _getCoordinateLabel('Y'),
                 border: const OutlineInputBorder(),
               ),
               inputFormatters: [
                 // Allow digits, decimal point, and minus sign (for negative numbers)
-                FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*\.?[0-9]*')),
+                FilteringTextInputFormatter.allow(
+                  RegExp(r'^-?[0-9]*\.?[0-9]*'),
+                ),
               ],
             ),
             const SizedBox(height: AppConstants.spacingMd),
-            if (!_isValid && _xController.text.isNotEmpty && _yController.text.isNotEmpty)
+            if (!_isValid &&
+                _xController.text.isNotEmpty &&
+                _yController.text.isNotEmpty)
               Container(
                 padding: const EdgeInsets.all(AppConstants.spacingSm),
                 decoration: BoxDecoration(
@@ -781,13 +823,14 @@ class _CoordinateInputDialogState extends State<_CoordinateInputDialog> {
                 ),
                 const SizedBox(width: AppConstants.spacingSm),
                 ElevatedButton(
-                  onPressed: _isValid
-                      ? () {
-                          final x = double.parse(_xController.text.trim());
-                          final y = double.parse(_yController.text.trim());
-                          Navigator.pop(context, {'x': x, 'y': y});
-                        }
-                      : null,
+                  onPressed:
+                      _isValid
+                          ? () {
+                            final x = double.parse(_xController.text.trim());
+                            final y = double.parse(_yController.text.trim());
+                            Navigator.pop(context, {'x': x, 'y': y});
+                          }
+                          : null,
                   child: const Text('Ongeza'),
                 ),
               ],
