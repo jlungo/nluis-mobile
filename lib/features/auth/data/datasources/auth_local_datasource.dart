@@ -1,8 +1,8 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../../../shared/constants/app_constants.dart';
 import '../models/user_model.dart';
+import 'token_manager.dart';
 
 abstract class AuthLocalDataSource {
   Future<void> cacheTokens(String accessToken, String refreshToken);
@@ -16,27 +16,23 @@ abstract class AuthLocalDataSource {
 }
 
 class AuthLocalDataSourceImpl implements AuthLocalDataSource {
-  final FlutterSecureStorage secureStorage;
   final SharedPreferences sharedPreferences;
+  late final TokenManager _tokenManager;
 
-  const AuthLocalDataSourceImpl({
-    required this.secureStorage,
+  AuthLocalDataSourceImpl({
     required this.sharedPreferences,
-  });
+  }) {
+    _tokenManager = TokenManager(sharedPreferences);
+  }
 
   @override
   Future<void> cacheTokens(String accessToken, String refreshToken) async {
     try {
-      await Future.wait([
-        secureStorage.write(
-          key: AppConstants.keyAccessToken,
-          value: accessToken,
-        ),
-        secureStorage.write(
-          key: AppConstants.keyRefreshToken,
-          value: refreshToken,
-        ),
-      ]);
+      // Store tokens using TokenManager (JWT expiration is read from token)
+      await _tokenManager.storeTokens(
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+      );
     } catch (e) {
       throw CacheException('Failed to cache tokens: $e');
     }
@@ -45,7 +41,8 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   @override
   Future<String?> getAccessToken() async {
     try {
-      return await secureStorage.read(key: AppConstants.keyAccessToken);
+      // Use TokenManager which checks expiration automatically
+      return await _tokenManager.getAccessToken();
     } catch (e) {
       throw CacheException('Failed to get access token: $e');
     }
@@ -54,7 +51,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   @override
   Future<String?> getRefreshToken() async {
     try {
-      return await secureStorage.read(key: AppConstants.keyRefreshToken);
+      return await _tokenManager.getRefreshToken();
     } catch (e) {
       throw CacheException('Failed to get refresh token: $e');
     }
@@ -87,8 +84,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   Future<void> clearAuthData() async {
     try {
       await Future.wait([
-        secureStorage.delete(key: AppConstants.keyAccessToken),
-        secureStorage.delete(key: AppConstants.keyRefreshToken),
+        _tokenManager.clearTokens(),
         sharedPreferences.remove(AppConstants.keyUser),
         sharedPreferences.remove(AppConstants.keyActiveModule),
       ]);
@@ -102,7 +98,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
     try {
       await sharedPreferences.setString(
         AppConstants.keyActiveModule,
-        moduleId as String,
+        moduleId.toString(),
       );
     } catch (e) {
       throw CacheException('Failed to set active module: $e');
