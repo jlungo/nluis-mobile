@@ -6,17 +6,17 @@ import 'package:latlong2/latlong.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../../shared/constants/app_constants.dart';
 import '../../../../../shared/theme/app_colors.dart';
-import '../../domain/entities/basemap.dart';
-import '../../domain/entities/user_location.dart';
+import '../../../../spatial/domain/entities/basemap.dart';
+import '../../../../spatial/domain/entities/user_location.dart';
 import '../../domain/entities/zoning_feature.dart';
 import '../providers/zoning_providers.dart';
-import '../../data/services/calculation_service.dart';
+import '../../../../spatial/data/services/calculation_service.dart';
 import 'feature_metadata_sheet.dart';
 import 'feature_details_sheet.dart';
 import 'location_indicator.dart';
 import 'coordinate_editor_map.dart';
 import 'manual_coordinate_entry_sheet.dart';
-import '../../data/services/coordinate_converter.dart';
+import '../../../../spatial/data/services/coordinate_converter.dart';
 
 const _uuid = Uuid();
 
@@ -207,49 +207,49 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
     final featuresAsync = ref.read(zoningFeaturesProvider(widget.projectId));
     featuresAsync.whenData((features) {
       final tappedFeature = _findFeatureAtPoint(point, features);
-      if (tappedFeature != null) {
-        // Open coordinate editor for this feature
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => CoordinateEditorMap(
-              feature: tappedFeature,
-              onSave: (updatedCoordinates) {
-                // Recalculate area/length
-                double? area;
-                double? length;
+        if (tappedFeature != null) {
+          // Open coordinate editor for this feature
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => CoordinateEditorMap(
+                feature: tappedFeature,
+                onSave: (updatedCoordinates) {
+                  // Recalculate area/length
+                  double? area;
+                  double? length;
 
-                if (tappedFeature.featureType == ZoningFeatureType.polygon) {
-                  area = CalculationService.calculatePolygonArea(updatedCoordinates);
-                } else if (tappedFeature.featureType == ZoningFeatureType.lineString) {
-                  length = CalculationService.calculateLineLength(updatedCoordinates);
-                }
+                  if (tappedFeature.featureType == ZoningFeatureType.polygon) {
+                    area = CalculationService.calculatePolygonArea(updatedCoordinates);
+                  } else if (tappedFeature.featureType == ZoningFeatureType.lineString) {
+                    length = CalculationService.calculateLineLength(updatedCoordinates);
+                  }
 
-                final updatedFeature = tappedFeature.copyWith(
-                  coordinates: updatedCoordinates,
-                  area: area,
-                  length: length,
-                  updatedAt: DateTime.now(),
-                );
+                  final updatedFeature = tappedFeature.copyWith(
+                    coordinates: updatedCoordinates,
+                    area: area,
+                    length: length,
+                    updatedAt: DateTime.now(),
+                  );
 
-                ref.read(zoningStateProvider.notifier).updateFeature(updatedFeature);
-                ref.invalidate(zoningFeaturesProvider(widget.projectId));
-                
-                Navigator.of(context).pop();
-                
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Feature coordinates updated successfully'),
-                    backgroundColor: AppColors.success,
-                  ),
-                );
-              },
-              onCancel: () {
-                Navigator.of(context).pop();
-              },
+                  ref.read(zoningStateProvider.notifier).updateFeature(updatedFeature);
+                  ref.invalidate(zoningFeaturesProvider(widget.projectId));
+                  
+                  Navigator.of(context).pop();
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Feature coordinates updated successfully'),
+                      backgroundColor: AppColors.success,
+                    ),
+                  );
+                },
+                onCancel: () {
+                  Navigator.of(context).pop();
+                },
+              ),
             ),
-          ),
-        );
-      }
+          );
+        }
     });
   }
 
@@ -275,6 +275,8 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
           duration: Duration(seconds: 4),
         ),
       );
+      // Reset creation state so FAB reappears
+      widget.onCreatingFeatureChanged?.call(false);
       return; // Don't start recording
     }
 
