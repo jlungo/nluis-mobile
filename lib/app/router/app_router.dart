@@ -14,6 +14,12 @@ import '../../features/notifications/presentation/pages/notifications_page.dart'
 import '../../features/madodoso/presentation/pages/madodoso_page.dart';
 import '../../features/land_use/survey/presentation/pages/questionnaire_form_page.dart';
 import '../../features/land_use/zoning/presentation/pages/zoning_manager_page.dart';
+import '../../features/ccro/dashboard/presentation/pages/ccro_dashboard_page.dart';
+import '../../features/ccro/dashboard/presentation/pages/ccro_projects_page.dart';
+import '../../features/ccro/dashboard/presentation/pages/my_applications_page.dart';
+import '../../features/ccro/subdivision/presentation/pages/subdivision_zones_page.dart';
+import '../../features/ccro/subdivision/presentation/pages/subdivision_applications_page.dart';
+import '../../features/ccro/subdivision/presentation/pages/parcel_mapping_page.dart';
 import '../../shared/widgets/app_shell.dart';
 import '../../features/auth/presentation/providers/auth_providers.dart';
 import '../../features/auth/domain/entities/user.dart';
@@ -49,14 +55,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       // Only redirect authenticated users away from login page
       final authState = ref.read(authStateProvider);
       final isGoingToLogin = state.matchedLocation == '/login';
-      
+
       if (isGoingToLogin) {
         final user = authState.when(
           data: (user) => user,
           loading: () => null,
           error: (_, _) => null,
         );
-        
+
         // If user is already authenticated, redirect to module switch
         if (user != null) {
           return '/module-switch';
@@ -108,13 +114,30 @@ final routerProvider = Provider<GoRouter>((ref) {
             name: 'zoningManager',
             builder: (context, state) => const ZoningManagerPage(),
           ),
-          // SETTINGS
+          // CCRO MODULE
           GoRoute(
-            path: '/settings',
-            name: 'settings',
-            builder: (context, state) => const SettingsPage(),
+            path: '/module/ccro/dashboard',
+            name: 'ccroDashboard',
+            builder: (context, state) => const CcroDashboardPage(),
+          ),
+          GoRoute(
+            path: '/module/ccro/projects',
+            name: 'ccroProjects',
+            builder: (context, state) => const CcroProjectsPage(),
+          ),
+          GoRoute(
+            path: '/module/ccro/my-applications',
+            name: 'myApplications',
+            builder: (context, state) => const MyApplicationsPage(),
           ),
         ],
+      ),
+      // GLOBAL ROUTES (NO BOTTOM BAR)
+      // Settings
+      GoRoute(
+        path: '/settings',
+        name: 'settings',
+        builder: (context, state) => const SettingsPage(),
       ),
       // APP CONFIGURATIONS
       GoRoute(
@@ -144,6 +167,56 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
+        path: '/module/ccro/zones/:projectId/:localityId',
+        name: 'subdivisionZones',
+        builder: (context, state) {
+          final projectId = state.pathParameters['projectId']!;
+          final localityId = int.parse(state.pathParameters['localityId']!);
+          final projectName =
+              state.uri.queryParameters['projectName'] ?? 'Mradi';
+          return SubdivisionZonesPage(
+            projectId: projectId,
+            localityId: localityId,
+            projectName: projectName,
+          );
+        },
+      ),
+      GoRoute(
+        path: '/module/ccro/subdivision/:projectId/:zoneId/:localityId',
+        name: 'subdivisionApplications',
+        builder: (context, state) {
+          final projectId = state.pathParameters['projectId']!;
+          final zoneId = state.pathParameters['zoneId']!;
+          final localityId = int.parse(state.pathParameters['localityId']!);
+          final projectName =
+              state.uri.queryParameters['projectName'] ?? 'Mradi';
+          return SubdivisionApplicationsPage(
+            projectId: projectId,
+            zoneId: zoneId,
+            localityId: localityId,
+            projectName: projectName,
+          );
+        },
+      ),
+      GoRoute(
+        path: '/module/ccro/parcel-mapping/:projectId/:zoneId/:localityId',
+        name: 'parcelMapping',
+        builder: (context, state) {
+          final projectId = state.pathParameters['projectId']!;
+          final zoneId = int.parse(state.pathParameters['zoneId']!);
+          final localityId = int.parse(state.pathParameters['localityId']!);
+          final applicationId = state.uri.queryParameters['applicationId'];
+          final inputMethod = state.uri.queryParameters['inputMethod'];
+          return ParcelMappingPage(
+            projectId: projectId,
+            localityId: localityId,
+            zoneId: zoneId,
+            applicationId: applicationId,
+            inputMethod: inputMethod,
+          );
+        },
+      ),
+      GoRoute(
         path: '/questionnaire/:questionnaireSlug/:projectId/:projectName',
         name: 'questionnaireForm',
         builder: (context, state) {
@@ -152,7 +225,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           final projectName = state.pathParameters['projectName']!;
           final surveyId = state.uri.queryParameters['surveyId'];
           final isReadOnly = state.uri.queryParameters['isReadOnly'] == 'true';
-          
+
           return QuestionnaireFormPage(
             questionnaireSlug: questionnaireSlug,
             projectId: projectId,
