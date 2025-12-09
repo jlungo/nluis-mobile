@@ -36,6 +36,7 @@ class AppConstants {
   // Storage Keys
   static const String keyAccessToken = 'access_token';
   static const String keyRefreshToken = 'refresh_token';
+  static const String keyTokenExpiresAt = 'token_expires_at';
   static const String keyUser = 'user';
   static const String keyActiveModule = 'active_module';
   static const String keyLocale = 'locale';
