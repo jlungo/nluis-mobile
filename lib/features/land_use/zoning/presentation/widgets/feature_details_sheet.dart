@@ -27,7 +27,8 @@ class FeatureDetailsSheet extends ConsumerWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final landUseMap = ref.watch(landUseMapProvider);
-    final landUse = feature.landUseId != null ? landUseMap[feature.landUseId!] : null;
+    final landUse =
+        feature.landUseId != null ? landUseMap[feature.landUseId!] : null;
 
     return Container(
       constraints: BoxConstraints(
@@ -343,12 +344,7 @@ class FeatureDetailsSheet extends ConsumerWidget {
                     ),
 
                     if (landUse != null)
-                      _buildDetailRow(
-                        'Land Use',
-                        landUse.name,
-                        theme,
-                        isDark,
-                      ),
+                      _buildDetailRow('Land Use', landUse.name, theme, isDark),
 
                     _buildDetailRow(
                       'Buffer',
@@ -422,11 +418,7 @@ class FeatureDetailsSheet extends ConsumerWidget {
                   ),
                   child: Row(
                     children: [
-                      Icon(
-                        Icons.cloud_done,
-                        color: AppColors.info,
-                        size: 20,
-                      ),
+                      Icon(Icons.cloud_done, color: AppColors.info, size: 20),
                       const SizedBox(width: AppConstants.spacingSm),
                       Expanded(
                         child: Text(
@@ -452,7 +444,6 @@ class FeatureDetailsSheet extends ConsumerWidget {
                   children: [
                     Expanded(
                       child: AppButton(
-                        label: 'Delete',
                         icon: Icons.delete_outline,
                         onPressed: () {
                           Navigator.of(context).pop();
@@ -476,86 +467,117 @@ class FeatureDetailsSheet extends ConsumerWidget {
                           showModalBottomSheet(
                             context: context,
                             isScrollControlled: true,
-                            builder: (context) => FeatureMetadataSheet(
-                              featureType: feature.featureType,
-                              coordinates: feature.coordinates,
-                              initialData: {
-                                'plotName': feature.plotName,
-                                'landUseId': feature.landUseId,
-                                'buffer': feature.buffer,
-                                'isDraft': feature.isDraft,
-                                'isProposed': feature.isProposed,
-                              },
-                              onSave: (metadata) {
-                                final updatedFeature = feature.copyWith(
-                                  plotName: metadata['plotName'] as String?,
-                                  landUseId: metadata['landUseId'] as int?,
-                                  buffer: metadata['buffer'] as double,
-                                  isDraft: metadata['isDraft'] as bool,
-                                  isProposed: metadata['isProposed'] as bool,
-                                  updatedAt: DateTime.now(),
-                                );
-                                onEdit(updatedFeature);
-                                Navigator.of(context).pop();
-                              },
-                              onCancel: () {
-                                Navigator.of(context).pop();
-                              },
-                              onEditCoordinates: () async {
-                                Navigator.of(context).pop(); // Close metadata sheet
-                                
-                                // Open coordinate editor
-                                final updatedCoordinates = await Navigator.of(context).push<List<LatLng>>(
-                                  MaterialPageRoute(
-                                    builder: (context) => CoordinateEditorMap(
-                                      feature: feature,
-                                      onSave: (coords) {
-                                        Navigator.of(context).pop(coords);
-                                      },
-                                      onCancel: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                  ),
-                                );
-                                
-                                // Reopen metadata sheet with updated coordinates if available
-                                if (context.mounted) {
-                                  showModalBottomSheet(
-                                    context: context,
-                                    isScrollControlled: true,
-                                    builder: (context) => FeatureMetadataSheet(
-                                      featureType: feature.featureType,
-                                      coordinates: updatedCoordinates ?? feature.coordinates,
-                                      initialData: {
-                                        'plotName': feature.plotName,
-                                        'landUseId': feature.landUseId,
-                                        'buffer': feature.buffer,
-                                        'isDraft': feature.isDraft,
-                                        'isProposed': feature.isProposed,
-                                      },
-                                      onSave: (newMetadata) {
-                                        final updatedFeature = feature.copyWith(
-                                          plotName: newMetadata['plotName'] as String?,
-                                          landUseId: newMetadata['landUseId'] as int?,
-                                          buffer: newMetadata['buffer'] as double,
-                                          isDraft: newMetadata['isDraft'] as bool,
-                                          isProposed: newMetadata['isProposed'] as bool,
-                                          coordinates: updatedCoordinates ?? feature.coordinates,
-                                          updatedAt: DateTime.now(),
+                            builder:
+                                (context) => FeatureMetadataSheet(
+                                  featureType: feature.featureType,
+                                  coordinates: feature.coordinates,
+                                  initialData: {
+                                    'plotName': feature.plotName,
+                                    'landUseId': feature.landUseId,
+                                    'buffer': feature.buffer,
+                                    'isDraft': feature.isDraft,
+                                    'isProposed': feature.isProposed,
+                                  },
+                                  onSave: (metadata) {
+                                    final updatedFeature = feature.copyWith(
+                                      plotName: metadata['plotName'] as String?,
+                                      landUseId: metadata['landUseId'] as int?,
+                                      buffer: metadata['buffer'] as double,
+                                      isDraft: metadata['isDraft'] as bool,
+                                      isProposed:
+                                          metadata['isProposed'] as bool,
+                                      updatedAt: DateTime.now(),
+                                    );
+                                    onEdit(updatedFeature);
+                                    Navigator.of(context).pop();
+                                  },
+                                  onCancel: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  onEditCoordinates: () async {
+                                    Navigator.of(
+                                      context,
+                                    ).pop(); // Close metadata sheet
+
+                                    // Open coordinate editor
+                                    final updatedCoordinates =
+                                        await Navigator.of(
+                                          context,
+                                        ).push<List<LatLng>>(
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) =>
+                                                    CoordinateEditorMap(
+                                                      feature: feature,
+                                                      onSave: (coords) {
+                                                        Navigator.of(
+                                                          context,
+                                                        ).pop(coords);
+                                                      },
+                                                      onCancel: () {
+                                                        Navigator.of(
+                                                          context,
+                                                        ).pop();
+                                                      },
+                                                    ),
+                                          ),
                                         );
-                                        onEdit(updatedFeature);
-                                        Navigator.of(context).pop();
-                                      },
-                                      onCancel: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      onEditCoordinates: null, // Prevent nested editing
-                                    ),
-                                  );
-                                }
-                              },
-                            ),
+
+                                    // Reopen metadata sheet with updated coordinates if available
+                                    if (context.mounted) {
+                                      showModalBottomSheet(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        builder:
+                                            (context) => FeatureMetadataSheet(
+                                              featureType: feature.featureType,
+                                              coordinates:
+                                                  updatedCoordinates ??
+                                                  feature.coordinates,
+                                              initialData: {
+                                                'plotName': feature.plotName,
+                                                'landUseId': feature.landUseId,
+                                                'buffer': feature.buffer,
+                                                'isDraft': feature.isDraft,
+                                                'isProposed':
+                                                    feature.isProposed,
+                                              },
+                                              onSave: (newMetadata) {
+                                                final updatedFeature = feature
+                                                    .copyWith(
+                                                      plotName:
+                                                          newMetadata['plotName']
+                                                              as String?,
+                                                      landUseId:
+                                                          newMetadata['landUseId']
+                                                              as int?,
+                                                      buffer:
+                                                          newMetadata['buffer']
+                                                              as double,
+                                                      isDraft:
+                                                          newMetadata['isDraft']
+                                                              as bool,
+                                                      isProposed:
+                                                          newMetadata['isProposed']
+                                                              as bool,
+                                                      coordinates:
+                                                          updatedCoordinates ??
+                                                          feature.coordinates,
+                                                      updatedAt: DateTime.now(),
+                                                    );
+                                                onEdit(updatedFeature);
+                                                Navigator.of(context).pop();
+                                              },
+                                              onCancel: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              onEditCoordinates:
+                                                  null, // Prevent nested editing
+                                            ),
+                                      );
+                                    }
+                                  },
+                                ),
                           );
                         },
                         gradientColors: [
@@ -629,7 +651,7 @@ class FeatureDetailsSheet extends ConsumerWidget {
   void _showDeleteConfirmation(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    
+
     AppBottomSheet.show(
       context: context,
       title: 'Delete Feature',

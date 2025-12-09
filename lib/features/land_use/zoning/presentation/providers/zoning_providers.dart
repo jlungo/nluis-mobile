@@ -4,21 +4,21 @@ import 'package:latlong2/latlong.dart';
 import '../../../../../data/local/draft_provider.dart';
 import '../../../../../features/auth/presentation/providers/auth_providers.dart';
 import '../../data/repositories/zoning_repository_impl.dart';
-import '../../data/services/basemap_storage_service.dart';
-import '../../data/services/location_service.dart';
+import '../../../../spatial/data/services/basemap_service.dart';
+import '../../../../spatial/data/services/location_service.dart';
 import '../../data/services/land_use_api_service.dart';
 import '../../data/services/zoning_api_service.dart';
-import '../../domain/entities/basemap.dart';
-import '../../domain/entities/user_location.dart';
+import '../../../../spatial/domain/entities/basemap.dart';
+import '../../../../spatial/domain/entities/user_location.dart';
 import '../../domain/entities/zoning_feature.dart';
 import '../../domain/entities/land_use.dart';
 import '../../domain/repositories/zoning_repository.dart';
 
 // Service Providers
-final basemapStorageServiceProvider = Provider<BasemapStorageService>((ref) {
+final basemapServiceProvider = Provider<BasemapService>((ref) {
   final dioClient = ref.watch(dioClientProvider);
   final database = ref.watch(databaseProvider);
-  return BasemapStorageService(dioClient: dioClient, database: database);
+  return BasemapService(dioClient: dioClient, database: database);
 });
 
 final locationServiceProvider = Provider<LocationService>((ref) {
@@ -86,7 +86,7 @@ Color _parseHexColor(String hex) {
 
 // Repository Provider
 final zoningRepositoryProvider = Provider<ZoningRepository>((ref) {
-  final storageService = ref.watch(basemapStorageServiceProvider);
+  final storageService = ref.watch(basemapServiceProvider);
   final locationService = ref.watch(locationServiceProvider);
   final database = ref.watch(databaseProvider);
 

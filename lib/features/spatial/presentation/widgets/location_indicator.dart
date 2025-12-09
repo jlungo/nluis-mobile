@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
-import '../../../../../shared/constants/app_constants.dart';
-import '../../../../../shared/theme/app_colors.dart';
-import '../../../../spatial/domain/entities/user_location.dart';
+import '../../../../shared/constants/app_constants.dart';
+import '../../../../shared/theme/app_colors.dart';
+import '../../domain/entities/user_location.dart';
 
 class LocationIndicator extends StatelessWidget {
   final UserLocation location;
+  final bool showBoundaryStatus;
 
-  const LocationIndicator({super.key, required this.location});
+  const LocationIndicator({
+    super.key,
+    required this.location,
+    this.showBoundaryStatus = true,
+  });
 
   @override
   Widget build(BuildContext context) {

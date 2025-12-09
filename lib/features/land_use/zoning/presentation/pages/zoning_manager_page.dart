@@ -179,11 +179,10 @@ class _ZoningManagerPageState extends ConsumerState<ZoningManagerPage> {
           uploadedAt: DateTime.now(),
         );
         await repository.updateFeature(updatedFeature);
-        
+
         // Delete feature history after successful upload
         await (database.delete(database.zoningFeatureHistory)
-          ..where((tbl) => tbl.featureId.equals(feature.clientUuid)))
-          .go();
+          ..where((tbl) => tbl.featureId.equals(feature.clientUuid))).go();
       }
 
       // Refresh locality projects list
@@ -343,14 +342,11 @@ class _ZoningTabBar extends StatelessWidget implements PreferredSizeWidget {
 
     return TabBar(
       isScrollable: true,
-      tabAlignment: TabAlignment.start,
-      labelColor: isDark ? AppColors.darkPrimary : AppColors.primaryDark,
+      tabAlignment: TabAlignment.center,
+      labelColor: isDark ? AppColors.darkPrimary : AppColors.primary,
       unselectedLabelColor:
           isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
       dividerColor: isDark ? AppColors.darkDivider : AppColors.divider,
-      indicatorColor: isDark ? AppColors.darkPrimary : AppColors.primaryDark,
-      indicatorWeight: 3,
-      indicatorSize: TabBarIndicatorSize.tab,
       padding: const EdgeInsets.symmetric(horizontal: AppConstants.spacingSm),
       tabs: [
         buildTab('Rasimu', counts.$1, AppColors.warning),
@@ -628,7 +624,8 @@ class _LocalityProjectCard extends StatelessWidget {
   }
 
   bool _shouldShowTimestamp() {
-    return (status == 'draft' || status == 'saved') && project.lastUpdatedAt != null ||
+    return (status == 'draft' || status == 'saved') &&
+            project.lastUpdatedAt != null ||
         status == 'uploaded' && project.uploadedAt != null;
   }
 
@@ -640,19 +637,18 @@ class _LocalityProjectCard extends StatelessWidget {
   }
 
   String _getTimestampText() {
-    final DateTime? timestamp = status == 'uploaded' 
-        ? project.uploadedAt 
-        : project.lastUpdatedAt;
-    
+    final DateTime? timestamp =
+        status == 'uploaded' ? project.uploadedAt : project.lastUpdatedAt;
+
     if (timestamp == null) return '';
-    
+
     final now = DateTime.now();
     final difference = now.difference(timestamp);
-    
+
     if (difference.inMinutes < 1) {
       return status == 'uploaded' ? 'Uploaded just now' : 'Updated just now';
     } else if (difference.inHours < 1) {
-      return status == 'uploaded' 
+      return status == 'uploaded'
           ? 'Uploaded ${difference.inMinutes}m ago'
           : 'Updated ${difference.inMinutes}m ago';
     } else if (difference.inDays < 1) {

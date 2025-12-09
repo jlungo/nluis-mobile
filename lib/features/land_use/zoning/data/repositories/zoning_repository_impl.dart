@@ -5,20 +5,20 @@ import 'package:latlong2/latlong.dart';
 import 'package:drift/drift.dart' as drift;
 import '../../../../../core/error/failures.dart';
 import '../../../../../data/local/database.dart';
-import '../../domain/entities/basemap.dart';
-import '../../domain/entities/user_location.dart';
+import '../../../../spatial/domain/entities/basemap.dart';
+import '../../../../spatial/domain/entities/user_location.dart';
 import '../../domain/entities/zoning_feature.dart' as domain;
 import '../../domain/repositories/zoning_repository.dart';
-import '../services/basemap_storage_service.dart';
-import '../services/location_service.dart';
+import '../../../../spatial/data/services/basemap_service.dart';
+import '../../../../spatial/data/services/location_service.dart';
 
 class ZoningRepositoryImpl implements ZoningRepository {
-  final BasemapStorageService _storageService;
+  final BasemapService _storageService;
   final LocationService _locationService;
   final AppDatabase _database;
 
   ZoningRepositoryImpl({
-    required BasemapStorageService storageService,
+    required BasemapService storageService,
     required LocationService locationService,
     required AppDatabase database,
   })  : _storageService = storageService,
