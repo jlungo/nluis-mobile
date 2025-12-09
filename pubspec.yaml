@@ -70,6 +70,7 @@ dependencies:
   uuid: ^4.5.1
   dartz: ^0.10.1
   drift_dev: ^2.28.0
+  jwt_decoder: ^2.0.1
   shimmer: ^3.0.0
   overlay_loader_with_app_icon: ^0.0.4
   pull_to_refresh: ^2.0.0
