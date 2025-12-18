@@ -1,240 +1,245 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../features/auth/presentation/pages/splash_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/module_switchboard_page.dart';
 import '../../features/land_use/dashboard/presentation/pages/land_use_dashboard_page.dart';
-import '../../features/land_use/dashboard/presentation/pages/projects_list_page.dart';
 import '../../features/land_use/survey/presentation/pages/survey_list_page.dart';
+import '../../features/land_use/survey/presentation/pages/survey_form_page.dart';
+import '../../features/adjudication/dashboard/presentation/pages/adjudication_dashboard_page.dart';
+import '../../features/adjudication/survey/presentation/pages/survey_list_page.dart'
+    as adjudication_survey;
+import '../../features/adjudication/survey/presentation/pages/survey_form_page.dart'
+    as adjudication_form;
+import '../../features/monitoring_evaluation/dashboard/presentation/pages/me_dashboard_page.dart';
+import '../../features/monitoring_evaluation/survey/presentation/pages/survey_list_page.dart'
+    as me_survey;
+import '../../features/monitoring_evaluation/survey/presentation/pages/survey_form_page.dart'
+    as me_form;
+import '../../features/compliance/dashboard/presentation/pages/compliance_dashboard_page.dart';
+import '../../features/compliance/survey/presentation/pages/survey_list_page.dart'
+    as compliance_survey;
+import '../../features/compliance/survey/presentation/pages/survey_form_page.dart'
+    as compliance_form;
 import '../../features/land_use/zoning/presentation/pages/zoning_page_wrapper.dart';
+import '../../features/adjudication/zoning/presentation/pages/zoning_page_wrapper.dart'
+    as adjudication_zoning;
+import '../../features/monitoring_evaluation/zoning/presentation/pages/zoning_page_wrapper.dart'
+    as me_zoning;
+import '../../features/compliance/zoning/presentation/pages/zoning_page_wrapper.dart'
+    as compliance_zoning;
 import '../../features/settings/presentation/pages/settings_page.dart';
-import '../../features/settings/presentation/pages/app_configurations_page.dart';
-import '../../features/notifications/presentation/pages/notifications_page.dart';
-import '../../features/madodoso/presentation/pages/madodoso_page.dart';
-import '../../features/land_use/survey/presentation/pages/questionnaire_form_page.dart';
-import '../../features/land_use/zoning/presentation/pages/zoning_manager_page.dart';
-import '../../features/ccro/dashboard/presentation/pages/ccro_dashboard_page.dart';
-import '../../features/ccro/dashboard/presentation/pages/ccro_projects_page.dart';
-import '../../features/ccro/dashboard/presentation/pages/my_applications_page.dart';
-import '../../features/ccro/subdivision/presentation/pages/subdivision_zones_page.dart';
-import '../../features/ccro/subdivision/presentation/pages/subdivision_applications_page.dart';
-import '../../features/ccro/subdivision/presentation/pages/parcel_mapping_page.dart';
-import '../../shared/widgets/app_shell.dart';
-import '../../features/auth/presentation/providers/auth_providers.dart';
-import '../../features/auth/domain/entities/user.dart';
 
-class GoRouterRefreshNotifier extends ChangeNotifier {
-  GoRouterRefreshNotifier(Ref ref) {
-    ref.listen<AsyncValue<User?>>(authStateProvider, (previous, next) {
-      // Only notify on successful login
-      // Don't notify on login failure
-      final wasError = previous?.hasError ?? false;
-      final wasLoading = previous?.isLoading ?? false;
-      final isNowData = next.hasValue && next.value != null;
-      final isNowError = next.hasError;
-
-      // Refresh router when user becomes authenticated
-      if ((wasError || wasLoading) && isNowData) {
-        notifyListeners();
-      }
-      // Also refresh when user logout
-      else if (previous?.value != null && next.value == null && !isNowError) {
-        notifyListeners();
-      }
-    });
-  }
-}
-
-final routerProvider = Provider<GoRouter>((ref) {
-  return GoRouter(
-    initialLocation: '/splash',
-    refreshListenable: GoRouterRefreshNotifier(ref),
-    redirect: (context, state) {
-      // Let splash page handle all authentication logic
-      // Only redirect authenticated users away from login page
-      final authState = ref.read(authStateProvider);
-      final isGoingToLogin = state.matchedLocation == '/login';
-
-      if (isGoingToLogin) {
-        final user = authState.when(
-          data: (user) => user,
-          loading: () => null,
-          error: (_, _) => null,
+final appRouter = GoRouter(
+  initialLocation: '/',
+  routes: [
+    GoRoute(
+      path: '/',
+      name: 'splash',
+      builder: (context, state) => const SplashPage(),
+    ),
+    GoRoute(
+      path: '/login',
+      name: 'login',
+      builder: (context, state) => const LoginPage(),
+    ),
+    GoRoute(
+      path: '/module-switchboard',
+      name: 'moduleSwitch',
+      builder: (context, state) => const ModuleSwitchboardPage(),
+    ),
+    GoRoute(
+      path: '/land-use',
+      name: 'luDashboard',
+      builder: (context, state) => const LandUseDashboardPage(),
+    ),
+    GoRoute(
+      path: '/land-use/projects/:projectId/surveys',
+      name: 'luSurveys',
+      builder: (context, state) {
+        final projectId = state.pathParameters['projectId']!;
+        final projectName = state.uri.queryParameters['projectName'];
+        return SurveyListPage(projectId: projectId, projectName: projectName);
+      },
+      routes: [
+        GoRoute(
+          path: 'new',
+          name: 'luSurveyNew',
+          builder: (context, state) {
+            final projectId = state.pathParameters['projectId']!;
+            final projectName = state.uri.queryParameters['projectName'];
+            final questionnaireSlug =
+                state.uri.queryParameters['questionnaireSlug']!;
+            final surveyId = state.uri.queryParameters['surveyId'];
+            return SurveyFormPage(
+              projectId: projectId,
+              projectName: projectName,
+              questionnaireSlug: questionnaireSlug,
+              surveyId: surveyId,
+            );
+          },
+        ),
+      ],
+    ),
+    GoRoute(
+      path: '/land-use/projects/:projectId/zoning',
+      name: 'luZoning',
+      builder: (context, state) {
+        final projectId = state.pathParameters['projectId']!;
+        final projectName = state.uri.queryParameters['projectName'];
+        return ZoningPageWrapper(
+          projectId: projectId,
+          // projectName: projectName,
         );
-
-        // If user is already authenticated, redirect to module switch
-        if (user != null) {
-          return '/module-switch';
-        }
-      }
-
-      return null;
-    },
-    routes: [
-      GoRoute(
-        path: '/splash',
-        name: 'splash',
-        builder: (context, state) => const SplashPage(),
-      ),
-      GoRoute(
-        path: '/login',
-        name: 'login',
-        builder: (context, state) => const LoginPage(),
-      ),
-      GoRoute(
-        path: '/module-switch',
-        name: 'moduleSwitch',
-        builder: (context, state) => const ModuleSwitchboardPage(),
-      ),
-      // ROUTES WITH APP SHELL ( Bottom Navigation )
-      ShellRoute(
-        builder: (context, state, child) => AppShell(child: child),
-        routes: [
-          // LAND USE MODULE
-          GoRoute(
-            path: '/module/land-use/dashboard',
-            name: 'luDashboard',
-            builder: (context, state) => const LandUseDashboardPage(),
-          ),
-          GoRoute(
-            path: '/module/land-use/projects',
-            name: 'luProjects',
-            builder: (context, state) => const ProjectsListPage(),
-          ),
-          // DODOSO HUB
-          GoRoute(
-            path: '/madodoso',
-            name: 'madodoso',
-            builder: (context, state) => const MadodosoPage(),
-          ),
-          // ZONING MANAGER
-          GoRoute(
-            path: '/zoning-manager',
-            name: 'zoningManager',
-            builder: (context, state) => const ZoningManagerPage(),
-          ),
-          // CCRO MODULE
-          GoRoute(
-            path: '/module/ccro/dashboard',
-            name: 'ccroDashboard',
-            builder: (context, state) => const CcroDashboardPage(),
-          ),
-          GoRoute(
-            path: '/module/ccro/projects',
-            name: 'ccroProjects',
-            builder: (context, state) => const CcroProjectsPage(),
-          ),
-          GoRoute(
-            path: '/module/ccro/my-applications',
-            name: 'myApplications',
-            builder: (context, state) => const MyApplicationsPage(),
-          ),
-        ],
-      ),
-      // GLOBAL ROUTES (NO BOTTOM BAR)
-      // Settings
-      GoRoute(
-        path: '/settings',
-        name: 'settings',
-        builder: (context, state) => const SettingsPage(),
-      ),
-      // APP CONFIGURATIONS
-      GoRoute(
-        path: '/app-configurations',
-        name: 'appConfigurations',
-        builder: (context, state) => const AppConfigurationsPage(),
-      ),
-      GoRoute(
-        path: '/notifications',
-        name: 'notifications',
-        builder: (context, state) => const NotificationsPage(),
-      ),
-      GoRoute(
-        path: '/module/land-use/survey/:projectId',
-        name: 'luSurveyList',
-        builder: (context, state) {
-          final projectId = state.pathParameters['projectId']!;
-          return SurveyListPage(projectId: projectId);
-        },
-      ),
-      GoRoute(
-        path: '/module/land-use/zoning/:projectId',
-        name: 'luZoning',
-        builder: (context, state) {
-          final projectId = state.pathParameters['projectId']!;
-          return ZoningPageWrapper(projectId: projectId);
-        },
-      ),
-      GoRoute(
-        path: '/module/ccro/zones/:projectId/:localityId',
-        name: 'subdivisionZones',
-        builder: (context, state) {
-          final projectId = state.pathParameters['projectId']!;
-          final localityId = int.parse(state.pathParameters['localityId']!);
-          final projectName =
-              state.uri.queryParameters['projectName'] ?? 'Mradi';
-          return SubdivisionZonesPage(
-            projectId: projectId,
-            localityId: localityId,
-            projectName: projectName,
-          );
-        },
-      ),
-      GoRoute(
-        path: '/module/ccro/subdivision/:projectId/:zoneId/:localityId',
-        name: 'subdivisionApplications',
-        builder: (context, state) {
-          final projectId = state.pathParameters['projectId']!;
-          final zoneId = state.pathParameters['zoneId']!;
-          final localityId = int.parse(state.pathParameters['localityId']!);
-          final projectName =
-              state.uri.queryParameters['projectName'] ?? 'Mradi';
-          return SubdivisionApplicationsPage(
-            projectId: projectId,
-            zoneId: zoneId,
-            localityId: localityId,
-            projectName: projectName,
-          );
-        },
-      ),
-      GoRoute(
-        path: '/module/ccro/parcel-mapping/:projectId/:zoneId/:localityId',
-        name: 'parcelMapping',
-        builder: (context, state) {
-          final projectId = state.pathParameters['projectId']!;
-          final zoneId = int.parse(state.pathParameters['zoneId']!);
-          final localityId = int.parse(state.pathParameters['localityId']!);
-          final applicationId = state.uri.queryParameters['applicationId'];
-          final inputMethod = state.uri.queryParameters['inputMethod'];
-          return ParcelMappingPage(
-            projectId: projectId,
-            localityId: localityId,
-            zoneId: zoneId,
-            applicationId: applicationId,
-            inputMethod: inputMethod,
-          );
-        },
-      ),
-      GoRoute(
-        path: '/questionnaire/:questionnaireSlug/:projectId/:projectName',
-        name: 'questionnaireForm',
-        builder: (context, state) {
-          final questionnaireSlug = state.pathParameters['questionnaireSlug']!;
-          final projectId = state.pathParameters['projectId']!;
-          final projectName = state.pathParameters['projectName']!;
-          final surveyId = state.uri.queryParameters['surveyId'];
-          final isReadOnly = state.uri.queryParameters['isReadOnly'] == 'true';
-
-          return QuestionnaireFormPage(
-            questionnaireSlug: questionnaireSlug,
-            projectId: projectId,
-            projectName: projectName,
-            surveyId: surveyId,
-            isReadOnly: isReadOnly,
-          );
-        },
-      ),
-    ],
-  );
-});
+      },
+    ),
+    GoRoute(
+      path: '/adjudication',
+      name: 'adjudicationDashboard',
+      builder: (context, state) => const AdjudicationDashboardPage(),
+    ),
+    GoRoute(
+      path: '/adjudication/projects/:projectId/surveys',
+      name: 'adjudicationSurveys',
+      builder: (context, state) {
+        final projectId = state.pathParameters['projectId']!;
+        final projectName = state.uri.queryParameters['projectName'];
+        return adjudication_survey.SurveyListPage(
+          projectId: projectId,
+          projectName: projectName,
+        );
+      },
+      routes: [
+        GoRoute(
+          path: 'new',
+          name: 'adjudicationSurveyNew',
+          builder: (context, state) {
+            final projectId = state.pathParameters['projectId']!;
+            final projectName = state.uri.queryParameters['projectName'];
+            final questionnaireSlug =
+                state.uri.queryParameters['questionnaireSlug']!;
+            final surveyId = state.uri.queryParameters['surveyId'];
+            return adjudication_form.SurveyFormPage(
+              projectId: projectId,
+              projectName: projectName,
+              questionnaireSlug: questionnaireSlug,
+              surveyId: surveyId,
+            );
+          },
+        ),
+      ],
+    ),
+    GoRoute(
+      path: '/adjudication/projects/:projectId/zoning',
+      name: 'adjudicationZoning',
+      builder: (context, state) {
+        final projectId = state.pathParameters['projectId']!;
+        final projectName = state.uri.queryParameters['projectName'];
+        return adjudication_zoning.ZoningPageWrapper(
+          projectId: projectId,
+          // projectName: projectName,
+        );
+      },
+    ),
+    GoRoute(
+      path: '/monitoring-evaluation',
+      name: 'meDashboard',
+      builder: (context, state) => const MEDashboardPage(),
+    ),
+    GoRoute(
+      path: '/monitoring-evaluation/projects/:projectId/surveys',
+      name: 'meSurveys',
+      builder: (context, state) {
+        final projectId = state.pathParameters['projectId']!;
+        final projectName = state.uri.queryParameters['projectName'];
+        return me_survey.SurveyListPage(
+          projectId: projectId,
+          projectName: projectName,
+        );
+      },
+      routes: [
+        GoRoute(
+          path: 'new',
+          name: 'meSurveyNew',
+          builder: (context, state) {
+            final projectId = state.pathParameters['projectId']!;
+            final projectName = state.uri.queryParameters['projectName'];
+            final questionnaireSlug =
+                state.uri.queryParameters['questionnaireSlug']!;
+            final surveyId = state.uri.queryParameters['surveyId'];
+            return me_form.SurveyFormPage(
+              projectId: projectId,
+              projectName: projectName,
+              questionnaireSlug: questionnaireSlug,
+              surveyId: surveyId,
+            );
+          },
+        ),
+      ],
+    ),
+    GoRoute(
+      path: '/monitoring-evaluation/projects/:projectId/zoning',
+      name: 'meZoning',
+      builder: (context, state) {
+        final projectId = state.pathParameters['projectId']!;
+        final projectName = state.uri.queryParameters['projectName'];
+        return me_zoning.ZoningPageWrapper(
+          projectId: projectId,
+          // projectName: projectName,
+        );
+      },
+    ),
+    GoRoute(
+      path: '/compliance',
+      name: 'complianceDashboard',
+      builder: (context, state) => const ComplianceDashboardPage(),
+    ),
+    GoRoute(
+      path: '/compliance/projects/:projectId/surveys',
+      name: 'complianceSurveys',
+      builder: (context, state) {
+        final projectId = state.pathParameters['projectId']!;
+        final projectName = state.uri.queryParameters['projectName'];
+        return compliance_survey.SurveyListPage(
+          projectId: projectId,
+          projectName: projectName,
+        );
+      },
+      routes: [
+        GoRoute(
+          path: 'new',
+          name: 'complianceSurveyNew',
+          builder: (context, state) {
+            final projectId = state.pathParameters['projectId']!;
+            final projectName = state.uri.queryParameters['projectName'];
+            final questionnaireSlug =
+                state.uri.queryParameters['questionnaireSlug']!;
+            final surveyId = state.uri.queryParameters['surveyId'];
+            return compliance_form.SurveyFormPage(
+              projectId: projectId,
+              projectName: projectName,
+              questionnaireSlug: questionnaireSlug,
+              surveyId: surveyId,
+            );
+          },
+        ),
+      ],
+    ),
+    GoRoute(
+      path: '/compliance/projects/:projectId/zoning',
+      name: 'complianceZoning',
+      builder: (context, state) {
+        final projectId = state.pathParameters['projectId']!;
+        final projectName = state.uri.queryParameters['projectName'];
+        return compliance_zoning.ZoningPageWrapper(
+          projectId: projectId,
+          // projectName: projectName,
+        );
+      },
+    ),
+    GoRoute(
+      path: '/settings',
+      name: 'settings',
+      builder: (context, state) => const SettingsPage(),
+    ),
+  ],
+);

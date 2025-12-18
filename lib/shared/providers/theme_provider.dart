@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../features/auth/presentation/providers/auth_providers.dart';
 
 enum AppThemeMode {
   light,
@@ -66,9 +65,8 @@ class ThemeNotifier extends StateNotifier<AppThemeMode> {
   }
 
   Future<void> toggleTheme() async {
-    final nextMode = state == AppThemeMode.light
-        ? AppThemeMode.dark
-        : AppThemeMode.light;
+    final nextMode =
+        state == AppThemeMode.light ? AppThemeMode.dark : AppThemeMode.light;
     await setTheme(nextMode);
   }
 }
