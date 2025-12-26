@@ -9,6 +9,7 @@ import '../../../../../shared/features/spatial/presentation/widgets/gps_tracker_
 import '../../../../../shared/theme/app_colors.dart';
 import '../../../../../shared/features/spatial/domain/entities/basemap.dart';
 import '../../../../../shared/features/spatial/domain/entities/user_location.dart';
+import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import '../../domain/entities/zoning_feature.dart';
 import '../providers/zoning_providers.dart';
 import '../../../../../shared/features/spatial/data/services/calculation_service.dart';
@@ -86,7 +87,7 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
         }
       });
     }
-
+    
     // Handle external feature highlighting
     if (widget.highlightFeatureId != null &&
         widget.highlightFeatureId != oldWidget.highlightFeatureId) {
@@ -95,7 +96,7 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
       });
     }
   }
-
+  
   void _highlightAndZoomToFeature(String featureId) async {
     final featuresAsync = ref.read(zoningFeaturesProvider(widget.projectId));
     featuresAsync.whenData((features) {
@@ -103,11 +104,11 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
         (f) => f.clientUuid == featureId,
         orElse: () => features.first,
       );
-
+      
       setState(() {
         _selectedFeatureId = featureId;
       });
-
+      
       // Zoom to feature
       if (feature.coordinates.isNotEmpty) {
         if (feature.featureType == ZoningFeatureType.point) {
@@ -122,7 +123,7 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
           );
         }
       }
-
+      
       // Show feature details after a short delay
       Future.delayed(const Duration(milliseconds: 500), () {
         if (mounted) {
@@ -207,60 +208,49 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
     final featuresAsync = ref.read(zoningFeaturesProvider(widget.projectId));
     featuresAsync.whenData((features) {
       final tappedFeature = _findFeatureAtPoint(point, features);
-      if (tappedFeature != null) {
-        // Open coordinate editor for this feature
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder:
-                (context) => CoordinateEditorMap(
-                  feature: tappedFeature,
-                  onSave: (updatedCoordinates) {
-                    // Recalculate area/length
-                    double? area;
-                    double? length;
+        if (tappedFeature != null) {
+          // Open coordinate editor for this feature
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => CoordinateEditorMap(
+                feature: tappedFeature,
+                onSave: (updatedCoordinates) {
+                  // Recalculate area/length
+                  double? area;
+                  double? length;
 
-                    if (tappedFeature.featureType ==
-                        ZoningFeatureType.polygon) {
-                      area = CalculationService.calculatePolygonArea(
-                        updatedCoordinates,
-                      );
-                    } else if (tappedFeature.featureType ==
-                        ZoningFeatureType.lineString) {
-                      length = CalculationService.calculateLineLength(
-                        updatedCoordinates,
-                      );
-                    }
+                  if (tappedFeature.featureType == ZoningFeatureType.polygon) {
+                    area = CalculationService.calculatePolygonArea(updatedCoordinates);
+                  } else if (tappedFeature.featureType == ZoningFeatureType.lineString) {
+                    length = CalculationService.calculateLineLength(updatedCoordinates);
+                  }
 
-                    final updatedFeature = tappedFeature.copyWith(
-                      coordinates: updatedCoordinates,
-                      area: area,
-                      length: length,
-                      updatedAt: DateTime.now(),
-                    );
+                  final updatedFeature = tappedFeature.copyWith(
+                    coordinates: updatedCoordinates,
+                    area: area,
+                    length: length,
+                    updatedAt: DateTime.now(),
+                  );
 
-                    ref
-                        .read(zoningStateProvider.notifier)
-                        .updateFeature(updatedFeature);
-                    ref.invalidate(zoningFeaturesProvider(widget.projectId));
+                  ref.read(zoningStateProvider.notifier).updateFeature(updatedFeature);
+                  ref.invalidate(zoningFeaturesProvider(widget.projectId));
+                  
+                  Navigator.of(context).pop();
 
-                    Navigator.of(context).pop();
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Feature coordinates updated successfully',
-                        ),
-                        backgroundColor: AppColors.success,
-                      ),
-                    );
-                  },
-                  onCancel: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-          ),
-        );
-      }
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Feature coordinates updated successfully'),
+                      backgroundColor: AppColors.success,
+                    ),
+                  );
+                },
+                onCancel: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ),
+          );
+        }
     });
   }
 
@@ -415,37 +405,35 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
       isScrollControlled: true,
       isDismissible: false,
       enableDrag: false,
-      builder:
-          (context) => ManualCoordinateEntrySheet(
-            featureType: featureType,
-            onSave: (zoneName, srid, coordinates, isDraft) {
-              // Convert coordinates from the selected SRID to WGS84
-              CoordinateConverter.initialize();
-              final wgs84Coordinates =
-                  coordinates.map((coord) {
-                    return CoordinateConverter.toWGS84(
-                      x: coord[0],
-                      y: coord[1],
-                      fromSrid: srid,
-                    );
-                  }).toList();
+      builder: (context) => ManualCoordinateEntrySheet(
+        featureType: featureType,
+        onSave: (zoneName, srid, coordinates, isDraft) {
+          // Convert coordinates from the selected SRID to WGS84
+          CoordinateConverter.initialize();
+          final wgs84Coordinates = coordinates.map((coord) {
+            return CoordinateConverter.toWGS84(
+              x: coord[0],
+              y: coord[1],
+              fromSrid: srid,
+            );
+          }).toList();
 
-              setState(() {
-                _currentFeaturePoints.clear();
-                _currentFeaturePoints.addAll(wgs84Coordinates);
-              });
+          setState(() {
+            _currentFeaturePoints.clear();
+            _currentFeaturePoints.addAll(wgs84Coordinates);
+          });
 
-              // Close the manual entry sheet
-              Navigator.of(context).pop();
+          // Close the manual entry sheet
+          Navigator.of(context).pop();
 
-              // Open metadata sheet to complete the feature
-              _openMetadataSheet();
-            },
-            onCancel: () {
-              Navigator.of(context).pop();
-              _cancelFeatureCreation();
-            },
-          ),
+          // Open metadata sheet to complete the feature
+          _openMetadataSheet();
+        },
+        onCancel: () {
+          Navigator.of(context).pop();
+          _cancelFeatureCreation();
+        },
+      ),
     );
   }
 
@@ -561,11 +549,9 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
             featuresAsync.when(
               data: (features) {
                 // Separate local and server features
-                final localFeatures =
-                    features.where((f) => !f.uploaded).toList();
-                final serverFeatures =
-                    features.where((f) => f.uploaded).toList();
-
+                final localFeatures = features.where((f) => !f.uploaded).toList();
+                final serverFeatures = features.where((f) => f.uploaded).toList();
+                
                 return Stack(
                   children: [
                     // Server features (from MVT tiles) - render first (behind)
@@ -605,12 +591,8 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
                   style: LocationMarkerStyle(
                     marker: DefaultLocationMarker(color: AppColors.primary),
                     markerSize: const Size.square(AppConstants.mapMarkerSize),
-                    accuracyCircleColor: AppColors.primary.withValues(
-                      alpha: 0.15,
-                    ),
-                    headingSectorColor: AppColors.primary.withValues(
-                      alpha: 0.4,
-                    ),
+                    accuracyCircleColor: AppColors.primary.withValues(alpha: 0.15),
+                    headingSectorColor: AppColors.primary.withValues(alpha: 0.4),
                     headingSectorRadius: location.accuracy,
                   ),
                 );
@@ -682,13 +664,13 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
 
     for (final feature in features) {
       final isSelected = _selectedFeatureId == feature.clientUuid;
-
+      
       // Use land-use color, fallback to grey if not available
       final baseColor =
           feature.landUseId != null
               ? (landUseColors[feature.landUseId!] ?? Colors.grey)
               : Colors.grey;
-
+      
       // Apply border opacity to color
       final color = baseColor.withValues(alpha: borderOpacity);
 
@@ -763,7 +745,11 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
           markers: [
             Marker(
               point: _currentFeaturePoints.first,
-              child: Icon(Icons.location_pin, color: color, size: 32),
+              child: Icon(
+                Icons.location_pin,
+                color: color,
+                size: 32,
+              ),
             ),
           ],
         );
@@ -794,6 +780,7 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
         );
     }
   }
+
 
   Widget _buildMapControls(ThemeData theme, bool isDark) {
     Widget control(IconData icon, VoidCallback onPressed) {
@@ -838,12 +825,9 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
         Container(
           margin: const EdgeInsets.only(bottom: AppConstants.spacingSm),
           decoration: BoxDecoration(
-            color:
-                _showServerFeatures
-                    ? AppColors.primary.withValues(alpha: 0.9)
-                    : (isDark
-                        ? AppColors.darkSurfaceVariant
-                        : AppColors.surfaceVariant),
+            color: _showServerFeatures
+                ? AppColors.primary.withValues(alpha: 0.9)
+                : (isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant),
             borderRadius: BorderRadius.circular(AppConstants.radiusMd),
             boxShadow: [
               BoxShadow(
@@ -857,21 +841,17 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
             icon: Icon(
               _showServerFeatures ? Icons.cloud_done : Icons.cloud_off,
             ),
-            tooltip:
-                _showServerFeatures
-                    ? 'Ficha vipimo vya seva'
-                    : 'Onyesha vipimo vya seva',
+            tooltip: _showServerFeatures 
+                ? 'Ficha vipimo vya seva' 
+                : 'Onyesha vipimo vya seva',
             onPressed: () {
               setState(() {
                 _showServerFeatures = !_showServerFeatures;
               });
             },
-            color:
-                _showServerFeatures
-                    ? Colors.white
-                    : (isDark
-                        ? AppColors.surfaceVariant
-                        : AppColors.darkSurfaceVariant),
+            color: _showServerFeatures
+                ? Colors.white
+                : (isDark ? AppColors.surfaceVariant : AppColors.darkSurfaceVariant),
           ),
         ),
       ],
@@ -950,11 +930,7 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
 
         case ZoningFeatureType.lineString:
           // Check if tap is near any line segment
-          if (_isPointNearPolyline(
-            tappedPoint,
-            feature.coordinates,
-            tolerance,
-          )) {
+          if (_isPointNearPolyline(tappedPoint, feature.coordinates, tolerance)) {
             return feature;
           }
           break;
@@ -962,11 +938,7 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
         case ZoningFeatureType.polygon:
           // Check if point is inside polygon or near boundary
           if (_isPointInPolygon(tappedPoint, feature.coordinates) ||
-              _isPointNearPolyline(
-                tappedPoint,
-                feature.coordinates,
-                tolerance,
-              )) {
+              _isPointNearPolyline(tappedPoint, feature.coordinates, tolerance)) {
             return feature;
           }
           break;
@@ -984,8 +956,7 @@ class _ZoningMapState extends ConsumerState<ZoningMap> {
 
       if ((v1.latitude <= point.latitude && point.latitude < v2.latitude) ||
           (v2.latitude <= point.latitude && point.latitude < v1.latitude)) {
-        final xIntersect =
-            (point.latitude - v1.latitude) *
+        final xIntersect = (point.latitude - v1.latitude) *
                 (v2.longitude - v1.longitude) /
                 (v2.latitude - v1.latitude) +
             v1.longitude;
