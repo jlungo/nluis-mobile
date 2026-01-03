@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/services/download_provider.dart';
-import '../../features/land_use/dashboard/presentation/providers/project_providers.dart';
 import '../models/project.dart';
 import 'dialog_utils.dart';
 import 'snackbar_utils.dart';
 
-/// Reusable handler for project actions 
+/// Reusable handler for project actions
 class ProjectActionHandler {
   final BuildContext context;
   final WidgetRef ref;
@@ -28,10 +27,7 @@ class ProjectActionHandler {
     if (!context.mounted) return;
 
     // Show loading dialog
-    DialogUtils.showLoading(
-      context,
-      message: 'Inapakua dodoso...',
-    );
+    DialogUtils.showLoading(context, message: 'Inapakua dodoso...');
 
     try {
       final downloadService = ref.read(downloadServiceProvider);
@@ -46,7 +42,7 @@ class ProjectActionHandler {
       if (result.success) {
         SnackBarUtils.showSuccess(context, result.message);
         // Refresh the projects list to update UI
-        ref.invalidate(assignedProjectsProvider);
+        // ref.invalidate(assignedProjectsProvider);
       } else {
         SnackBarUtils.showError(context, result.message);
       }
