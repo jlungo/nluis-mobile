@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/constants/app_constants.dart';
+import '../../../../shared/utils/responsive_utils.dart';
 import '../../../../shared/widgets/custom_app_bar.dart';
 import '../../../../shared/utils/snackbar_utils.dart';
 import '../providers/setup_providers.dart';
@@ -54,21 +55,21 @@ class _AppConfigurationsPageState extends ConsumerState<AppConfigurationsPage> {
         showProfile: false,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppConstants.spacingLg),
+        padding: EdgeInsets.all(ResponsiveUtils.spacing(context, AppConstants.spacingLg)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Land Uses Section
             _buildSectionHeader(context, 'MATUMIZI YA ARDHI'),
-            const SizedBox(height: AppConstants.spacingSm),
+            SizedBox(height: ResponsiveUtils.spacing(context, AppConstants.spacingSm)),
             _buildLandUsesCard(landUsesAsync, isDark, theme),
-            const SizedBox(height: AppConstants.spacingLg),
+            SizedBox(height: ResponsiveUtils.spacing(context, AppConstants.spacingLg)),
 
             // Buffer Defaults Section
             _buildSectionHeader(context, 'BUFFER CHAGUO-MSINGI'),
-            const SizedBox(height: AppConstants.spacingSm),
+            SizedBox(height: ResponsiveUtils.spacing(context, AppConstants.spacingSm)),
             _buildBufferDefaultsCard(bufferDefaultsAsync, isDark, theme),
-            const SizedBox(height: AppConstants.spacingXl),
+            SizedBox(height: ResponsiveUtils.spacing(context, AppConstants.spacingXl)),
           ],
         ),
       ),
@@ -79,7 +80,7 @@ class _AppConfigurationsPageState extends ConsumerState<AppConfigurationsPage> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+      padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.spacing(context, 8)),
       child: Text(
         title,
         style: theme.textTheme.titleSmall?.copyWith(
@@ -114,12 +115,12 @@ class _AppConfigurationsPageState extends ConsumerState<AppConfigurationsPage> {
       child: Column(
         children: [
           ListTile(
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 8,
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: ResponsiveUtils.spacing(context, 20),
+              vertical: ResponsiveUtils.spacing(context, 8),
             ),
             leading: Container(
-              padding: const EdgeInsets.all(10),
+              padding: EdgeInsets.all(ResponsiveUtils.spacing(context, 10)),
               decoration: BoxDecoration(
                 color: (isDark ? AppColors.successDark : AppColors.success)
                     .withValues(alpha: 0.1),
@@ -128,14 +129,14 @@ class _AppConfigurationsPageState extends ConsumerState<AppConfigurationsPage> {
               child: Icon(
                 Icons.landscape_outlined,
                 color: isDark ? AppColors.successDark : AppColors.success,
-                size: 24,
+                size: ResponsiveUtils.iconSize(context, 24),
               ),
             ),
             title: Text(
               'Matumizi ya Ardhi',
               style: TextStyle(
                 fontWeight: FontWeight.w600,
-                fontSize: 16,
+                fontSize: ResponsiveUtils.fontSize(context, 16),
                 color: theme.colorScheme.onSurface,
               ),
             ),
@@ -148,7 +149,7 @@ class _AppConfigurationsPageState extends ConsumerState<AppConfigurationsPage> {
                           isDark
                               ? AppColors.darkTextSecondary
                               : AppColors.textSecondary,
-                      fontSize: 13,
+                      fontSize: ResponsiveUtils.fontSize(context, 13),
                     ),
                   ),
               loading: () => const Text('Inapakia...'),
@@ -156,15 +157,15 @@ class _AppConfigurationsPageState extends ConsumerState<AppConfigurationsPage> {
             ),
             trailing: ElevatedButton.icon(
               onPressed: () => _handleReloadLandUses(),
-              icon: const Icon(Icons.refresh, size: 18),
+              icon: Icon(Icons.refresh, size: ResponsiveUtils.iconSize(context, 18)),
               label: const Text('Sasisha'),
               style: ElevatedButton.styleFrom(
                 backgroundColor:
                     isDark ? AppColors.darkPrimary : AppColors.primary,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
+                padding: EdgeInsets.symmetric(
+                  horizontal: ResponsiveUtils.spacing(context, 12),
+                  vertical: ResponsiveUtils.spacing(context, 8),
                 ),
               ),
             ),
@@ -195,7 +196,7 @@ class _AppConfigurationsPageState extends ConsumerState<AppConfigurationsPage> {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(ResponsiveUtils.spacing(context, 20)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -203,11 +204,11 @@ class _AppConfigurationsPageState extends ConsumerState<AppConfigurationsPage> {
               'Weka Buffer Chaguo-Msingi',
               style: TextStyle(
                 fontWeight: FontWeight.w600,
-                fontSize: 16,
+                fontSize: ResponsiveUtils.fontSize(context, 16),
                 color: theme.colorScheme.onSurface,
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: ResponsiveUtils.spacing(context, 4)),
             Text(
               'Buffer (kwa mita) itakayotumika kwaajili ya vipengele vipya',
               style: TextStyle(
@@ -215,16 +216,16 @@ class _AppConfigurationsPageState extends ConsumerState<AppConfigurationsPage> {
                     isDark
                         ? AppColors.darkTextSecondary
                         : AppColors.textSecondary,
-                fontSize: 13,
+                fontSize: ResponsiveUtils.fontSize(context, 13),
               ),
             ),
-            const SizedBox(height: AppConstants.spacingMd),
+            SizedBox(height: ResponsiveUtils.spacing(context, AppConstants.spacingMd)),
             _buildBufferInput('Point', 'point', isDark, theme),
-            const SizedBox(height: AppConstants.spacingSm),
+            SizedBox(height: ResponsiveUtils.spacing(context, AppConstants.spacingSm)),
             _buildBufferInput('Line', 'lineString', isDark, theme),
-            const SizedBox(height: AppConstants.spacingSm),
+            SizedBox(height: ResponsiveUtils.spacing(context, AppConstants.spacingSm)),
             _buildBufferInput('Polygon', 'polygon', isDark, theme),
-            const SizedBox(height: AppConstants.spacingMd),
+            SizedBox(height: ResponsiveUtils.spacing(context, AppConstants.spacingMd)),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -233,14 +234,17 @@ class _AppConfigurationsPageState extends ConsumerState<AppConfigurationsPage> {
                   backgroundColor:
                       isDark ? AppColors.darkPrimary : AppColors.primary,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.spacing(context, 14)),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AppConstants.radiusSm),
                   ),
                 ),
-                child: const Text(
+                child: Text(
                   'Hifadhi Mabadiliko',
-                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: ResponsiveUtils.fontSize(context, 16),
+                  ),
                 ),
               ),
             ),
@@ -263,7 +267,7 @@ class _AppConfigurationsPageState extends ConsumerState<AppConfigurationsPage> {
             label,
             style: TextStyle(
               fontWeight: FontWeight.w500,
-              fontSize: 14,
+              fontSize: ResponsiveUtils.fontSize(context, 14),
               color: theme.colorScheme.onSurface,
             ),
           ),
@@ -283,9 +287,9 @@ class _AppConfigurationsPageState extends ConsumerState<AppConfigurationsPage> {
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(AppConstants.radiusSm),
               ),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 10,
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: ResponsiveUtils.spacing(context, 12),
+                vertical: ResponsiveUtils.spacing(context, 10),
               ),
             ),
           ),

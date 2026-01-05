@@ -2,14 +2,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nluis_app/core/env/env.dart';
 import '../../../../shared/providers/theme_provider.dart';
-import '../../../../features/auth/presentation/providers/auth_providers.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/constants/app_constants.dart';
+import '../../../../shared/utils/responsive_utils.dart';
 import '../../../../shared/widgets/custom_app_bar.dart';
-import '../../../../data/local/draft_provider.dart';
-import '../../../../shared/utils/dialog_utils.dart';
 import '../../../../shared/utils/snackbar_utils.dart';
 
 class SettingsPage extends ConsumerWidget {
@@ -27,38 +24,23 @@ class SettingsPage extends ConsumerWidget {
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       appBar: const CustomAppBar(
         showBackButton: true,
+        title: 'Mipangilio',
+        // subtitle: 'Dhibiti programu yako',
         showProfile: false,
         hasNotification: true,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppConstants.spacingLg),
+        padding: EdgeInsets.all(
+          ResponsiveUtils.spacing(context, AppConstants.spacingLg),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
-            Text(
-              'Mipangilio',
-              style: theme.textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-                color:
-                    isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Dhibiti programu yako',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color:
-                    isDark
-                        ? AppColors.darkTextSecondary
-                        : AppColors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: AppConstants.spacingLg),
-
             // Account Section
             _buildSectionTitle(context, 'AKAUNTI'),
-            const SizedBox(height: AppConstants.spacingSm),
+            SizedBox(
+              height: ResponsiveUtils.spacing(context, AppConstants.spacingSm),
+            ),
             _SettingCard(
               theme: theme,
               children: [
@@ -70,7 +52,7 @@ class SettingsPage extends ConsumerWidget {
                   subtitle: user?.fullName ?? 'User',
                   trailing: Icon(
                     Icons.arrow_forward_ios,
-                    size: 16,
+                    size: ResponsiveUtils.iconSize(context, 16),
                     color:
                         isDark
                             ? AppColors.darkTextSecondary
@@ -95,7 +77,7 @@ class SettingsPage extends ConsumerWidget {
                   subtitle: 'Badilisha neno la siri',
                   trailing: Icon(
                     Icons.arrow_forward_ios,
-                    size: 16,
+                    size: ResponsiveUtils.iconSize(context, 16),
                     color:
                         isDark
                             ? AppColors.darkTextSecondary
@@ -110,11 +92,15 @@ class SettingsPage extends ConsumerWidget {
                 ),
               ],
             ),
-            const SizedBox(height: AppConstants.spacingLg),
+            SizedBox(
+              height: ResponsiveUtils.spacing(context, AppConstants.spacingLg),
+            ),
 
             // Preferences Section
             _buildSectionTitle(context, 'MAPENDELEO'),
-            const SizedBox(height: AppConstants.spacingSm),
+            SizedBox(
+              height: ResponsiveUtils.spacing(context, AppConstants.spacingSm),
+            ),
             _SettingCard(
               theme: theme,
               children: [
@@ -126,7 +112,7 @@ class SettingsPage extends ConsumerWidget {
                   subtitle: 'Kiswahili',
                   trailing: Icon(
                     Icons.arrow_forward_ios,
-                    size: 16,
+                    size: ResponsiveUtils.iconSize(context, 16),
                     color:
                         isDark
                             ? AppColors.darkTextSecondary
@@ -146,7 +132,7 @@ class SettingsPage extends ConsumerWidget {
                   subtitle: currentTheme.label,
                   trailing: Icon(
                     Icons.arrow_forward_ios,
-                    size: 16,
+                    size: ResponsiveUtils.iconSize(context, 16),
                     color:
                         isDark
                             ? AppColors.darkTextSecondary
@@ -181,11 +167,15 @@ class SettingsPage extends ConsumerWidget {
                 // ),
               ],
             ),
-            const SizedBox(height: AppConstants.spacingLg),
+            SizedBox(
+              height: ResponsiveUtils.spacing(context, AppConstants.spacingLg),
+            ),
 
             // Data Section
             _buildSectionTitle(context, 'DATA'),
-            const SizedBox(height: AppConstants.spacingSm),
+            SizedBox(
+              height: ResponsiveUtils.spacing(context, AppConstants.spacingSm),
+            ),
             _SettingCard(
               theme: theme,
               children: [
@@ -197,7 +187,7 @@ class SettingsPage extends ConsumerWidget {
                   subtitle: 'Mipangilio na data za msingi',
                   trailing: Icon(
                     Icons.arrow_forward_ios,
-                    size: 16,
+                    size: ResponsiveUtils.iconSize(context, 16),
                     color:
                         isDark
                             ? AppColors.darkTextSecondary
@@ -219,7 +209,7 @@ class SettingsPage extends ConsumerWidget {
                   subtitle: 'Futa data zote zilizohifadhiwa',
                   trailing: Icon(
                     Icons.arrow_forward_ios,
-                    size: 16,
+                    size: ResponsiveUtils.iconSize(context, 16),
                     color:
                         isDark
                             ? AppColors.darkTextSecondary
@@ -229,11 +219,15 @@ class SettingsPage extends ConsumerWidget {
                 ),
               ],
             ),
-            const SizedBox(height: AppConstants.spacingLg),
+            SizedBox(
+              height: ResponsiveUtils.spacing(context, AppConstants.spacingLg),
+            ),
 
             // Help Section
             _buildSectionTitle(context, 'MSAADA'),
-            const SizedBox(height: AppConstants.spacingSm),
+            SizedBox(
+              height: ResponsiveUtils.spacing(context, AppConstants.spacingSm),
+            ),
             _SettingCard(
               theme: theme,
               children: [
@@ -245,7 +239,7 @@ class SettingsPage extends ConsumerWidget {
                   subtitle: 'Pata msaada na maswali',
                   trailing: Icon(
                     Icons.arrow_forward_ios,
-                    size: 16,
+                    size: ResponsiveUtils.iconSize(context, 16),
                     color:
                         isDark
                             ? AppColors.darkTextSecondary
@@ -270,7 +264,7 @@ class SettingsPage extends ConsumerWidget {
                   subtitle: 'Toleo ${Env.appVersion}',
                   trailing: Icon(
                     Icons.arrow_forward_ios,
-                    size: 16,
+                    size: ResponsiveUtils.iconSize(context, 16),
                     color:
                         isDark
                             ? AppColors.darkTextSecondary
@@ -287,13 +281,15 @@ class SettingsPage extends ConsumerWidget {
                         height: 120,
                         fit: BoxFit.cover,
                       ),
-                      applicationLegalese: 'Test Legal txt',
+                      applicationLegalese: 'NLUIS Test Legal txt',
                     );
                   },
                 ),
               ],
             ),
-            const SizedBox(height: AppConstants.spacingXl),
+            SizedBox(
+              height: ResponsiveUtils.spacing(context, AppConstants.spacingXl),
+            ),
           ],
         ),
       ),
@@ -320,10 +316,15 @@ class SettingsPage extends ConsumerWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const SizedBox(height: AppConstants.spacingMd),
+                  SizedBox(
+                    height: ResponsiveUtils.spacing(
+                      context,
+                      AppConstants.spacingMd,
+                    ),
+                  ),
                   Container(
-                    width: 40,
-                    height: 4,
+                    width: ResponsiveUtils.spacing(context, 40),
+                    height: ResponsiveUtils.spacing(context, 4),
                     decoration: BoxDecoration(
                       color: isDark ? AppColors.darkDivider : AppColors.divider,
                       borderRadius: BorderRadius.circular(
@@ -331,7 +332,12 @@ class SettingsPage extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: AppConstants.spacingLg),
+                  SizedBox(
+                    height: ResponsiveUtils.spacing(
+                      context,
+                      AppConstants.spacingLg,
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: AppConstants.spacingLg,
@@ -347,7 +353,12 @@ class SettingsPage extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: AppConstants.spacingLg),
+                  SizedBox(
+                    height: ResponsiveUtils.spacing(
+                      context,
+                      AppConstants.spacingLg,
+                    ),
+                  ),
                   _LanguageOption(
                     theme: theme,
                     label: 'Kiswahili',
@@ -366,7 +377,12 @@ class SettingsPage extends ConsumerWidget {
                       );
                     },
                   ),
-                  const SizedBox(height: AppConstants.spacingLg),
+                  SizedBox(
+                    height: ResponsiveUtils.spacing(
+                      context,
+                      AppConstants.spacingLg,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -377,7 +393,9 @@ class SettingsPage extends ConsumerWidget {
   Widget _buildSectionTitle(BuildContext context, String title) {
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+      padding: EdgeInsets.symmetric(
+        horizontal: ResponsiveUtils.spacing(context, 8),
+      ),
       child: Text(
         title,
         style: theme.textTheme.titleSmall?.copyWith(
@@ -396,91 +414,19 @@ class SettingsPage extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) async {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    // final result = await ClearStorageBottomSheet.show(context);
 
-    final confirm = await DialogUtils.showCustomDialog<bool>(
-      context,
-      builder:
-          (dialogContext) => AlertDialog(
-            backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppConstants.radiusMd),
-            ),
-            title: Row(
-              children: [
-                Icon(
-                  Icons.warning_amber_rounded,
-                  color: isDark ? AppColors.errorDark : AppColors.error,
-                  size: 28,
-                ),
-                const SizedBox(width: AppConstants.spacingSm),
-                Expanded(
-                  child: Text(
-                    'Futa Data?',
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color:
-                          isDark
-                              ? AppColors.darkTextPrimary
-                              : AppColors.textPrimary,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            content: Text(
-              'Je, una uhakika unataka kufuta data zote zilizohifadhiwa? Hatua hii haiwezi kubatilishwa. Data zote za miradi, dodoso, na rasimu zitafutwa.',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color:
-                    isDark
-                        ? AppColors.darkTextSecondary
-                        : AppColors.textSecondary,
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(dialogContext).pop(false),
-                child: Text(
-                  'Ghairi',
-                  style: TextStyle(
-                    color:
-                        isDark
-                            ? AppColors.darkTextSecondary
-                            : AppColors.textSecondary,
-                  ),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.of(dialogContext).pop(true),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      isDark ? AppColors.errorDark : AppColors.error,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppConstants.radiusSm),
-                  ),
-                ),
-                child: const Text('Futa'),
-              ),
-            ],
-          ),
-    );
-
-    if (confirm == true) {
-      try {
-        final draftService = ref.read(draftServiceProvider);
-        await draftService.clearAllData();
-
-        if (context.mounted) {
-          SnackBarUtils.showSuccess(context, 'Data zote zimefutwa kamili');
-        }
-      } catch (e) {
-        if (context.mounted) {
-          SnackBarUtils.showError(context, 'Hitilafu: $e');
-        }
-      }
-    }
+    // if (result == true && context.mounted) {
+    //   SnackBarUtils.showSuccess(
+    //     context,
+    //     'Data zilizochaguliwa zimefutwa kamili',
+    //   );
+    // } else if (result == false && context.mounted) {
+    //   SnackBarUtils.showError(
+    //     context,
+    //     'Hitilafu imetokea wakati wa kufuta data',
+    //   );
+    // }
   }
 
   void _showThemePicker(BuildContext context, WidgetRef ref) {
@@ -505,8 +451,8 @@ class SettingsPage extends ConsumerWidget {
                 children: [
                   const SizedBox(height: 12),
                   Container(
-                    width: 40,
-                    height: 4,
+                    width: ResponsiveUtils.spacing(context, 40),
+                    height: ResponsiveUtils.spacing(context, 4),
                     decoration: BoxDecoration(
                       color:
                           theme.brightness == Brightness.dark
@@ -610,20 +556,27 @@ class _SettingTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: ResponsiveUtils.spacing(context, 20),
+        vertical: ResponsiveUtils.spacing(context, 4),
+      ),
       leading: Container(
-        padding: const EdgeInsets.all(10),
+        padding: EdgeInsets.all(ResponsiveUtils.spacing(context, 10)),
         decoration: BoxDecoration(
           color: iconColor.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Icon(icon, color: iconColor, size: 24),
+        child: Icon(
+          icon,
+          color: iconColor,
+          size: ResponsiveUtils.iconSize(context, 24),
+        ),
       ),
       title: Text(
         title,
         style: TextStyle(
           fontWeight: FontWeight.w600,
-          fontSize: 16,
+          fontSize: ResponsiveUtils.fontSize(context, 16),
           color: theme.colorScheme.onSurface,
         ),
       ),
@@ -634,7 +587,7 @@ class _SettingTile extends StatelessWidget {
               theme.brightness == Brightness.dark
                   ? AppColors.darkTextSecondary
                   : AppColors.textSecondary,
-          fontSize: 13,
+          fontSize: ResponsiveUtils.fontSize(context, 13),
         ),
       ),
       trailing: trailing,
