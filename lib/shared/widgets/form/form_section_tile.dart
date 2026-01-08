@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:nluis_app/shared/constants/app_constants.dart';
-import 'package:nluis_app/shared/models/questionnaire.dart';
-import 'package:nluis_app/shared/theme/app_colors.dart';
-import 'package:nluis_app/shared/widgets/form/form_completion_state.dart';
-import 'package:nluis_app/shared/widgets/form/form_field_builder.dart' as custom;
-import 'package:nluis_app/shared/widgets/form/form_status_badge.dart';
+import 'package:nluis_collect/shared/constants/app_constants.dart';
+import 'package:nluis_collect/shared/models/questionnaire.dart';
+import 'package:nluis_collect/shared/theme/app_colors.dart';
+import 'package:nluis_collect/shared/widgets/form/form_completion_state.dart';
+import 'package:nluis_collect/shared/widgets/form/form_status_badge.dart';
 
 class FormSectionTile extends StatelessWidget {
   final QuestionnaireForm form;
@@ -76,7 +75,7 @@ class FormSectionTile extends StatelessWidget {
             FormStatusBadge(
               status: status,
               isDark: isDark,
-              compact: true,
+              // compact: true,
             ),
           ],
         ),
@@ -100,10 +99,13 @@ class FormSectionTile extends StatelessWidget {
           ...sortedFields.map(
             (field) => Padding(
               padding: const EdgeInsets.only(bottom: AppConstants.spacingSm),
-              child: custom.FormFieldBuilder(
+              child: FormFieldBuilder(
                 field: field,
                 value: _resolveFieldValue(field, formValues[field.id]),
-                onChanged: isReadOnly ? null : (value) => onFieldChanged(field.id, value),
+                onChanged:
+                    isReadOnly
+                        ? null
+                        : (value) => onFieldChanged(field.id, value),
                 isReadOnly: isReadOnly,
               ),
             ),
@@ -133,14 +135,17 @@ class FormSectionTile extends StatelessWidget {
                   icon: const Icon(Icons.save_outlined, size: 18),
                   label: const Text('Hifadhi'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: isDark ? AppColors.darkPrimary : AppColors.primary,
+                    backgroundColor:
+                        isDark ? AppColors.darkPrimary : AppColors.primary,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
                       horizontal: AppConstants.spacingMd,
                       vertical: AppConstants.spacingSm,
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppConstants.radiusSm),
+                      borderRadius: BorderRadius.circular(
+                        AppConstants.radiusSm,
+                      ),
                     ),
                   ),
                 ),
@@ -162,11 +167,7 @@ class FormSectionTile extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.lock_outline,
-                    size: 16,
-                    color: AppColors.info,
-                  ),
+                  Icon(Icons.lock_outline, size: 16, color: AppColors.info),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
