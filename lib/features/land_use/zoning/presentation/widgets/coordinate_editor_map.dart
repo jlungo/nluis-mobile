@@ -6,6 +6,7 @@ import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 
 import '../../../../../shared/constants/app_constants.dart';
 import '../../../../../shared/theme/app_colors.dart';
+import '../../../../../shared/utils/responsive_utils.dart';
 import '../../../../../shared/widgets/app_button.dart';
 import '../../domain/entities/zoning_feature.dart';
 
@@ -187,8 +188,8 @@ class _CoordinateEditorMapState extends ConsumerState<CoordinateEditorMap> {
 
                       return Marker(
                         point: point,
-                        width: 40,
-                        height: 40,
+                        width: AppConstants.mapPointMarkerSize,
+                        height: AppConstants.mapPointMarkerSize,
                         child: GestureDetector(
                           onLongPress: () => _deletePoint(index),
                           onTap: () {
@@ -198,8 +199,8 @@ class _CoordinateEditorMapState extends ConsumerState<CoordinateEditorMap> {
                             alignment: Alignment.center,
                             children: [
                               Container(
-                                width: isDragging ? 44 : 40,
-                                height: isDragging ? 44 : 40,
+                                width: isDragging ? AppConstants.mapPointMarkerSize + 4.0 : AppConstants.mapPointMarkerSize,
+                                height: isDragging ? AppConstants.mapPointMarkerSize + 4.0 : AppConstants.mapPointMarkerSize,
                                 decoration: BoxDecoration(
                                   color:
                                       isDragging
@@ -223,9 +224,9 @@ class _CoordinateEditorMapState extends ConsumerState<CoordinateEditorMap> {
                                 child: Center(
                                   child: Text(
                                     '${index + 1}',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       color: Colors.white,
-                                      fontSize: 14,
+                                      fontSize: ResponsiveUtils.fontSize(context, 14),
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),

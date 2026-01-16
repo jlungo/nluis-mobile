@@ -7,7 +7,7 @@ import '../../../../../shared/theme/app_colors.dart';
 import '../../../../../shared/widgets/app_bottom_sheet.dart';
 import '../../../../../shared/widgets/app_button.dart';
 import '../../../../../shared/widgets/toggle_card_widget.dart';
-import '../../../../spatial/data/services/coordinate_converter.dart';
+import '../../../../../shared/features/spatial/data/services/coordinate_converter.dart';
 import '../../domain/entities/zoning_feature.dart';
 
 /// Fullscreen bottom sheet for manual coordinate entry
@@ -342,7 +342,7 @@ class _ManualCoordinateEntrySheetState
 
             // SRID Selector - Custom Dropdown
             DropdownButtonFormField<int>(
-              value: _selectedSrid,
+              initialValue: _selectedSrid,
               decoration: InputDecoration(
                 labelText: 'Coordinate System',
                 prefixIcon: const Icon(Icons.public),

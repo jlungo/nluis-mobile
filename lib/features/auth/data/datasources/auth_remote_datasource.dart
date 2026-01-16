@@ -26,7 +26,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
 
       if (response.statusCode == 200) {
-        // Validate user_type before parsing full response
         final userType = response.data['user_type'] as int?;
         if (userType != 5) {
           return const Left(AuthFailure('Hauruhusiwi kutumia programu ya simu. Wasiliana na msimamizi.'));

@@ -14,12 +14,11 @@ class AuthResponseModel {
   });
 
   factory AuthResponseModel.fromJson(Map<String, dynamic> json) {
-    // API returns user data at root level, not nested
     return AuthResponseModel(
       accessToken: json['access'] as String,
       refreshToken: json['refresh'] as String,
       expiresIn: json['expires_in'] as int? ?? 3600,
-      user: UserModel.fromJson(json), // Pass entire response since user data is at root
+      user: UserModel.fromJson(json),
     );
   }
 }

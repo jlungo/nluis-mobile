@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../../../core/error/failures.dart';
-import '../../../../spatial/domain/entities/basemap.dart';
-import '../../../../spatial/domain/entities/user_location.dart';
+import '../../../../../shared/features/spatial/domain/entities/basemap.dart';
+import '../../../../../shared/features/spatial/domain/entities/user_location.dart';
 import '../entities/zoning_feature.dart';
 
 abstract class ZoningRepository {

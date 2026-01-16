@@ -7,6 +7,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../../../../shared/constants/app_constants.dart';
 import '../../../../../shared/theme/app_colors.dart';
+import '../../../../../shared/utils/responsive_utils.dart';
 import '../../../../../shared/widgets/app_drawer.dart';
 import '../../../../../shared/widgets/custom_app_bar.dart';
 import '../../../../../shared/widgets/action_menu_item.dart';
@@ -18,6 +19,8 @@ import '../../domain/entities/zoning_feature.dart';
 import '../providers/zoning_providers.dart';
 import '../../../../../data/local/draft_provider.dart';
 
+enum ZoningFilter { all, draft, saved, uploaded }
+
 class ZoningManagerPage extends ConsumerStatefulWidget {
   const ZoningManagerPage({super.key});
 
@@ -26,6 +29,132 @@ class ZoningManagerPage extends ConsumerStatefulWidget {
 }
 
 class _ZoningManagerPageState extends ConsumerState<ZoningManagerPage> {
+  ZoningFilter _currentFilter = ZoningFilter.all;
+  final Set<String> _selectedLocalityIds = {};
+  bool _isUploading = false;
+
+  bool get _isSelectionMode => _selectedLocalityIds.isNotEmpty;
+
+  bool _canSelectLocality(LocalityProject project) {
+    // Can only select localities with saved (not draft, not uploaded) features
+    return project.savedCount > 0;
+  }
+
+  void _toggleSelection(LocalityProject project) {
+    setState(() {
+      if (_selectedLocalityIds.contains(project.localityId)) {
+        _selectedLocalityIds.remove(project.localityId);
+      } else {
+        _selectedLocalityIds.add(project.localityId);
+      }
+    });
+  }
+
+  void _clearSelection() {
+    setState(() {
+      _selectedLocalityIds.clear();
+    });
+  }
+
+  void _selectAllEligible(List<LocalityProject> projects) {
+    setState(() {
+      for (final project in projects) {
+        if (_canSelectLocality(project)) {
+          _selectedLocalityIds.add(project.localityId);
+        }
+      }
+    });
+  }
+
+  Future<void> _uploadSelectedLocalities(List<LocalityProject> allProjects) async {
+    final selectedProjects = allProjects
+        .where((p) => _selectedLocalityIds.contains(p.localityId))
+        .toList();
+
+    if (selectedProjects.isEmpty) return;
+
+    setState(() => _isUploading = true);
+
+    try {
+      final repository = ref.read(zoningRepositoryProvider);
+      final zoningApi = ref.read(zoningApiServiceProvider);
+      final database = ref.read(databaseProvider);
+
+      int totalUploaded = 0;
+
+      for (final project in selectedProjects) {
+        // Get saved features for this locality
+        final savedResult = await repository.getFeaturesByStatus(
+          isDraft: false,
+          uploaded: false,
+        );
+
+        final savedFeatures = savedResult.fold(
+          (failure) => <ZoningFeature>[],
+          (features) =>
+              features.where((f) => f.localityId == project.localityId).toList(),
+        );
+
+        if (savedFeatures.isNotEmpty) {
+          // Upload features using bulk API
+          await zoningApi.bulkUploadZones(features: savedFeatures);
+
+          // Mark features as uploaded in local database
+          for (final feature in savedFeatures) {
+            final updatedFeature = feature.copyWith(
+              uploaded: true,
+              uploadedAt: DateTime.now(),
+            );
+            await repository.updateFeature(updatedFeature);
+
+            // Delete feature history after successful upload
+            await (database.delete(database.zoningFeatureHistory)
+                  ..where((tbl) => tbl.featureId.equals(feature.clientUuid)))
+                .go();
+          }
+
+          totalUploaded += savedFeatures.length;
+        }
+      }
+
+      // Refresh providers
+      ref.invalidate(localityProjectsProvider);
+
+      if (mounted) {
+        SnackBarUtils.showSuccess(
+          context,
+          '$totalUploaded vipengele vimepakiwa',
+        );
+      }
+
+      _clearSelection();
+    } catch (e) {
+      if (mounted) {
+        SnackBarUtils.showError(context, 'Imeshindikana kupakia: ${e.toString()}');
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isUploading = false);
+      }
+    }
+  }
+
+  List<LocalityProject> _getFilteredProjects(List<LocalityProject> projects) {
+    switch (_currentFilter) {
+      case ZoningFilter.all:
+        return projects
+            .where((p) =>
+                p.draftCount > 0 || p.savedCount > 0 || p.uploadedCount > 0)
+            .toList();
+      case ZoningFilter.draft:
+        return projects.where((p) => p.draftCount > 0).toList();
+      case ZoningFilter.saved:
+        return projects.where((p) => p.savedCount > 0).toList();
+      case ZoningFilter.uploaded:
+        return projects.where((p) => p.uploadedCount > 0).toList();
+    }
+  }
+
   Future<void> _exportLocalityToCSV(
     BuildContext context,
     String localityId,
@@ -246,264 +375,291 @@ class _ZoningManagerPageState extends ConsumerState<ZoningManagerPage> {
 
   @override
   Widget build(BuildContext context) {
-    final localityProjectsAsync = ref.watch(localityProjectsProvider);
-
-    // Calculate total counts
-    final totalCounts = localityProjectsAsync.when(
-      data:
-          (projects) => (
-            projects.fold(0, (sum, p) => sum + p.draftCount),
-            projects.fold(0, (sum, p) => sum + p.savedCount),
-            projects.fold(0, (sum, p) => sum + p.uploadedCount),
-          ),
-      loading: () => (0, 0, 0),
-      error: (error, stack) => (0, 0, 0),
-    );
-
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        drawer: const AppDrawer(),
-        appBar: CustomAppBar(
-          title: 'Zoning',
-          bottom: _ZoningTabBar(counts: totalCounts),
-        ),
-        body: localityProjectsAsync.when(
-          data:
-              (projects) => TabBarView(
-                children: [
-                  _LocalityProjectsList(
-                    projects: projects,
-                    filterStatus: 'draft',
-                    onProjectTap:
-                        (context, project) =>
-                            _showLocalityActions(context, project, 'draft'),
-                  ),
-                  _LocalityProjectsList(
-                    projects: projects,
-                    filterStatus: 'saved',
-                    onProjectTap:
-                        (context, project) =>
-                            _showLocalityActions(context, project, 'saved'),
-                  ),
-                  _LocalityProjectsList(
-                    projects: projects,
-                    filterStatus: 'uploaded',
-                    onProjectTap:
-                        (context, project) =>
-                            _showLocalityActions(context, project, 'uploaded'),
-                  ),
-                ],
-              ),
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, stack) => Center(child: Text('Error: $error')),
-        ),
-      ),
-    );
-  }
-}
-
-class _ZoningTabBar extends StatelessWidget implements PreferredSizeWidget {
-  final (int draft, int saved, int uploaded) counts;
-
-  const _ZoningTabBar({required this.counts});
-
-  @override
-  Size get preferredSize => const Size.fromHeight(56);
-
-  @override
-  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final localityProjectsAsync = ref.watch(localityProjectsProvider);
 
-    Widget buildTab(String label, int count, Color color) {
-      return Tab(
-        child: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppConstants.spacingMd,
-            vertical: AppConstants.spacingXs,
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
+    return Scaffold(
+      backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
+      drawer: _isSelectionMode ? null : const AppDrawer(),
+      appBar: _buildAppBar(isDark, theme, localityProjectsAsync.valueOrNull ?? []),
+      body: localityProjectsAsync.when(
+        data: (projects) {
+          final filteredProjects = _getFilteredProjects(projects);
+          final draftCount = projects.fold(0, (sum, p) => sum + p.draftCount);
+          final savedCount = projects.fold(0, (sum, p) => sum + p.savedCount);
+          final uploadedCount = projects.fold(0, (sum, p) => sum + p.uploadedCount);
+
+          return Column(
             children: [
-              Text(
-                label,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
+              if (!_isSelectionMode)
+                _buildFilterChips(isDark, draftCount, savedCount, uploadedCount),
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    ref.invalidate(localityProjectsProvider);
+                  },
+                  child: _buildProjectList(isDark, projects, filteredProjects),
                 ),
               ),
-              const SizedBox(width: 8),
-              _ModernBadge(count: count, color: color, isDark: isDark),
+            ],
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(child: Text('Error: $error')),
+      ),
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar(
+    bool isDark,
+    ThemeData theme,
+    List<LocalityProject> allProjects,
+  ) {
+    if (_isSelectionMode) {
+      return AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: _clearSelection,
+        ),
+        title: Text(
+          '${_selectedLocalityIds.length} vimechaguliwa',
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+        foregroundColor:
+            isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+        elevation: 1,
+        actions: [
+          TextButton.icon(
+            onPressed: _isUploading
+                ? null
+                : () => _uploadSelectedLocalities(allProjects),
+            icon: _isUploading
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.cloud_upload_outlined),
+            label: Text(_isUploading ? 'Inapakia...' : 'Pakia'),
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.primary,
+            ),
+          ),
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'select_all') {
+                _selectAllEligible(allProjects);
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'select_all',
+                child: Text('Chagua Zote'),
+              ),
             ],
           ),
-        ),
+        ],
       );
     }
-
-    return TabBar(
-      isScrollable: true,
-      tabAlignment: TabAlignment.center,
-      labelColor: isDark ? AppColors.darkPrimary : AppColors.primary,
-      unselectedLabelColor:
-          isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
-      dividerColor: isDark ? AppColors.darkDivider : AppColors.divider,
-      padding: const EdgeInsets.symmetric(horizontal: AppConstants.spacingSm),
-      tabs: [
-        buildTab('Rasimu', counts.$1, AppColors.warning),
-        buildTab('Zilizohifadhiwa', counts.$2, AppColors.info),
-        buildTab('Zimepakiwa', counts.$3, AppColors.success),
-      ],
+    return const CustomAppBar(
+      title: 'Zoning',
+      showBackButton: false,
+      showProfile: true,
     );
   }
-}
 
-class _ModernBadge extends StatelessWidget {
-  final int count;
-  final Color color;
-  final bool isDark;
+  Widget _buildFilterChips(
+    bool isDark,
+    int draftCount,
+    int savedCount,
+    int uploadedCount,
+  ) {
+    final allCount = draftCount + savedCount + uploadedCount;
 
-  const _ModernBadge({
-    required this.count,
-    required this.color,
-    required this.isDark,
-  });
+    final filters = [
+      (ZoningFilter.all, 'Zote', allCount, AppColors.primary),
+      (ZoningFilter.draft, 'Rasimu', draftCount, AppColors.warning),
+      (ZoningFilter.saved, 'Zilizohifadhiwa', savedCount, AppColors.info),
+      (ZoningFilter.uploaded, 'Zimepakiwa', uploadedCount, AppColors.success),
+    ];
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      constraints: const BoxConstraints(minWidth: 24),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            color.withValues(alpha: isDark ? 0.9 : 1.0),
-            color.withValues(alpha: isDark ? 0.7 : 0.8),
-          ],
+    return SizedBox(
+      height: 48,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppConstants.spacingMd,
+          vertical: AppConstants.spacingSm,
         ),
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: color.withValues(alpha: 0.3),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Text(
-        count.toString(),
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w700,
-          color: Colors.white,
-          height: 1.2,
-        ),
-      ),
-    );
-  }
-}
-
-class _LocalityProjectsList extends StatelessWidget {
-  final List<LocalityProject> projects;
-  final String filterStatus;
-  final Function(BuildContext, LocalityProject) onProjectTap;
-
-  const _LocalityProjectsList({
-    required this.projects,
-    required this.filterStatus,
-    required this.onProjectTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    // Filter projects that have features in this status
-    final filteredProjects =
-        projects.where((project) {
-          switch (filterStatus) {
-            case 'draft':
-              return project.draftCount > 0;
-            case 'saved':
-              return project.savedCount > 0;
-            case 'uploaded':
-              return project.uploadedCount > 0;
-            default:
-              return false;
-          }
-        }).toList();
-
-    if (filteredProjects.isEmpty) {
-      return _ZoningEmpty(message: _getEmptyMessage());
-    }
-
-    return RefreshIndicator(
-      onRefresh: () async {
-        // Trigger refresh
-      },
-      child: ListView.builder(
-        padding: const EdgeInsets.all(AppConstants.spacingMd),
-        itemCount: filteredProjects.length,
+        itemCount: filters.length,
+        separatorBuilder: (_, i) =>
+            const SizedBox(width: AppConstants.spacingSm),
         itemBuilder: (context, index) {
-          final project = filteredProjects[index];
-          return _LocalityProjectCard(
-            project: project,
-            status: filterStatus,
-            onTap: () => onProjectTap(context, project),
+          final (filter, label, count, color) = filters[index];
+          final isActive = _currentFilter == filter;
+
+          return FilterChip(
+            label: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(label),
+                const SizedBox(width: 6),
+                Container(
+                  constraints: const BoxConstraints(minWidth: 20),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: isActive
+                        ? color
+                        : (isDark
+                            ? Colors.grey.shade700
+                            : Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    count.toString(),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.fontSize(context, 11),
+                      fontWeight: FontWeight.w700,
+                      color: isActive
+                          ? Colors.white
+                          : (isDark
+                              ? AppColors.darkTextSecondary
+                              : AppColors.textSecondary),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            selected: isActive,
+            onSelected: (_) => setState(() => _currentFilter = filter),
+            selectedColor: color.withValues(alpha: 0.2),
+            checkmarkColor: color,
+            labelStyle: TextStyle(
+              color: isActive
+                  ? color
+                  : (isDark
+                      ? AppColors.darkTextSecondary
+                      : AppColors.textSecondary),
+              fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+            ),
+            backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+            side: BorderSide(
+              color: isActive
+                  ? color
+                  : (isDark ? Colors.grey.shade700 : Colors.grey.shade300),
+            ),
+            showCheckmark: false,
+            padding: const EdgeInsets.symmetric(horizontal: 4),
           );
         },
       ),
     );
   }
 
-  String _getEmptyMessage() {
-    switch (filterStatus) {
-      case 'draft':
-        return 'Hakuna miradi yenye rasimu za vipengele.';
-      case 'saved':
-        return 'Hakuna miradi yenye vipengele vilivyohifadhiwa.';
-      case 'uploaded':
-        return 'Hakuna miradi yenye vipengele vilivyopakiwa.';
-      default:
-        return 'Hakuna miradi yenye vipengele.';
+  Widget _buildProjectList(
+    bool isDark,
+    List<LocalityProject> allProjects,
+    List<LocalityProject> filteredProjects,
+  ) {
+    if (filteredProjects.isEmpty) {
+      return _ZoningEmpty(filter: _currentFilter);
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.all(AppConstants.spacingMd),
+      itemCount: filteredProjects.length,
+      itemBuilder: (context, index) {
+        final project = filteredProjects[index];
+        final isSelected = _selectedLocalityIds.contains(project.localityId);
+        final canSelect = _canSelectLocality(project);
+
+        return _LocalityProjectCard(
+          project: project,
+          filter: _currentFilter,
+          isSelected: isSelected,
+          isSelectionMode: _isSelectionMode,
+          canSelect: canSelect,
+          onTap: () {
+            if (_isSelectionMode) {
+              if (canSelect) {
+                _toggleSelection(project);
+              }
+            } else {
+              _showLocalityActions(context, project, _getStatusFromFilter());
+            }
+          },
+          onLongPress: () {
+            if (canSelect) {
+              _toggleSelection(project);
+            }
+          },
+        );
+      },
+    );
+  }
+
+  String _getStatusFromFilter() {
+    switch (_currentFilter) {
+      case ZoningFilter.all:
+        return 'all';
+      case ZoningFilter.draft:
+        return 'draft';
+      case ZoningFilter.saved:
+        return 'saved';
+      case ZoningFilter.uploaded:
+        return 'uploaded';
     }
   }
 }
 
 class _LocalityProjectCard extends StatelessWidget {
   final LocalityProject project;
-  final String status;
+  final ZoningFilter filter;
+  final bool isSelected;
+  final bool isSelectionMode;
+  final bool canSelect;
   final VoidCallback onTap;
+  final VoidCallback onLongPress;
 
   const _LocalityProjectCard({
     required this.project,
-    required this.status,
+    required this.filter,
+    required this.isSelected,
+    required this.isSelectionMode,
+    required this.canSelect,
     required this.onTap,
+    required this.onLongPress,
   });
 
   int _getCount() {
-    switch (status) {
-      case 'draft':
+    switch (filter) {
+      case ZoningFilter.all:
+        return project.draftCount + project.savedCount + project.uploadedCount;
+      case ZoningFilter.draft:
         return project.draftCount;
-      case 'saved':
+      case ZoningFilter.saved:
         return project.savedCount;
-      case 'uploaded':
+      case ZoningFilter.uploaded:
         return project.uploadedCount;
-      default:
-        return 0;
     }
   }
 
   Color _getStatusColor() {
-    switch (status) {
-      case 'draft':
+    switch (filter) {
+      case ZoningFilter.all:
+        return AppColors.primary;
+      case ZoningFilter.draft:
         return AppColors.warning;
-      case 'saved':
+      case ZoningFilter.saved:
         return AppColors.info;
-      case 'uploaded':
+      case ZoningFilter.uploaded:
         return AppColors.success;
-      default:
-        return Colors.grey;
     }
   }
 
@@ -514,109 +670,146 @@ class _LocalityProjectCard extends StatelessWidget {
     final count = _getCount();
     final color = _getStatusColor();
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: AppConstants.spacingMd),
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppConstants.radiusMd),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppConstants.radiusMd),
-        child: Padding(
-          padding: const EdgeInsets.all(AppConstants.spacingMd),
-          child: Row(
-            children: [
-              // Locality icon
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(Icons.location_city, color: color, size: 28),
-              ),
-              const SizedBox(width: AppConstants.spacingMd),
-              // Locality details
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      project.localityName,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+    return GestureDetector(
+      onLongPress: canSelect ? onLongPress : null,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        margin: const EdgeInsets.only(bottom: AppConstants.spacingMd),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(AppConstants.radiusMd),
+          border: isSelected
+              ? Border.all(
+                  color: isDark ? AppColors.darkPrimary : AppColors.primary,
+                  width: 2,
+                )
+              : null,
+        ),
+        child: Card(
+          margin: EdgeInsets.zero,
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppConstants.radiusMd),
+          ),
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(AppConstants.radiusMd),
+            child: Padding(
+              padding: const EdgeInsets.all(AppConstants.spacingMd),
+              child: Row(
+                children: [
+                  // Selection indicator
+                  if (isSelectionMode && canSelect) ...[
+                    Container(
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? (isDark ? AppColors.darkPrimary : AppColors.primary)
+                            : Colors.transparent,
+                        border: Border.all(
+                          color: isSelected
+                              ? (isDark ? AppColors.darkPrimary : AppColors.primary)
+                              : (isDark ? Colors.grey.shade600 : Colors.grey.shade400),
+                          width: 2,
+                        ),
+                        shape: BoxShape.circle,
                       ),
+                      child: isSelected
+                          ? const Icon(Icons.check, size: 16, color: Colors.white)
+                          : null,
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '$count ${count == 1 ? "feature" : "features"}',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color:
-                            isDark
+                    const SizedBox(width: AppConstants.spacingMd),
+                  ],
+                  // Locality icon
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(Icons.location_city, color: color, size: 28),
+                  ),
+                  const SizedBox(width: AppConstants.spacingMd),
+                  // Locality details
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          project.localityName,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '$count ${count == 1 ? "kipengele" : "vipengele"}',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: isDark
                                 ? AppColors.darkTextSecondary
                                 : AppColors.textSecondary,
-                      ),
-                    ),
-                    if (_shouldShowTimestamp()) ...[
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Icon(
-                            _getTimestampIcon(),
-                            size: 14,
-                            color:
-                                isDark
+                          ),
+                        ),
+                        if (_shouldShowTimestamp()) ...[
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Icon(
+                                _getTimestampIcon(),
+                                size: ResponsiveUtils.iconSize(context, 14),
+                                color: isDark
                                     ? AppColors.darkTextSecondary
                                     : AppColors.textSecondary,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            _getTimestampText(),
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color:
-                                  isDark
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                _getTimestampText(),
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: isDark
                                       ? AppColors.darkTextSecondary
                                       : AppColors.textSecondary,
-                              fontSize: 12,
-                            ),
+                                  fontSize: ResponsiveUtils.fontSize(context, 12),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              // Badge
-              Container(
-                constraints: const BoxConstraints(minWidth: 40),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  count.toString(),
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
+                      ],
+                    ),
                   ),
-                ),
+                  // Badge
+                  Container(
+                    constraints: const BoxConstraints(minWidth: 40),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: color,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      count.toString(),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.fontSize(context, 14),
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  if (!isSelectionMode) ...[
+                    const SizedBox(width: AppConstants.spacingSm),
+                    Icon(
+                      Icons.chevron_right,
+                      color: isDark
+                          ? AppColors.darkTextSecondary
+                          : AppColors.textSecondary,
+                    ),
+                  ],
+                ],
               ),
-              const SizedBox(width: AppConstants.spacingSm),
-              Icon(
-                Icons.chevron_right,
-                color:
-                    isDark
-                        ? AppColors.darkTextSecondary
-                        : AppColors.textSecondary,
-              ),
-            ],
+            ),
           ),
         ),
       ),
@@ -624,13 +817,13 @@ class _LocalityProjectCard extends StatelessWidget {
   }
 
   bool _shouldShowTimestamp() {
-    return (status == 'draft' || status == 'saved') &&
+    return (filter == ZoningFilter.draft || filter == ZoningFilter.saved) &&
             project.lastUpdatedAt != null ||
-        status == 'uploaded' && project.uploadedAt != null;
+        filter == ZoningFilter.uploaded && project.uploadedAt != null;
   }
 
   IconData _getTimestampIcon() {
-    if (status == 'uploaded') {
+    if (filter == ZoningFilter.uploaded) {
       return Icons.cloud_upload_rounded;
     }
     return Icons.update_rounded;
@@ -638,7 +831,7 @@ class _LocalityProjectCard extends StatelessWidget {
 
   String _getTimestampText() {
     final DateTime? timestamp =
-        status == 'uploaded' ? project.uploadedAt : project.lastUpdatedAt;
+        filter == ZoningFilter.uploaded ? project.uploadedAt : project.lastUpdatedAt;
 
     if (timestamp == null) return '';
 
@@ -646,31 +839,44 @@ class _LocalityProjectCard extends StatelessWidget {
     final difference = now.difference(timestamp);
 
     if (difference.inMinutes < 1) {
-      return status == 'uploaded' ? 'Uploaded just now' : 'Updated just now';
+      return filter == ZoningFilter.uploaded ? 'Imepakiwa sasa' : 'Imesasishwa sasa';
     } else if (difference.inHours < 1) {
-      return status == 'uploaded'
-          ? 'Uploaded ${difference.inMinutes}m ago'
-          : 'Updated ${difference.inMinutes}m ago';
+      return filter == ZoningFilter.uploaded
+          ? 'Imepakiwa dakika ${difference.inMinutes} zilizopita'
+          : 'Imesasishwa dakika ${difference.inMinutes} zilizopita';
     } else if (difference.inDays < 1) {
-      return status == 'uploaded'
-          ? 'Uploaded ${difference.inHours}h ago'
-          : 'Updated ${difference.inHours}h ago';
+      return filter == ZoningFilter.uploaded
+          ? 'Imepakiwa saa ${difference.inHours} zilizopita'
+          : 'Imesasishwa saa ${difference.inHours} zilizopita';
     } else if (difference.inDays < 7) {
-      return status == 'uploaded'
-          ? 'Uploaded ${difference.inDays}d ago'
-          : 'Updated ${difference.inDays}d ago';
+      return filter == ZoningFilter.uploaded
+          ? 'Imepakiwa siku ${difference.inDays} zilizopita'
+          : 'Imesasishwa siku ${difference.inDays} zilizopita';
     } else {
-      return status == 'uploaded'
-          ? 'Uploaded ${timestamp.day}/${timestamp.month}/${timestamp.year}'
-          : 'Updated ${timestamp.day}/${timestamp.month}/${timestamp.year}';
+      return filter == ZoningFilter.uploaded
+          ? 'Imepakiwa ${timestamp.day}/${timestamp.month}/${timestamp.year}'
+          : 'Imesasishwa ${timestamp.day}/${timestamp.month}/${timestamp.year}';
     }
   }
 }
 
 class _ZoningEmpty extends StatelessWidget {
-  final String message;
+  final ZoningFilter filter;
 
-  const _ZoningEmpty({required this.message});
+  const _ZoningEmpty({required this.filter});
+
+  String _getMessage() {
+    switch (filter) {
+      case ZoningFilter.all:
+        return 'Hakuna miradi yenye vipengele.';
+      case ZoningFilter.draft:
+        return 'Hakuna miradi yenye rasimu za vipengele.';
+      case ZoningFilter.saved:
+        return 'Hakuna miradi yenye vipengele vilivyohifadhiwa.';
+      case ZoningFilter.uploaded:
+        return 'Hakuna miradi yenye vipengele vilivyopakiwa.';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -689,19 +895,17 @@ class _ZoningEmpty extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(AppConstants.spacingLg),
                   decoration: BoxDecoration(
-                    color:
-                        isDark
-                            ? AppColors.darkPrimary.withValues(alpha: 0.1)
-                            : AppColors.primary.withValues(alpha: 0.1),
+                    color: isDark
+                        ? AppColors.darkPrimary.withValues(alpha: 0.1)
+                        : AppColors.primary.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     Icons.map_outlined,
                     size: 64,
-                    color:
-                        isDark
-                            ? AppColors.darkTextSecondary
-                            : AppColors.textSecondary,
+                    color: isDark
+                        ? AppColors.darkTextSecondary
+                        : AppColors.textSecondary,
                   ),
                 ),
                 const SizedBox(height: AppConstants.spacingLg),
@@ -710,13 +914,12 @@ class _ZoningEmpty extends StatelessWidget {
                     horizontal: AppConstants.spacingXl,
                   ),
                   child: Text(
-                    message,
+                    _getMessage(),
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color:
-                          isDark
-                              ? AppColors.darkTextSecondary
-                              : AppColors.textSecondary,
+                      color: isDark
+                          ? AppColors.darkTextSecondary
+                          : AppColors.textSecondary,
                     ),
                   ),
                 ),

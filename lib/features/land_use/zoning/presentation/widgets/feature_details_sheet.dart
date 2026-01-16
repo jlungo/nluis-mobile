@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../../../shared/constants/app_constants.dart';
 import '../../../../../shared/theme/app_colors.dart';
+import '../../../../../shared/utils/responsive_utils.dart';
 import '../../../../../shared/widgets/app_button.dart';
 import '../../../../../shared/widgets/app_bottom_sheet.dart';
 import '../../domain/entities/zoning_feature.dart';
@@ -134,7 +135,7 @@ class FeatureDetailsSheet extends ConsumerWidget {
                             style: theme.textTheme.labelSmall?.copyWith(
                               color: AppColors.info,
                               fontWeight: FontWeight.w700,
-                              fontSize: 10,
+                              fontSize: ResponsiveUtils.fontSize(context, 10),
                             ),
                           ),
                         ),
@@ -156,7 +157,7 @@ class FeatureDetailsSheet extends ConsumerWidget {
                             style: theme.textTheme.labelSmall?.copyWith(
                               color: AppColors.warning,
                               fontWeight: FontWeight.w700,
-                              fontSize: 10,
+                              fontSize: ResponsiveUtils.fontSize(context, 10),
                             ),
                           ),
                         ),
@@ -179,7 +180,7 @@ class FeatureDetailsSheet extends ConsumerWidget {
                             style: theme.textTheme.labelSmall?.copyWith(
                               color: AppColors.success,
                               fontWeight: FontWeight.w700,
-                              fontSize: 10,
+                              fontSize: ResponsiveUtils.fontSize(context, 10),
                             ),
                           ),
                         ),
@@ -201,7 +202,7 @@ class FeatureDetailsSheet extends ConsumerWidget {
                             style: theme.textTheme.labelSmall?.copyWith(
                               color: AppColors.warning,
                               fontWeight: FontWeight.w700,
-                              fontSize: 10,
+                              fontSize: ResponsiveUtils.fontSize(context, 10),
                             ),
                           ),
                         ),

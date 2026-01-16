@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../../../spatial/common/widgets/input_method_selection_sheet.dart'
+import '../../../../../shared/features/spatial/presentation/widgets/input_method_selection_sheet.dart'
     as shared;
 import '../../domain/entities/zoning_feature.dart';
 
 // Re-export for convenience
-export '../../../../spatial/common/widgets/input_method_selection_sheet.dart'
+export '../../../../../shared/features/spatial/presentation/widgets/input_method_selection_sheet.dart'
     show InputMethod;
 
 /// Zoning-specific wrapper for InputMethodSelectionSheet

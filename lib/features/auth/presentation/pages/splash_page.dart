@@ -1,150 +1,158 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nluis_app/core/env/env.dart';
+import '../../../../core/env/env.dart';
 import '../../../../shared/constants/app_constants.dart';
-import '../../../../core/network/network_info.dart';
-import '../providers/auth_providers.dart';
-import '../../../settings/presentation/providers/setup_providers.dart';
+import '../../../../shared/utils/responsive_utils.dart';
+import '../../../../shared/states/page_state.dart';
+import '../bloc/auth/auth_bloc.dart';
+import '../bloc/auth/auth_event.dart';
+import '../bloc/auth/auth_state.dart';
+import '../../domain/entities/user.dart';
 
-class SplashPage extends ConsumerStatefulWidget {
+class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
 
   @override
-  ConsumerState<SplashPage> createState() => _SplashPageState();
+  State<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashPageState extends ConsumerState<SplashPage> {
+class _SplashPageState extends State<SplashPage> {
+  PageState _pageState = PageState.loading;
   String _statusMessage = 'Initializing...';
-  bool _isCheckingAuth = false;
 
   @override
   void initState() {
     super.initState();
-    _initializeApp();
+    _startInitialization();
   }
 
-  Future<void> _initializeApp() async {
-    // Initial delay for splash animation
-    await Future.delayed(const Duration(milliseconds: 3000));
+  void _startInitialization() async {
+    // Reduced delay for faster startup
+    await Future.delayed(const Duration(milliseconds: 1000));
 
-    setState(() {
-      _statusMessage = 'Checking network connection...';
-    });
-
-    // Check network connectivity
-    final networkInfo = ref.read(networkInfoProvider);
-    final hasConnection = await networkInfo.isConnected;
-    final hasInternet =
-        hasConnection ? await networkInfo.hasInternetConnection : false;
-
-    if (hasInternet) {
+    if (mounted) {
       setState(() {
-        _statusMessage = 'Validating session...';
-        _isCheckingAuth = true;
+        _statusMessage = 'Checking authentication...';
+      });
+      context.read<AuthBloc>().add(const AppStarted());
+    }
+  }
+
+  void _handleAuthState(AuthState state) async {
+    debugPrint('🔍 Auth state received: ${state.runtimeType}');
+
+    if (state is Authenticated) {
+      debugPrint('✅ User authenticated: ${state.user.firstName}');
+      debugPrint('📦 Modules: ${state.user.mobileModules}');
+
+      if (!mounted) {
+        debugPrint('❌ Widget not mounted, cannot navigate');
+        return;
+      }
+
+      setState(() {
+        _pageState = PageState.success;
+        _statusMessage = 'Welcome back!';
       });
 
-      // Only check authentication when online
-      await _validateSession();
-    } else {
+      // Reduced delay for faster navigation
+      await Future.delayed(const Duration(milliseconds: 300));
+
+      if (!mounted) {
+        debugPrint('❌ Widget not mounted after delay, cannot navigate');
+        return;
+      }
+
+      final destination = _getRedirectDestination(state.user);
+      debugPrint('🔄 Attempting navigation to: $destination');
+
+      try {
+        context.go(destination);
+        debugPrint('✅ Navigation called successfully');
+      } catch (e) {
+        debugPrint('❌ Navigation error: $e');
+      }
+    } else if (state is Unauthenticated) {
+      debugPrint('🚫 User not authenticated, going to login');
+
       setState(() {
-        _statusMessage =
-            hasConnection
-                ? 'No internet connection. Working offline...'
-                : 'No network connection. Working offline...';
+        _pageState = PageState.success;
+        _statusMessage = 'Redirecting to login...';
       });
 
-      // Delay to show offline message, then proceed to offline mode
+      await Future.delayed(const Duration(milliseconds: 500));
+      if (mounted) {
+        context.go('/login');
+      }
+    } else if (state is SessionExpiredState) {
+      debugPrint('⏰ Session expired');
+
+      setState(() {
+        _pageState = PageState.loadFailed;
+        _statusMessage = 'Session expired. Please login...';
+      });
+
       await Future.delayed(const Duration(milliseconds: 1000));
-      _navigateToOfflineMode();
+      if (mounted) {
+        context.go('/login');
+      }
+    } else {
+      debugPrint('❓ Unknown auth state: ${state.runtimeType}');
     }
   }
 
-  Future<void> _validateSession() async {
-    try {
-      // Force refresh auth state to validate session by reading current user
-      final authRepository = ref.read(authRepositoryProvider);
-      final result = await authRepository.getCurrentUser();
+  String _getRedirectDestination(User user) {
+    final modules = user.mobileModules;
+    debugPrint('📊 Total modules: ${modules.length}');
 
-      result.fold(
-        (failure) {
-          setState(() {
-            _statusMessage = 'Session expired. Please login...';
-          });
-          Future.delayed(const Duration(milliseconds: 1000), () {
-            if (mounted) context.go('/login');
-          });
-        },
-        (user) async {
-          if (user != null) {
-            setState(() {
-              _statusMessage = 'Session valid. Loading configurations...';
-            });
-            
-            // Fetch land uses and other setup data in background
-            ref.read(setupStateProvider.notifier).fetchLandUses().catchError((_) {
-              // Silently fail - user can manually refresh from settings
-            });
-            
-            await Future.delayed(const Duration(milliseconds: 800));
-            setState(() {
-              _statusMessage = 'Redirecting...';
-            });
-            
-            Future.delayed(const Duration(milliseconds: 300), () {
-              if (mounted) context.go('/module-switch');
-            });
-          } else {
-            setState(() {
-              _statusMessage = 'No active session. Please login...';
-            });
-            Future.delayed(const Duration(milliseconds: 1000), () {
-              if (mounted) context.go('/login');
-            });
-          }
-        },
-      );
-    } catch (e) {
-      setState(() {
-        _statusMessage = 'Authentication error. Please login...';
-      });
-      Future.delayed(const Duration(milliseconds: 1000), () {
-        if (mounted) context.go('/login');
-      });
+    if (modules.isEmpty) {
+      debugPrint('⚠️ No modules found, going to switchboard');
+      return '/module-switchboard';
     }
-  }
 
-  void _navigateToOfflineMode() {
-    // In offline mode, check if user was previously logged in locally
-    final authState = ref.read(authStateProvider);
-    authState.when(
-      data: (user) {
-        if (user != null) {
-          // User has local session, proceed to app
-          if (mounted) context.go('/module-switch');
-        } else {
-          // No local session, require login
-          if (mounted) context.go('/login');
-        }
-      },
-      loading: () {
-        // Wait for auth state to load
-        Future.delayed(const Duration(milliseconds: 500), () {
-          if (mounted) _navigateToOfflineMode();
-        });
-      },
-      error: (_, _) {
-        // Error in auth state, require login
-        if (mounted) context.go('/login');
-      },
-    );
+    if (modules.length == 1) {
+      final module = modules.first;
+      final moduleId = module['module_id'] as int;
+      debugPrint('🎯 Single module detected: $moduleId');
+
+      switch (moduleId) {
+        case 1:
+          debugPrint('🌍 Navigating to Land Use');
+          return '/land-use';
+        case 2:
+          debugPrint('📋 Navigating to Adjudication');
+          return '/adjudication';
+        case 3:
+          debugPrint('📊 Navigating to M&E');
+          return '/monitoring-evaluation';
+        case 4:
+          debugPrint('✅ Navigating to Compliance');
+          return '/compliance';
+        default:
+          debugPrint('❓ Unknown module, going to switchboard');
+          return '/module-switchboard';
+      }
+    }
+
+    debugPrint('🔀 Multiple modules, going to switchboard');
+    return '/module-switchboard';
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        _handleAuthState(state);
+      },
+      child: _buildSplashContent(theme),
+    );
+  }
+
+  Widget _buildSplashContent(ThemeData theme) {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -161,13 +169,12 @@ class _SplashPageState extends ConsumerState<SplashPage> {
         ),
         child: Stack(
           children: [
-            // Animated background circles
             Positioned(
-              top: -100,
-              right: -100,
+              top: ResponsiveUtils.spacing(context, -100),
+              right: ResponsiveUtils.spacing(context, -100),
               child: Container(
-                    width: 300,
-                    height: 300,
+                    width: ResponsiveUtils.spacing(context, 300),
+                    height: ResponsiveUtils.spacing(context, 300),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: theme.colorScheme.onPrimary.withValues(alpha: 0.1),
@@ -189,11 +196,11 @@ class _SplashPageState extends ConsumerState<SplashPage> {
                   ),
             ),
             Positioned(
-              bottom: -50,
-              left: -50,
+              bottom: ResponsiveUtils.spacing(context, -50),
+              left: ResponsiveUtils.spacing(context, -50),
               child: Container(
-                    width: 200,
-                    height: 200,
+                    width: ResponsiveUtils.spacing(context, 200),
+                    height: ResponsiveUtils.spacing(context, 200),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: theme.colorScheme.onPrimary.withValues(
@@ -216,12 +223,10 @@ class _SplashPageState extends ConsumerState<SplashPage> {
                     curve: Curves.easeInOut,
                   ),
             ),
-            // Main content
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Logo with glow effect
                   Container(
                         padding: const EdgeInsets.all(AppConstants.spacingLg),
                         decoration: BoxDecoration(
@@ -238,8 +243,8 @@ class _SplashPageState extends ConsumerState<SplashPage> {
                         ),
                         child: Image.asset(
                           'assets/images/logo/nlupc_logo.png',
-                          width: 120,
-                          height: 120,
+                          width: ResponsiveUtils.iconSize(context, 120),
+                          height: ResponsiveUtils.iconSize(context, 120),
                           fit: BoxFit.cover,
                         ),
                       )
@@ -258,6 +263,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
 
                   Text(
                         Env.appName,
+                        textAlign: TextAlign.center,
                         style: theme.textTheme.headlineMedium?.copyWith(
                           color: theme.colorScheme.onPrimary,
                           fontWeight: FontWeight.w700,
@@ -270,7 +276,6 @@ class _SplashPageState extends ConsumerState<SplashPage> {
 
                   const SizedBox(height: AppConstants.spacingMd),
 
-                  // Status message
                   Text(
                     _statusMessage,
                     style: theme.textTheme.bodyMedium?.copyWith(
@@ -282,46 +287,23 @@ class _SplashPageState extends ConsumerState<SplashPage> {
 
                   const SizedBox(height: AppConstants.spacingLg),
 
-                  // Loading indicator
-                  if (_isCheckingAuth) ...[
-                    SizedBox(
-                          width: 200,
-                          child: LinearProgressIndicator(
-                            backgroundColor: theme.colorScheme.onPrimary
-                                .withValues(alpha: 0.2),
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              theme.colorScheme.onPrimary.withValues(
-                                alpha: 0.8,
-                              ),
-                            ),
-                            minHeight: 3,
+                  SizedBox(
+                        width: ResponsiveUtils.spacing(context, 200),
+                        child: LinearProgressIndicator(
+                          backgroundColor: theme.colorScheme.onPrimary
+                              .withValues(alpha: 0.2),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            theme.colorScheme.onPrimary.withValues(alpha: 0.8),
                           ),
-                        )
-                        .animate()
-                        .fadeIn(delay: 800.ms, duration: 600.ms)
-                        .slideX(begin: -0.2, end: 0),
-                  ] else ...[
-                    SizedBox(
-                          width: 200,
-                          child: LinearProgressIndicator(
-                            backgroundColor: theme.colorScheme.onPrimary
-                                .withValues(alpha: 0.2),
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              theme.colorScheme.onPrimary.withValues(
-                                alpha: 0.8,
-                              ),
-                            ),
-                            minHeight: 3,
-                          ),
-                        )
-                        .animate()
-                        .fadeIn(delay: 800.ms, duration: 600.ms)
-                        .slideX(begin: -0.2, end: 0),
-                  ],
+                          minHeight: 3,
+                        ),
+                      )
+                      .animate()
+                      .fadeIn(delay: 800.ms, duration: 600.ms)
+                      .slideX(begin: -0.2, end: 0),
 
                   const SizedBox(height: AppConstants.spacing2xl),
 
-                  // Version
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: AppConstants.spacingMd,

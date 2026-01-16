@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../shared/constants/app_constants.dart';
-import '../../../../spatial/data/services/coordinate_converter.dart';
+import '../../../../../shared/features/spatial/data/services/coordinate_converter.dart';
 
 /// Dialog for selecting coordinate system (EPSG/SRID) for manual entry
 class EpsgSelectorDialog extends StatefulWidget {

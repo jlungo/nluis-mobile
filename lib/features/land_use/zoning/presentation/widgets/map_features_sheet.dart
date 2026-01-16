@@ -56,7 +56,7 @@ class _MapFeaturesSheetState extends ConsumerState<MapFeaturesSheet> {
 
     return DraggableScrollableSheet(
       controller: _controller,
-      initialChildSize: 0.3,
+      initialChildSize: 0.1,
       minChildSize: 0.1,
       maxChildSize: 0.9,
       snap: true,
