@@ -2,26 +2,23 @@ import 'package:flutter/material.dart';
 import '../../../constants/app_constants.dart';
 import '../../../theme/app_colors.dart';
 import '../../../models/questionnaire.dart';
+import 'form_field_label.dart';
 
 class SelectFormFieldWidget extends StatelessWidget {
   final String label;
-  final String? placeholder;
   final bool required;
   final List<SelectOption> options;
   final String? value;
-  final void Function(String?)? onChanged;
-  final String? Function(String?)? validator;
+  final Function(String?) onChanged;
   final bool enabled;
 
   const SelectFormFieldWidget({
     super.key,
     required this.label,
-    this.placeholder,
     this.required = false,
     required this.options,
     this.value,
     required this.onChanged,
-    this.validator,
     this.enabled = true,
   });
 
@@ -30,48 +27,18 @@ class SelectFormFieldWidget extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
+    final sortedOptions = List<SelectOption>.from(options)
+      ..sort((a, b) => a.position.compareTo(b.position));
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Text(
-                label,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color:
-                      isDark
-                          ? AppColors.darkTextPrimary
-                          : AppColors.textPrimary,
-                ),
-                softWrap: true,
-                overflow: TextOverflow.visible,
-              ),
-            ),
-            if (required) ...[
-              const SizedBox(width: 4),
-              Text(
-                '*',
-                style: TextStyle(
-                  color: isDark ? AppColors.errorDark : AppColors.error,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ],
-        ),
+        FormFieldLabel(label: label, required: required),
         const SizedBox(height: AppConstants.spacingSm),
         DropdownButtonFormField<String>(
-          initialValue: value,
+          value: value,
           onChanged: enabled ? onChanged : null,
-          validator: validator,
           decoration: InputDecoration(
-            hintText: placeholder ?? 'Chagua...',
-            hintStyle: TextStyle(
-              color: isDark ? AppColors.darkTextHint : AppColors.textHint,
-            ),
             filled: true,
             fillColor:
                 isDark
@@ -94,20 +61,27 @@ class SelectFormFieldWidget extends StatelessWidget {
                 width: 2,
               ),
             ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppConstants.radiusMd),
-              borderSide: BorderSide(
-                color: isDark ? AppColors.errorDark : AppColors.error,
-              ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: AppConstants.spacingMd,
+              vertical: AppConstants.spacingMd,
             ),
           ),
           items:
-              options.map((option) {
-                return DropdownMenuItem<String>(
-                  value: option.value,
-                  child: Text(option.textLabel),
-                );
-              }).toList(),
+              sortedOptions
+                  .map(
+                    (option) => DropdownMenuItem<String>(
+                      value: option.value,
+                      child: Text(option.textLabel),
+                    ),
+                  )
+                  .toList(),
+          validator:
+              required
+                  ? (value) =>
+                      value == null || value.isEmpty
+                          ? 'Hii sehemu inahitajika'
+                          : null
+                  : null,
         ),
       ],
     );

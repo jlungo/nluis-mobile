@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../constants/app_constants.dart';
 import '../../../theme/app_colors.dart';
+import 'form_field_label.dart';
 
 class TextFormFieldWidget extends StatelessWidget {
   final String label;
@@ -10,8 +11,7 @@ class TextFormFieldWidget extends StatelessWidget {
   final String? Function(String?)? validator;
   final TextInputType keyboardType;
   final bool enabled;
-  final int? maxLength;
-  final bool showCounter;
+  final int? maxLines;
 
   const TextFormFieldWidget({
     super.key,
@@ -22,8 +22,7 @@ class TextFormFieldWidget extends StatelessWidget {
     this.validator,
     this.keyboardType = TextInputType.text,
     this.enabled = true,
-    this.maxLength,
-    this.showCounter = false,
+    this.maxLines = 1,
   });
 
   @override
@@ -34,55 +33,14 @@ class TextFormFieldWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Text(
-                label,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color:
-                      isDark
-                          ? AppColors.darkTextPrimary
-                          : AppColors.textPrimary,
-                ),
-                softWrap: true,
-                overflow: TextOverflow.visible,
-              ),
-            ),
-            if (required) ...[
-              const SizedBox(width: 4),
-              Text(
-                '*',
-                style: TextStyle(
-                  color: isDark ? AppColors.errorDark : AppColors.error,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ],
-        ),
+        FormFieldLabel(label: label, required: required),
         const SizedBox(height: AppConstants.spacingSm),
         TextFormField(
           controller: controller,
           keyboardType: keyboardType,
           validator: validator,
           enabled: enabled,
-          maxLength: maxLength,
-          buildCounter: showCounter && maxLength != null
-              ? (context, {required currentLength, required isFocused, maxLength}) {
-                  return Text(
-                    '$currentLength/$maxLength',
-                    style: TextStyle(
-                      color: currentLength == maxLength
-                          ? (isDark ? AppColors.successDark : AppColors.success)
-                          : (isDark ? AppColors.darkTextHint : AppColors.textHint),
-                      fontSize: 12,
-                    ),
-                  );
-                }
-              : null,
+          maxLines: maxLines,
           decoration: InputDecoration(
             hintText: placeholder ?? label,
             hintStyle: TextStyle(
@@ -90,9 +48,7 @@ class TextFormFieldWidget extends StatelessWidget {
             ),
             filled: true,
             fillColor:
-                isDark
-                    ? AppColors.darkSurfaceVariant
-                    : AppColors.surfaceVariant,
+                isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppConstants.radiusMd),
               borderSide: BorderSide.none,
@@ -115,6 +71,17 @@ class TextFormFieldWidget extends StatelessWidget {
               borderSide: BorderSide(
                 color: isDark ? AppColors.errorDark : AppColors.error,
               ),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppConstants.radiusMd),
+              borderSide: BorderSide(
+                color: isDark ? AppColors.errorDark : AppColors.error,
+                width: 2,
+              ),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: AppConstants.spacingMd,
+              vertical: AppConstants.spacingMd,
             ),
           ),
         ),

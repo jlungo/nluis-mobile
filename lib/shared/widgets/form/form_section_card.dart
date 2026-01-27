@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:nluis_app/shared/widgets/form/form_section_tile.dart';
-import 'package:nluis_app/shared/constants/app_constants.dart';
-import 'package:nluis_app/shared/models/questionnaire.dart';
-import 'package:nluis_app/shared/theme/app_colors.dart';
-import 'package:nluis_app/shared/widgets/form/form_completion_state.dart';
-import 'package:nluis_app/shared/widgets/form/form_status_badge.dart';
+import '../../constants/app_constants.dart';
+import '../../models/questionnaire.dart';
+import '../../theme/app_colors.dart';
+import 'form_field_builder.dart' as form_builder;
 
 class FormSectionCard extends StatelessWidget {
   final QuestionnaireSection section;
@@ -12,15 +10,9 @@ class FormSectionCard extends StatelessWidget {
   final bool isDark;
   final bool isReadOnly;
   final Map<String, Map<String, dynamic>> formDataByFormSlug;
-  final Map<String, DateTime?> formLastSavedAt;
   final Map<String, bool> expandedSections;
   final Map<String, bool> expandedForms;
-  final Map<String, FormCompletionState> formStatuses;
-  final Map<String, FormCompletionState> sectionStatuses;
   final Function(String, String, dynamic) onFieldChanged;
-  final Function(String) onSaveForm;
-  final Function(String, bool) onSectionExpandChanged;
-  final Function(String, bool) onFormExpandChanged;
 
   const FormSectionCard({
     super.key,
@@ -29,30 +21,21 @@ class FormSectionCard extends StatelessWidget {
     required this.isDark,
     this.isReadOnly = false,
     required this.formDataByFormSlug,
-    required this.formLastSavedAt,
     required this.expandedSections,
     required this.expandedForms,
-    required this.formStatuses,
-    required this.sectionStatuses,
     required this.onFieldChanged,
-    required this.onSaveForm,
-    required this.onSectionExpandChanged,
-    required this.onFormExpandChanged,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isExpanded = expandedSections[section.slug] ?? false;
-    final sectionStatus =
-        sectionStatuses[section.slug] ?? FormCompletionState.notStarted;
+    final isExpanded = expandedSections[section.slug] ?? true;
 
-    // Sort forms by position
     final sortedForms = List<QuestionnaireForm>.from(section.forms)
       ..sort((a, b) => a.position.compareTo(b.position));
 
     return Container(
-      margin: const EdgeInsets.only(bottom: AppConstants.spacingSm),
+      margin: const EdgeInsets.only(bottom: AppConstants.spacingMd),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(AppConstants.radiusMd),
@@ -64,13 +47,13 @@ class FormSectionCard extends StatelessWidget {
         data: theme.copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
           initiallyExpanded: isExpanded,
-          onExpansionChanged: (expanded) {
-            onSectionExpandChanged(section.slug, expanded);
-          },
-          // tilePadding: const EdgeInsets.all(AppConstants.spacingMd),
-          childrenPadding: EdgeInsets.zero,
+          tilePadding: const EdgeInsets.all(AppConstants.spacingMd),
+          childrenPadding: const EdgeInsets.symmetric(
+            horizontal: AppConstants.spacingMd,
+            vertical: AppConstants.spacingSm,
+          ),
           leading: Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(AppConstants.spacingSm),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors:
@@ -88,31 +71,17 @@ class FormSectionCard extends StatelessWidget {
               ),
             ),
           ),
-          title: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  section.name,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color:
-                        isDark
-                            ? AppColors.darkTextPrimary
-                            : AppColors.textPrimary,
-                  ),
-                ),
-              ),
-              const SizedBox(width: AppConstants.spacingSm),
-              FormStatusBadge(
-                status: sectionStatus,
-                isDark: isDark,
-              ),
-            ],
+          title: Text(
+            section.name,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+            ),
           ),
           subtitle:
               section.description.isNotEmpty
                   ? Padding(
-                    padding: const EdgeInsets.only(top: 4),
+                    padding: const EdgeInsets.only(top: AppConstants.spacingXs),
                     child: Text(
                       section.description,
                       style: theme.textTheme.bodySmall?.copyWith(
@@ -126,28 +95,69 @@ class FormSectionCard extends StatelessWidget {
                   : null,
           children:
               sortedForms
-                  .map(
-                    (form) => FormSectionTile(
-                      form: form,
-                      isDark: isDark,
-                      isReadOnly: isReadOnly,
-                      formValues: formDataByFormSlug[form.slug] ?? {},
-                      lastSavedAt: formLastSavedAt[form.slug],
-                      isExpanded: expandedForms[form.slug] ?? false,
-                      status:
-                          formStatuses[form.slug] ??
-                          FormCompletionState.notStarted,
-                      onExpansionChanged: (isExpanded) {
-                        onFormExpandChanged(form.slug, isExpanded);
-                      },
-                      onFieldChanged: (fieldId, value) {
-                        onFieldChanged(form.slug, fieldId, value);
-                      },
-                      onSaveForm: () => onSaveForm(form.slug),
-                    ),
-                  )
+                  .map((form) => _buildFormCard(context, theme, form))
                   .toList(),
         ),
+      ),
+    );
+  }
+
+  Widget _buildFormCard(
+    BuildContext context,
+    ThemeData theme,
+    QuestionnaireForm form,
+  ) {
+    final formData = formDataByFormSlug[form.slug] ?? {};
+    final sortedFields = List<CustomFormField>.from(form.customFormFields)
+      ..sort((a, b) => a.position.compareTo(b.position));
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: AppConstants.spacingMd),
+      padding: const EdgeInsets.all(AppConstants.spacingMd),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
+        borderRadius: BorderRadius.circular(AppConstants.radiusSm),
+        border: Border.all(
+          color: isDark ? AppColors.darkDivider : AppColors.divider,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            form.name,
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+            ),
+          ),
+          if (form.description.isNotEmpty) ...[
+            const SizedBox(height: AppConstants.spacingXs),
+            Text(
+              form.description,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color:
+                    isDark
+                        ? AppColors.darkTextSecondary
+                        : AppColors.textSecondary,
+              ),
+            ),
+          ],
+          const SizedBox(height: AppConstants.spacingMd),
+          ...sortedFields.map((field) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: AppConstants.spacingMd),
+              child: form_builder.FormFieldBuilder(
+                field: field,
+                value: formData[field.id],
+                onChanged: (value) {
+                  onFieldChanged(form.slug, field.id, value);
+                },
+                isReadOnly: isReadOnly,
+              ),
+            );
+          }),
+        ],
       ),
     );
   }

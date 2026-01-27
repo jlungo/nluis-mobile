@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
+import '../utils/responsive_utils.dart';
 
 class OverlayLoader extends StatelessWidget {
   final bool isLoading;
@@ -78,7 +79,7 @@ class OverlayLoader extends StatelessWidget {
                         'Inapakia...',
                         style: TextStyle(
                           color: textColor,
-                          fontSize: 16,
+                          fontSize: ResponsiveUtils.fontSize(context, 16),
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.5,
                         ),

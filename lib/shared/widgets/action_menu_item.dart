@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../constants/app_constants.dart';
 import '../theme/app_colors.dart';
+import '../utils/responsive_utils.dart';
 
 class ActionMenuItem extends StatelessWidget {
   final IconData icon;
@@ -22,9 +23,9 @@ class ActionMenuItem extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Container(
-      margin: const EdgeInsets.symmetric(
-        horizontal: AppConstants.spacingLg,
-        vertical: 4,
+      margin: EdgeInsets.symmetric(
+        horizontal: ResponsiveUtils.spacing(context, AppConstants.spacingLg),
+        vertical: ResponsiveUtils.spacing(context, 4),
       ),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
@@ -32,7 +33,7 @@ class ActionMenuItem extends StatelessWidget {
       ),
       child: ListTile(
         leading: Container(
-          padding: const EdgeInsets.all(AppConstants.spacingSm),
+          padding: EdgeInsets.all(ResponsiveUtils.spacing(context, AppConstants.spacingSm)),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: isDark
@@ -61,7 +62,7 @@ class ActionMenuItem extends StatelessWidget {
         ),
         trailing: Icon(
           Icons.arrow_forward_ios,
-          size: 16,
+          size: ResponsiveUtils.iconSize(context, 16),
           color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
         ),
         onTap: onTap,

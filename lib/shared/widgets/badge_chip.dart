@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/responsive_utils.dart';
 
 class BadgeChip extends StatelessWidget {
   final Color color;
@@ -20,14 +21,14 @@ class BadgeChip extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (icon != null) ...[
-            Icon(icon, size: 14, color: color),
+            Icon(icon, size: ResponsiveUtils.iconSize(context, 14), color: color),
             const SizedBox(width: 4),
           ],
           Text(
             label,
             style: TextStyle(
               color: color,
-              fontSize: 12,
+              fontSize: ResponsiveUtils.fontSize(context, 12),
               fontWeight: FontWeight.w700,
               letterSpacing: 0.3,
             ),

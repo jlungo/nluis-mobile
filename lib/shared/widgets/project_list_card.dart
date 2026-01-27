@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:nluis_app/shared/widgets/badge_chip.dart';
 import '../constants/app_constants.dart';
 import '../theme/app_colors.dart';
-import '../models/project.dart';
+import '../../features/projects/domain/entities/project.dart';
+import '../utils/responsive_utils.dart';
 
 class ProjectListCard extends StatelessWidget {
   final Project project;
@@ -24,28 +24,13 @@ class ProjectListCard extends StatelessWidget {
     this.icon,
   });
 
-  Color _getStatusColor(String status, bool isDark) {
-    switch (status.toLowerCase()) {
-      case 'completed':
-        return isDark ? AppColors.successDark : AppColors.success;
-      case 'in process':
-        return isDark ? AppColors.infoDark : AppColors.info;
-      case 'on hold':
-        return isDark ? AppColors.errorDark : AppColors.error;
-      case 'pending':
-      case 'unknown':
-      default:
-        return isDark ? AppColors.darkTextSecondary : AppColors.textSecondary;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: AppConstants.spacingSm),
+      margin: EdgeInsets.only(bottom: ResponsiveUtils.spacing(context, AppConstants.spacingSm)),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(AppConstants.radiusMd),
@@ -62,43 +47,18 @@ class ProjectListCard extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(AppConstants.radiusMd),
           child: Padding(
-            padding: const EdgeInsets.all(AppConstants.spacingMd),
+            padding: EdgeInsets.all(ResponsiveUtils.spacing(context, AppConstants.spacingMd)),
             child: Row(
               children: [
-                // Icon with download indicator
                 Stack(
                   clipBehavior: Clip.none,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(AppConstants.spacingMd),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors:
-                              isDark
-                                  ? [
-                                    AppColors.darkPrimary,
-                                    AppColors.darkPrimaryDark,
-                                  ]
-                                  : [AppColors.primary, AppColors.primaryDark],
-                        ),
-                        borderRadius: BorderRadius.circular(
-                          AppConstants.radiusSm,
-                        ),
-                      ),
-                      child: Icon(
-                        icon ?? Icons.description_outlined,
-                        color:
-                            isDark ? AppColors.darkTextInverse : Colors.white,
-                        size: 24,
-                      ),
-                    ),
-                    // Download indicator badge
                     if (isDownloaded)
                       Positioned(
                         right: -4,
                         top: -4,
                         child: Container(
-                          padding: const EdgeInsets.all(4),
+                          padding: EdgeInsets.all(ResponsiveUtils.spacing(context, 4)),
                           decoration: BoxDecoration(
                             color: AppColors.success,
                             shape: BoxShape.circle,
@@ -108,17 +68,16 @@ class ProjectListCard extends StatelessWidget {
                               width: 2,
                             ),
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.cloud_done,
-                            size: 12,
+                            size: ResponsiveUtils.iconSize(context, 12),
                             color: Colors.white,
                           ),
                         ),
                       ),
                   ],
                 ),
-                const SizedBox(width: AppConstants.spacingMd),
-                // Content
+                SizedBox(width: ResponsiveUtils.spacing(context, AppConstants.spacingMd)),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -133,7 +92,7 @@ class ProjectListCard extends StatelessWidget {
                                   : AppColors.textPrimary,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: ResponsiveUtils.spacing(context, 4)),
                       if (project.organization.isNotEmpty) ...[
                         Text(
                           project.organization,
@@ -144,19 +103,19 @@ class ProjectListCard extends StatelessWidget {
                                     : AppColors.textSecondary,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: ResponsiveUtils.spacing(context, 4)),
                       ],
                       Row(
                         children: [
                           Icon(
                             Icons.calendar_today,
-                            size: 14,
+                            size: ResponsiveUtils.iconSize(context, 14),
                             color:
                                 isDark
                                     ? AppColors.darkTextSecondary
                                     : AppColors.textSecondary,
                           ),
-                          const SizedBox(width: 4),
+                          SizedBox(width: ResponsiveUtils.spacing(context, 4)),
                           Text(
                             project.authorizationDate,
                             style: theme.textTheme.bodySmall?.copyWith(
@@ -166,37 +125,11 @@ class ProjectListCard extends StatelessWidget {
                                       : AppColors.textSecondary,
                             ),
                           ),
-                          const SizedBox(width: AppConstants.spacingMd),
-                          Icon(
-                            Icons.show_chart,
-                            size: 14,
-                            color:
-                                isDark
-                                    ? AppColors.darkTextSecondary
-                                    : AppColors.textSecondary,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${project.progress.toStringAsFixed(1)}%',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color:
-                                  isDark
-                                      ? AppColors.darkTextSecondary
-                                      : AppColors.textSecondary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          BadgeChip(
-                            color: _getStatusColor(project.status, isDark),
-                            label: project.status,
-                          ),
                         ],
                       ),
                     ],
                   ),
                 ),
-                // Action menu dropdown
                 if (onDownload != null || onUpload != null || onMoreTap != null)
                   PopupMenuButton<String>(
                     icon: Icon(
@@ -229,10 +162,10 @@ class ProjectListCard extends StatelessWidget {
                                 children: [
                                   Icon(
                                     Icons.cloud_download_outlined,
-                                    size: 20,
+                                    size: ResponsiveUtils.iconSize(context, 20),
                                     color: AppColors.primary,
                                   ),
-                                  const SizedBox(width: AppConstants.spacingSm),
+                                  SizedBox(width: ResponsiveUtils.spacing(context, AppConstants.spacingSm)),
                                   Text(
                                     'Pakua Data',
                                     style: TextStyle(
@@ -252,10 +185,10 @@ class ProjectListCard extends StatelessWidget {
                                 children: [
                                   Icon(
                                     Icons.cloud_upload_outlined,
-                                    size: 20,
+                                    size: ResponsiveUtils.iconSize(context, 20),
                                     color: AppColors.success,
                                   ),
-                                  const SizedBox(width: AppConstants.spacingSm),
+                                  SizedBox(width: ResponsiveUtils.spacing(context, AppConstants.spacingSm)),
                                   Text(
                                     'Pakia Dodoso',
                                     style: TextStyle(
@@ -275,13 +208,13 @@ class ProjectListCard extends StatelessWidget {
                                 children: [
                                   Icon(
                                     Icons.info_outline,
-                                    size: 20,
+                                    size: ResponsiveUtils.iconSize(context, 20),
                                     color:
                                         isDark
                                             ? AppColors.darkTextSecondary
                                             : AppColors.textSecondary,
                                   ),
-                                  const SizedBox(width: AppConstants.spacingSm),
+                                  SizedBox(width: ResponsiveUtils.spacing(context, AppConstants.spacingSm)),
                                   Text(
                                     'Maelezo',
                                     style: TextStyle(

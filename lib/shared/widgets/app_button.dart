@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/responsive_utils.dart';
 
 class AppButton extends StatelessWidget {
   final String? label;
@@ -55,12 +56,13 @@ class AppButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(borderRadius),
           ),
         ),
-        child: _buildChild(hasLabel, hasIcon),
+        child: _buildChild(context, hasLabel, hasIcon),
       ),
     );
   }
 
-  Widget _buildChild(bool hasLabel, bool hasIcon) {
+  Widget _buildChild(BuildContext context, bool hasLabel, bool hasIcon) {
+    final responsiveIconSize = ResponsiveUtils.iconSize(context, iconSize);
     if (hasLabel && hasIcon) {
       return Row(
         mainAxisSize: MainAxisSize.min,
@@ -68,27 +70,39 @@ class AppButton extends StatelessWidget {
         children:
             iconOnRight
                 ? [
-                  Text(label!, style: _buildTextStyle()),
+                  Text(label!, style: _buildTextStyle(context)),
                   SizedBox(width: spacing),
-                  Icon(icon, size: iconSize, color: _buildTextStyle().color),
+                  Icon(
+                    icon,
+                    size: responsiveIconSize,
+                    color: _buildTextStyle(context).color,
+                  ),
                 ]
                 : [
-                  Icon(icon, size: iconSize, color: _buildTextStyle().color),
+                  Icon(
+                    icon,
+                    size: responsiveIconSize,
+                    color: _buildTextStyle(context).color,
+                  ),
                   SizedBox(width: spacing),
-                  Text(label!, style: _buildTextStyle()),
+                  Text(label!, style: _buildTextStyle(context)),
                 ],
       );
     } else if (hasIcon) {
-      return Icon(icon, size: iconSize, color: _buildTextStyle().color);
+      return Icon(
+        icon,
+        size: responsiveIconSize,
+        color: _buildTextStyle(context).color,
+      );
     } else {
-      return Text(label ?? '', style: _buildTextStyle());
+      return Text(label ?? '', style: _buildTextStyle(context));
     }
   }
 
-  TextStyle _buildTextStyle() {
+  TextStyle _buildTextStyle(BuildContext context) {
     return textStyle ??
-        const TextStyle(
-          fontSize: 18,
+        TextStyle(
+          fontSize: ResponsiveUtils.fontSize(context, 18),
           fontWeight: FontWeight.w700,
           color: Colors.white,
           letterSpacing: 0.5,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
+import 'responsive_utils.dart';
 
 class SnackBarUtils {
   SnackBarUtils._();
@@ -34,19 +35,19 @@ class SnackBarUtils {
                 color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.check_circle_rounded,
                 color: Colors.white,
-                size: 24,
+                size: ResponsiveUtils.iconSize(context, 24),
               ),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: Text(
                 message,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
-                  fontSize: 15,
+                  fontSize: ResponsiveUtils.fontSize(context, 15),
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -79,19 +80,19 @@ class SnackBarUtils {
                 color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.error_rounded,
                 color: Colors.white,
-                size: 24,
+                size: ResponsiveUtils.iconSize(context, 24),
               ),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: Text(
                 cleanMessage,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
-                  fontSize: 15,
+                  fontSize: ResponsiveUtils.fontSize(context, 15),
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -105,7 +106,7 @@ class SnackBarUtils {
         elevation: 8,
         duration: const Duration(seconds: 4),
         action: SnackBarAction(
-          label: 'Funga',
+          label: 'x',
           textColor: Colors.white,
           backgroundColor: Colors.white.withValues(alpha: 0.2),
           onPressed: () {
@@ -129,19 +130,19 @@ class SnackBarUtils {
                 color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.info_rounded,
                 color: Colors.white,
-                size: 24,
+                size: ResponsiveUtils.iconSize(context, 24),
               ),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: Text(
                 message,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
-                  fontSize: 15,
+                  fontSize: ResponsiveUtils.fontSize(context, 15),
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -171,19 +172,19 @@ class SnackBarUtils {
                 color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.warning_amber_rounded,
                 color: Colors.white,
-                size: 24,
+                size: ResponsiveUtils.iconSize(context, 24),
               ),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: Text(
                 message,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
-                  fontSize: 15,
+                  fontSize: ResponsiveUtils.fontSize(context, 15),
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -226,9 +227,9 @@ class SnackBarUtils {
             Expanded(
               child: Text(
                 message,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
-                  fontSize: 15,
+                  fontSize: ResponsiveUtils.fontSize(context, 15),
                   fontWeight: FontWeight.w600,
                 ),
               ),

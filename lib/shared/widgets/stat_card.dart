@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/responsive_utils.dart';
 
 class StatCard extends StatelessWidget {
   final String count;
@@ -24,10 +25,14 @@ class StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final padding = ResponsiveUtils.spacing(context, 16);
+    final countFontSize = ResponsiveUtils.fontSize(context, 32);
+    final labelFontSize = ResponsiveUtils.fontSize(context, 12);
+
     return Container(
       width: width,
       height: height,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(padding),
       decoration: BoxDecoration(
         color: color.withValues(alpha: isDark ? 0.15 : 0.1),
         borderRadius: BorderRadius.circular(12),
@@ -36,22 +41,30 @@ class StatCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: alignment,
         children: [
-          Text(
-            count,
-            style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.w700,
-              color: color,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: alignment == CrossAxisAlignment.center
+                ? Alignment.center
+                : Alignment.centerLeft,
+            child: Text(
+              count,
+              style: TextStyle(
+                fontSize: countFontSize,
+                fontWeight: FontWeight.w700,
+                color: color,
+              ),
             ),
           ),
           const SizedBox(height: 4),
           Text(
             label,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: labelFontSize,
               fontWeight: FontWeight.w500,
               color: isDark ? Colors.white70 : Colors.black54,
             ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

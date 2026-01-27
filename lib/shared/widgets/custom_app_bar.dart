@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../features/auth/presentation/providers/auth_providers.dart';
-import '../../features/notifications/presentation/pages/notifications_page.dart';
+import '../../features/auth/presentation/bloc/auth/auth_bloc.dart';
+import '../../features/auth/presentation/bloc/auth/auth_state.dart';
 import '../constants/app_constants.dart';
 import '../theme/app_colors.dart';
+import '../utils/responsive_utils.dart';
 
-class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
+class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool showBackButton;
   final bool showNotifications;
   final bool hasNotification;
@@ -15,6 +16,8 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final String? title;
   final String? subtitle;
   final PreferredSizeWidget? bottom;
+  final Widget? leading;
+  final List<Widget>? actions;
 
   const CustomAppBar({
     super.key,
@@ -26,19 +29,20 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
     this.title,
     this.subtitle,
     this.bottom,
+    this.leading,
+    this.actions,
   });
 
   @override
-  Size get preferredSize => Size.fromHeight(
-        kToolbarHeight + (bottom?.preferredSize.height ?? 0),
-      );
+  Size get preferredSize =>
+      Size.fromHeight(kToolbarHeight + (bottom?.preferredSize.height ?? 0));
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final authState = ref.watch(authStateProvider);
-    final user = authState.valueOrNull;
+    final authState = context.watch<AuthBloc>().state;
+    final user = authState is Authenticated ? authState.user : null;
 
     return AppBar(
       backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
@@ -73,85 +77,75 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
                   ),
                 )
           : null,
-      leading: Builder(
-        builder: (context) => IconButton(
-          icon: Icon(
-            showBackButton ? Icons.arrow_back : Icons.menu,
-            color: isDark
-                ? AppColors.darkTextPrimary
-                : AppColors.textPrimary,
-          ),
-          onPressed: () {
-            if (showBackButton) {
-              // Always try to pop first for proper back navigation
-              context.pop();
-            } else {
-              Scaffold.of(context).openDrawer();
-            }
-          },
-        ),
-      ),
-      bottom: bottom,
-      actions: [
-        if (showNotifications)
-          Stack(
-            children: [
-              IconButton(
-                icon: Icon(
-                  Icons.notifications_outlined,
-                  color: isDark
-                      ? AppColors.darkTextPrimary
-                      : AppColors.textPrimary,
-                ),
-                onPressed: onNotificationTap ??
-                    () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const NotificationsPage(),
-                        ),
-                      );
-                    },
+      automaticallyImplyLeading: false,
+      leading: leading ??
+          Builder(
+            builder: (context) => IconButton(
+              icon: Icon(
+                showBackButton ? Icons.arrow_back : Icons.menu,
+                color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
               ),
-              if (hasNotification)
-                Positioned(
-                  right: 10,
-                  top: 10,
-                  child: Container(
-                    width: 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: AppColors.error,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: isDark
-                            ? AppColors.darkSurface
-                            : Colors.white,
-                        width: 1.5,
+              onPressed: () {
+                if (showBackButton) {
+                  context.pop();
+                } else {
+                  Scaffold.of(context).openDrawer();
+                }
+              },
+            ),
+          ),
+      actions: actions ??
+          [
+            if (showNotifications)
+              Stack(
+                children: [
+                  IconButton(
+                    icon: Icon(
+                      Icons.notifications_outlined,
+                      color: isDark
+                          ? AppColors.darkTextPrimary
+                          : AppColors.textPrimary,
+                    ),
+                    onPressed: onNotificationTap,
+                  ),
+                  if (hasNotification)
+                    Positioned(
+                      right: ResponsiveUtils.spacing(context, 10),
+                      top: ResponsiveUtils.spacing(context, 10),
+                      child: Container(
+                        width: ResponsiveUtils.spacing(context, 8),
+                        height: ResponsiveUtils.spacing(context, 8),
+                        decoration: BoxDecoration(
+                          color: AppColors.error,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: isDark ? AppColors.darkSurface : Colors.white,
+                            width: 1.5,
+                          ),
+                        ),
                       ),
+                    ),
+                ],
+              ),
+            if (showProfile)
+              Padding(
+                padding: EdgeInsets.only(
+                  right: ResponsiveUtils.spacing(context, AppConstants.spacingMd),
+                ),
+                child: CircleAvatar(
+                  backgroundColor:
+                      isDark ? AppColors.darkPrimary : AppColors.primary,
+                  child: Text(
+                    user != null ? user.firstName[0].toUpperCase() : 'U',
+                    style: TextStyle(
+                      color: isDark ? AppColors.darkTextInverse : Colors.white,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
-            ],
-          ),
-        if (showProfile)
-          Padding(
-            padding: const EdgeInsets.only(right: AppConstants.spacingMd),
-            child: CircleAvatar(
-              backgroundColor:
-                  isDark ? AppColors.darkPrimary : AppColors.primary,
-              child: Text(
-                user != null ? user.firstName[0].toUpperCase() : 'U',
-                style: TextStyle(
-                  color: isDark
-                      ? AppColors.darkTextInverse
-                      : Colors.white,
-                  fontWeight: FontWeight.w700,
-                ),
               ),
-            ),
-          ),
-      ],
+          ],
+      bottom: bottom,
     );
   }
 }

@@ -1,75 +1,71 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../features/land_use/survey/presentation/bloc/questionnaire_bloc.dart';
+import '../../features/land_use/survey/presentation/bloc/questionnaire_event.dart';
+import '../../features/land_use/survey/presentation/bloc/questionnaire_state.dart';
 import '../constants/app_constants.dart';
-import '../theme/app_colors.dart';
 import '../models/questionnaire.dart';
-import '../../features/land_use/survey/presentation/providers/questionnaire_providers.dart';
+import '../theme/app_colors.dart';
 
-class QuestionnaireListBottomSheet extends ConsumerStatefulWidget {
+class QuestionnaireListBottomSheet extends StatefulWidget {
   final String projectId;
-  final String projectName;
+  final String? projectName;
   final String module;
-  final String? category;
   final Function(String questionnaireSlug) onQuestionnaireSelected;
-  final List<Questionnaire>? hardcodedQuestionnaires;
 
   const QuestionnaireListBottomSheet({
     super.key,
     required this.projectId,
-    required this.projectName,
+    this.projectName,
     required this.module,
-    this.category,
     required this.onQuestionnaireSelected,
-    this.hardcodedQuestionnaires,
   });
 
   @override
-  ConsumerState<QuestionnaireListBottomSheet> createState() =>
+  State<QuestionnaireListBottomSheet> createState() =>
       _QuestionnaireListBottomSheetState();
 
-  /// Helper method to show the bottom sheet
   static void show(
     BuildContext context, {
     required String projectId,
-    required String projectName,
+    String? projectName,
     required String module,
-    String? category,
     required Function(String questionnaireSlug) onQuestionnaireSelected,
-    List<Questionnaire>? hardcodedQuestionnaires,
   }) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder:
-          (context) => DraggableScrollableSheet(
-            initialChildSize: 0.7,
-            minChildSize: 0.5,
-            maxChildSize: 0.95,
-            builder:
-                (context, scrollController) => QuestionnaireListBottomSheet(
-                  projectId: projectId,
-                  projectName: projectName,
-                  module: module,
-                  category: category,
-                  onQuestionnaireSelected: onQuestionnaireSelected,
-                  hardcodedQuestionnaires: hardcodedQuestionnaires,
-                ),
-          ),
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (context, scrollController) => QuestionnaireListBottomSheet(
+          projectId: projectId,
+          projectName: projectName,
+          module: module,
+          onQuestionnaireSelected: onQuestionnaireSelected,
+        ),
+      ),
     );
   }
 }
 
 class _QuestionnaireListBottomSheetState
-    extends ConsumerState<QuestionnaireListBottomSheet> {
+    extends State<QuestionnaireListBottomSheet> {
   final TextEditingController _searchController = TextEditingController();
-  final ScrollController _scrollController = ScrollController();
-  String _searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<QuestionnaireBloc>().add(
+          LoadQuestionnaires(module: widget.module),
+        );
+  }
 
   @override
   void dispose() {
     _searchController.dispose();
-    _scrollController.dispose();
     super.dispose();
   }
 
@@ -77,16 +73,6 @@ class _QuestionnaireListBottomSheetState
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-
-    final questionnairesAsync = ref.watch(
-      questionnaireListProvider(
-        QuestionnaireListParams(
-          keyword: _searchQuery.isEmpty ? null : _searchQuery,
-          module: widget.module,
-          category: widget.category,
-        ),
-      ),
-    );
 
     return Container(
       decoration: BoxDecoration(
@@ -99,7 +85,6 @@ class _QuestionnaireListBottomSheetState
       child: Column(
         children: [
           const SizedBox(height: AppConstants.spacingMd),
-          // Handle bar
           Center(
             child: Container(
               width: 40,
@@ -111,8 +96,6 @@ class _QuestionnaireListBottomSheetState
             ),
           ),
           const SizedBox(height: AppConstants.spacingLg),
-
-          // Header
           Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: AppConstants.spacingLg,
@@ -124,27 +107,25 @@ class _QuestionnaireListBottomSheetState
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.hardcodedQuestionnaires != null
-                            ? 'Chagua Fomu'
-                            : 'Chagua Dodoso',
+                        'Chagua Dodoso',
                         style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.w700,
-                          color:
-                              isDark
-                                  ? AppColors.darkTextPrimary
-                                  : AppColors.textPrimary,
+                          color: isDark
+                              ? AppColors.darkTextPrimary
+                              : AppColors.textPrimary,
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        widget.projectName,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color:
-                              isDark
-                                  ? AppColors.darkTextSecondary
-                                  : AppColors.textSecondary,
+                      if (widget.projectName != null) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          widget.projectName!,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: isDark
+                                ? AppColors.darkTextSecondary
+                                : AppColors.textSecondary,
+                          ),
                         ),
-                      ),
+                      ],
                     ],
                   ),
                 ),
@@ -152,18 +133,15 @@ class _QuestionnaireListBottomSheetState
                   onPressed: () => Navigator.pop(context),
                   icon: Icon(
                     Icons.close,
-                    color:
-                        isDark
-                            ? AppColors.darkTextSecondary
-                            : AppColors.textSecondary,
+                    color: isDark
+                        ? AppColors.darkTextSecondary
+                        : AppColors.textSecondary,
                   ),
                 ),
               ],
             ),
           ),
           const SizedBox(height: AppConstants.spacingMd),
-
-          // Search field
           Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: AppConstants.spacingLg,
@@ -171,29 +149,28 @@ class _QuestionnaireListBottomSheetState
             child: TextField(
               controller: _searchController,
               onChanged: (value) {
-                setState(() => _searchQuery = value);
+                context
+                    .read<QuestionnaireBloc>()
+                    .add(SearchQuestionnaires(value));
               },
               decoration: InputDecoration(
-                hintText:
-                    widget.hardcodedQuestionnaires != null
-                        ? 'Tafuta fomu...'
-                        : 'Tafuta dodoso...',
+                hintText: 'Tafuta dodoso...',
                 prefixIcon: const Icon(Icons.search),
-                suffixIcon:
-                    _searchQuery.isNotEmpty
-                        ? IconButton(
-                          icon: const Icon(Icons.clear),
-                          onPressed: () {
-                            _searchController.clear();
-                            setState(() => _searchQuery = '');
-                          },
-                        )
-                        : null,
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _searchController.clear();
+                          context
+                              .read<QuestionnaireBloc>()
+                              .add(const SearchQuestionnaires(''));
+                        },
+                      )
+                    : null,
                 filled: true,
-                fillColor:
-                    isDark
-                        ? AppColors.darkSurfaceVariant
-                        : AppColors.surfaceVariant,
+                fillColor: isDark
+                    ? AppColors.darkSurfaceVariant
+                    : AppColors.surfaceVariant,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(AppConstants.radiusMd),
                   borderSide: BorderSide.none,
@@ -202,13 +179,68 @@ class _QuestionnaireListBottomSheetState
             ),
           ),
           const SizedBox(height: AppConstants.spacingMd),
-
-          // Questionnaires list
           Expanded(
-            child: widget.hardcodedQuestionnaires != null
-                ? _buildHardcodedList(widget.hardcodedQuestionnaires!, isDark, theme)
-                : questionnairesAsync.when(
-              data: (questionnaires) {
+            child: BlocBuilder<QuestionnaireBloc, QuestionnaireState>(
+              builder: (context, state) {
+                if (state.isLoading) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(AppConstants.spacing2xl),
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
+
+                if (state.errorMessage != null) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppConstants.spacing2xl),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            size: 64,
+                            color: isDark ? AppColors.errorDark : AppColors.error,
+                          ),
+                          const SizedBox(height: AppConstants.spacingMd),
+                          Text(
+                            'Hitilafu imetokea',
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              color: isDark
+                                  ? AppColors.darkTextSecondary
+                                  : AppColors.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: AppConstants.spacingSm),
+                          Text(
+                            state.errorMessage!,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: isDark ? AppColors.errorDark : AppColors.error,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: AppConstants.spacingLg),
+                          IconButton.filled(
+                            onPressed: () {
+                              context.read<QuestionnaireBloc>().add(
+                                    LoadQuestionnaires(module: widget.module),
+                                  );
+                            },
+                            icon: const Icon(Icons.refresh),
+                            style: IconButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+
+                final questionnaires = state.filteredQuestionnaires;
+
                 if (questionnaires.isEmpty) {
                   return Center(
                     child: Padding(
@@ -219,21 +251,17 @@ class _QuestionnaireListBottomSheetState
                           Icon(
                             Icons.search_off,
                             size: 64,
-                            color:
-                                isDark
-                                    ? AppColors.darkTextHint
-                                    : AppColors.textHint,
+                            color: isDark
+                                ? AppColors.darkTextHint
+                                : AppColors.textHint,
                           ),
                           const SizedBox(height: AppConstants.spacingMd),
                           Text(
-                            widget.hardcodedQuestionnaires != null
-                                ? 'Hakuna fomu yaliyopatikana'
-                                : 'Hakuna madodoso yaliyopatikana',
+                            'Hakuna madodoso yaliyopatikana',
                             style: theme.textTheme.bodyLarge?.copyWith(
-                              color:
-                                  isDark
-                                      ? AppColors.darkTextSecondary
-                                      : AppColors.textSecondary,
+                              color: isDark
+                                  ? AppColors.darkTextSecondary
+                                  : AppColors.textSecondary,
                             ),
                           ),
                         ],
@@ -243,15 +271,13 @@ class _QuestionnaireListBottomSheetState
                 }
 
                 return ListView.separated(
-                  controller: _scrollController,
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppConstants.spacingLg,
                     vertical: AppConstants.spacingMd,
                   ),
                   itemCount: questionnaires.length,
-                  separatorBuilder:
-                      (context, index) =>
-                          const SizedBox(height: AppConstants.spacingSm),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: AppConstants.spacingSm),
                   itemBuilder: (context, index) {
                     final questionnaire = questionnaires[index];
                     return _QuestionnaireListItem(
@@ -265,119 +291,11 @@ class _QuestionnaireListBottomSheetState
                   },
                 );
               },
-              loading:
-                  () => const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(AppConstants.spacing2xl),
-                      child: CircularProgressIndicator(),
-                    ),
-                  ),
-              error:
-                  (error, stack) => Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(AppConstants.spacing2xl),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.error_outline,
-                            size: 64,
-                            color:
-                                isDark ? AppColors.errorDark : AppColors.error,
-                          ),
-                          const SizedBox(height: AppConstants.spacingMd),
-                          Text(
-                            'Hitilafu imetokea',
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              color:
-                                  isDark
-                                      ? AppColors.darkTextSecondary
-                                      : AppColors.textSecondary,
-                            ),
-                          ),
-                          const SizedBox(height: AppConstants.spacingSm),
-                          Text(
-                            error.toString(),
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color:
-                                  isDark
-                                      ? AppColors.errorDark
-                                      : AppColors.error,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
             ),
           ),
           const SizedBox(height: AppConstants.spacingMd),
         ],
       ),
-    );
-  }
-
-  Widget _buildHardcodedList(
-    List<Questionnaire> questionnaires,
-    bool isDark,
-    ThemeData theme,
-  ) {
-    // Filter based on search query
-    final filteredQuestionnaires = questionnaires.where((q) {
-      if (_searchQuery.isEmpty) return true;
-      final query = _searchQuery.toLowerCase();
-      return q.name.toLowerCase().contains(query) ||
-          q.description.toLowerCase().contains(query);
-    }).toList();
-
-    if (filteredQuestionnaires.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(AppConstants.spacing2xl),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.search_off,
-                size: 64,
-                color: isDark ? AppColors.darkTextHint : AppColors.textHint,
-              ),
-              const SizedBox(height: AppConstants.spacingMd),
-              Text(
-                'Hakuna fomu yaliyopatikana',
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: isDark
-                      ? AppColors.darkTextSecondary
-                      : AppColors.textSecondary,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    return ListView.separated(
-      controller: _scrollController,
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppConstants.spacingLg,
-        vertical: AppConstants.spacingMd,
-      ),
-      itemCount: filteredQuestionnaires.length,
-      separatorBuilder: (context, index) =>
-          const SizedBox(height: AppConstants.spacingSm),
-      itemBuilder: (context, index) {
-        final questionnaire = filteredQuestionnaires[index];
-        return _QuestionnaireListItem(
-          questionnaire: questionnaire,
-          isDark: isDark,
-          onTap: () {
-            Navigator.pop(context);
-            widget.onQuestionnaireSelected(questionnaire.slug);
-          },
-        );
-      },
     );
   }
 }
@@ -418,19 +336,13 @@ class _QuestionnaireListItem extends StatelessWidget {
                   padding: const EdgeInsets.all(AppConstants.spacingMd),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors:
-                          isDark
-                              ? [
-                                AppColors.darkPrimary,
-                                AppColors.darkPrimaryDark,
-                              ]
-                              : [AppColors.primary, AppColors.primaryDark],
+                      colors: [AppColors.primary, AppColors.primaryDark],
                     ),
                     borderRadius: BorderRadius.circular(AppConstants.radiusSm),
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.assignment_outlined,
-                    color: isDark ? AppColors.darkTextInverse : Colors.white,
+                    color: Colors.white,
                     size: 24,
                   ),
                 ),
@@ -443,10 +355,9 @@ class _QuestionnaireListItem extends StatelessWidget {
                         questionnaire.name,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w600,
-                          color:
-                              isDark
-                                  ? AppColors.darkTextPrimary
-                                  : AppColors.textPrimary,
+                          color: isDark
+                              ? AppColors.darkTextPrimary
+                              : AppColors.textPrimary,
                         ),
                       ),
                       if (questionnaire.description.isNotEmpty) ...[
@@ -454,10 +365,9 @@ class _QuestionnaireListItem extends StatelessWidget {
                         Text(
                           questionnaire.description,
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color:
-                                isDark
-                                    ? AppColors.darkTextSecondary
-                                    : AppColors.textSecondary,
+                            color: isDark
+                                ? AppColors.darkTextSecondary
+                                : AppColors.textSecondary,
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -469,19 +379,17 @@ class _QuestionnaireListItem extends StatelessWidget {
                           Icon(
                             Icons.folder_outlined,
                             size: 14,
-                            color:
-                                isDark
-                                    ? AppColors.darkTextSecondary
-                                    : AppColors.textSecondary,
+                            color: isDark
+                                ? AppColors.darkTextSecondary
+                                : AppColors.textSecondary,
                           ),
                           const SizedBox(width: 4),
                           Text(
                             '${questionnaire.questionnaireSectionsCount} section${questionnaire.questionnaireSectionsCount == 1 ? '' : 's'}',
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color:
-                                  isDark
-                                      ? AppColors.darkTextSecondary
-                                      : AppColors.textSecondary,
+                              color: isDark
+                                  ? AppColors.darkTextSecondary
+                                  : AppColors.textSecondary,
                             ),
                           ),
                           const SizedBox(width: AppConstants.spacingMd),
@@ -491,25 +399,14 @@ class _QuestionnaireListItem extends StatelessWidget {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color:
-                                  isDark
-                                      ? AppColors.darkPrimary.withValues(
-                                        alpha: 0.2,
-                                      )
-                                      : AppColors.primary.withValues(
-                                        alpha: 0.1,
-                                      ),
-                              borderRadius: BorderRadius.circular(
-                                AppConstants.radiusSm,
-                              ),
+                              color: AppColors.primary.withValues(alpha: 0.1),
+                              borderRadius:
+                                  BorderRadius.circular(AppConstants.radiusSm),
                             ),
                             child: Text(
                               'v${questionnaire.version}',
                               style: theme.textTheme.bodySmall?.copyWith(
-                                color:
-                                    isDark
-                                        ? AppColors.darkPrimary
-                                        : AppColors.primary,
+                                color: AppColors.primary,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -522,9 +419,7 @@ class _QuestionnaireListItem extends StatelessWidget {
                 Icon(
                   Icons.chevron_right,
                   color:
-                      isDark
-                          ? AppColors.darkTextSecondary
-                          : AppColors.textSecondary,
+                      isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                 ),
               ],
             ),

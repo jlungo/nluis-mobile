@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
 import '../../models/questionnaire.dart';
 import 'form_fields/text_form_field_widget.dart';
-import 'form_fields/textarea_form_field_widget.dart';
 import 'form_fields/select_form_field_widget.dart';
-import 'form_fields/checkbox_form_field_widget.dart';
 import 'form_fields/date_form_field_widget.dart';
+import 'form_fields/multiselect_form_field_widget.dart';
 import 'form_fields/file_form_field_widget.dart';
 import 'form_fields/camera_form_field_widget.dart';
-import 'form_fields/multiselect_form_field_widget.dart';
-import 'form_fields/table_form_field_widget.dart' as table;
-import 'form_fields/zoning_form_field_widget.dart';
+import 'form_fields/table_form_field_widget.dart';
 
 class FormFieldBuilder extends StatefulWidget {
   final CustomFormField field;
@@ -39,7 +35,7 @@ class _FormFieldBuilderState extends State<FormFieldBuilder> {
     _textController = TextEditingController(
       text: widget.value?.toString() ?? '',
     );
-    if (!widget.isReadOnly) {
+    if (!widget.isReadOnly && widget.onChanged != null) {
       _textController.addListener(_onTextChanged);
     }
   }
@@ -47,6 +43,15 @@ class _FormFieldBuilderState extends State<FormFieldBuilder> {
   void _onTextChanged() {
     if (widget.onChanged != null) {
       widget.onChanged!(_textController.text);
+    }
+  }
+
+  @override
+  void didUpdateWidget(FormFieldBuilder oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.value != widget.value &&
+        widget.value != _textController.text) {
+      _textController.text = widget.value?.toString() ?? '';
     }
   }
 
@@ -60,38 +65,21 @@ class _FormFieldBuilderState extends State<FormFieldBuilder> {
   Widget build(BuildContext context) {
     switch (widget.field.type.toLowerCase()) {
       case 'text':
-        return TextFormFieldWidget(
-          label: widget.field.label,
-          placeholder: widget.field.placeholder,
-          required: widget.field.required,
-          controller: _textController,
-          enabled: !widget.isReadOnly,
-          validator:
-              widget.field.required
-                  ? (value) =>
-                      value?.isEmpty ?? true ? 'Hii sehemu inahitajika' : null
-                  : null,
-        );
-
       case 'email':
         return TextFormFieldWidget(
           label: widget.field.label,
           placeholder: widget.field.placeholder,
           required: widget.field.required,
           controller: _textController,
-          keyboardType: TextInputType.emailAddress,
           enabled: !widget.isReadOnly,
+          keyboardType:
+              widget.field.type.toLowerCase() == 'email'
+                  ? TextInputType.emailAddress
+                  : TextInputType.text,
           validator:
               widget.field.required
-                  ? (value) {
-                    if (value?.isEmpty ?? true) return 'Hii sehemu inahitajika';
-                    if (!RegExp(
-                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                    ).hasMatch(value!)) {
-                      return 'Weka barua pepe sahihi';
-                    }
-                    return null;
-                  }
+                  ? (value) =>
+                      value?.isEmpty ?? true ? 'Hii sehemu inahitajika' : null
                   : null,
         );
 
@@ -101,27 +89,23 @@ class _FormFieldBuilderState extends State<FormFieldBuilder> {
           placeholder: widget.field.placeholder,
           required: widget.field.required,
           controller: _textController,
-          keyboardType: TextInputType.number,
           enabled: !widget.isReadOnly,
+          keyboardType: TextInputType.number,
           validator:
               widget.field.required
-                  ? (value) {
-                    if (value?.isEmpty ?? true) return 'Hii sehemu inahitajika';
-                    if (double.tryParse(value!) == null) {
-                      return 'Weka namba sahihi';
-                    }
-                    return null;
-                  }
+                  ? (value) =>
+                      value?.isEmpty ?? true ? 'Hii sehemu inahitajika' : null
                   : null,
         );
 
       case 'textarea':
-        return TextareaFormFieldWidget(
+        return TextFormFieldWidget(
           label: widget.field.label,
           placeholder: widget.field.placeholder,
           required: widget.field.required,
           controller: _textController,
           enabled: !widget.isReadOnly,
+          maxLines: 4,
           validator:
               widget.field.required
                   ? (value) =>
@@ -132,164 +116,132 @@ class _FormFieldBuilderState extends State<FormFieldBuilder> {
       case 'select':
         return SelectFormFieldWidget(
           label: widget.field.label,
-          placeholder: widget.field.placeholder,
           required: widget.field.required,
           options: widget.field.selectOptions,
-          value: widget.value as String?,
+          value: widget.value?.toString(),
+          onChanged:
+              widget.isReadOnly
+                  ? (_) {}
+                  : (value) {
+                    if (widget.onChanged != null) {
+                      widget.onChanged!(value);
+                    }
+                  },
           enabled: !widget.isReadOnly,
-          onChanged: widget.isReadOnly ? null : (value) {
-            widget.onChanged?.call(value);
-          },
-          validator:
-              widget.field.required
-                  ? (value) => value == null ? 'Hii sehemu inahitajika' : null
-                  : null,
-        );
-
-      case 'checkbox':
-        return CheckboxFormFieldWidget(
-          label: widget.field.label,
-          required: widget.field.required,
-          value: widget.value as bool? ?? false,
-          enabled: !widget.isReadOnly,
-          onChanged: widget.isReadOnly ? null : (value) {
-            widget.onChanged?.call(value ?? false);
-          },
         );
 
       case 'date':
         return DateFormFieldWidget(
           label: widget.field.label,
-          placeholder: widget.field.placeholder,
           required: widget.field.required,
-          value: widget.value as DateTime?,
+          value:
+              widget.value is DateTime
+                  ? widget.value as DateTime
+                  : (widget.value is String &&
+                          widget.value.toString().isNotEmpty
+                      ? DateTime.tryParse(widget.value.toString())
+                      : null),
+          onChanged:
+              widget.isReadOnly
+                  ? (_) {}
+                  : (value) {
+                    if (widget.onChanged != null) {
+                      widget.onChanged!(value);
+                    }
+                  },
           enabled: !widget.isReadOnly,
-          onChanged: widget.isReadOnly ? null : (value) {
-            widget.onChanged?.call(value);
-          },
-          validator:
-              widget.field.required
-                  ? (value) => value == null ? 'Hii sehemu inahitajika' : null
-                  : null,
+        );
+
+      case 'multiselect':
+        final valueList =
+            widget.value is List
+                ? (widget.value as List).map((e) => e.toString()).toList()
+                : (widget.value is String && widget.value.toString().isNotEmpty
+                    ? [widget.value.toString()]
+                    : <String>[]);
+        return MultiselectFormFieldWidget(
+          label: widget.field.label,
+          required: widget.field.required,
+          options: widget.field.selectOptions,
+          values: valueList,
+          onChanged:
+              widget.isReadOnly
+                  ? null
+                  : (value) {
+                    if (widget.onChanged != null) {
+                      widget.onChanged!(value);
+                    }
+                  },
+          enabled: !widget.isReadOnly,
         );
 
       case 'file':
         return FileFormFieldWidget(
           label: widget.field.label,
           required: widget.field.required,
-          value: widget.value as File?,
+          value: widget.value?.toString(),
+          onChanged:
+              widget.isReadOnly
+                  ? null
+                  : (value) {
+                    if (widget.onChanged != null) {
+                      widget.onChanged!(value);
+                    }
+                  },
           enabled: !widget.isReadOnly,
-          fileType: FileType.any,
-          onChanged: widget.isReadOnly ? null : (file) {
-            widget.onChanged?.call(file);
-          },
-        );
-
-      case 'document':
-        return FileFormFieldWidget(
-          label: widget.field.label,
-          required: widget.field.required,
-          value: widget.value as File?,
-          enabled: !widget.isReadOnly,
-          fileType: FileType.document,
-          allowedExtensions: ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt'],
-          onChanged: widget.isReadOnly ? null : (file) {
-            widget.onChanged?.call(file);
-          },
-        );
-
-      case 'image':
-        return FileFormFieldWidget(
-          label: widget.field.label,
-          required: widget.field.required,
-          value: widget.value as File?,
-          enabled: !widget.isReadOnly,
-          fileType: FileType.image,
-          onChanged: widget.isReadOnly ? null : (file) {
-            widget.onChanged?.call(file);
-          },
         );
 
       case 'camera':
-      case 'photo':
+      case 'image':
         return CameraFormFieldWidget(
           label: widget.field.label,
           required: widget.field.required,
-          value: widget.value as File?,
+          value: widget.value?.toString(),
+          onChanged:
+              widget.isReadOnly
+                  ? null
+                  : (value) {
+                    if (widget.onChanged != null) {
+                      widget.onChanged!(value);
+                    }
+                  },
           enabled: !widget.isReadOnly,
-          allowGallery: true,
-          imageQuality: 85,
-          maxWidth: 1920,
-          maxHeight: 1080,
-          onChanged: widget.isReadOnly ? null : (file) {
-            widget.onChanged?.call(file);
-          },
-        );
-
-      case 'multiselect':
-        return MultiselectFormFieldWidget(
-          label: widget.field.label,
-          placeholder: widget.field.placeholder,
-          required: widget.field.required,
-          options: widget.field.selectOptions,
-          values: widget.value as List<String>? ?? [],
-          enabled: !widget.isReadOnly,
-          onChanged: widget.isReadOnly ? null : (values) {
-            widget.onChanged?.call(values);
-          },
         );
 
       case 'table':
-        // Parse existing rows from saved value
-        final existingData = widget.value as Map<String, dynamic>?;
-        final existingRows = existingData?['rows'] as List<dynamic>?;
-
-        // Create table from field's select options (columns)
-        final tableData = table.DynamicTable.fromField(
+        final tableValue =
+            widget.value is List
+                ? (widget.value as List)
+                    .map(
+                      (e) =>
+                          e is Map<String, dynamic> ? e : <String, dynamic>{},
+                    )
+                    .toList()
+                : <Map<String, dynamic>>[];
+        return TableFormFieldWidget(
           label: widget.field.label,
           required: widget.field.required,
-          selectOptions: widget.field.selectOptions.map((opt) => {
-            'position': opt.position,
-            'value': opt.value,
-            'text_label': opt.textLabel,
-          }).toList(),
-          existingRows: existingRows,
-        );
-
-        return table.DynamicFillableTable(
-          tableData: tableData,
-          readOnly: widget.isReadOnly,
-          onChanged: widget.isReadOnly ? null : (rows) {
-            // Save table data when changed
-            widget.onChanged?.call({
-              'rows': rows.map((r) => r.toJson()).toList(),
-            });
-          },
-        );
-
-      case 'zoning':
-        return ZoningFormFieldWidget(
-          label: widget.field.label,
-          required: widget.field.required,
-          value: widget.value as Map<String, dynamic>?,
+          value: tableValue,
+          onChanged:
+              widget.isReadOnly
+                  ? null
+                  : (value) {
+                    if (widget.onChanged != null) {
+                      widget.onChanged!(value);
+                    }
+                  },
           enabled: !widget.isReadOnly,
-          onChanged: widget.isReadOnly ? null : (value) {
-            widget.onChanged?.call(value);
-          },
+          columns: ['column1', 'column2'],
+          columnLabels: ['Jina', 'Thamani'],
         );
 
       default:
         return TextFormFieldWidget(
           label: widget.field.label,
-          placeholder: widget.field.placeholder,
+          placeholder: 'Aina ya sehemu hii bado haijatekelezwa',
           required: widget.field.required,
           controller: _textController,
-          enabled: !widget.isReadOnly,
-          validator:
-              widget.field.required
-                  ? (value) =>
-                      value?.isEmpty ?? true ? 'Hii sehemu inahitajika' : null
-                  : null,
+          enabled: false,
         );
     }
   }

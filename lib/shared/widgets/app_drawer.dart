@@ -1,26 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../features/auth/presentation/providers/auth_providers.dart';
+import '../../features/auth/presentation/bloc/auth/auth_bloc.dart';
+import '../../features/auth/presentation/bloc/auth/auth_state.dart';
+import '../../features/auth/presentation/bloc/auth/auth_event.dart';
 import '../constants/app_constants.dart';
 import '../theme/app_colors.dart';
+import '../utils/responsive_utils.dart';
 
-class AppDrawer extends ConsumerWidget {
+class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final authState = ref.watch(authStateProvider);
-    final user = authState.valueOrNull;
+    final authState = context.watch<AuthBloc>().state;
+    final user = authState is Authenticated ? authState.user : null;
 
     final goRouter = GoRouter.maybeOf(context);
     final location =
         goRouter?.routeInformationProvider.value.uri.toString() ?? '';
 
-    final isOnSwitchboard = location == '/module-switch';
-    final isOnSettings = location.startsWith('/settings') || location.startsWith('/app-configurations');
+    final isOnSwitchboard = location == '/module-switchboard';
 
     return Drawer(
       backgroundColor:
@@ -29,7 +31,9 @@ class AppDrawer extends ConsumerWidget {
         children: [
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(AppConstants.spacingLg),
+            padding: EdgeInsets.all(
+              ResponsiveUtils.spacing(context, AppConstants.spacingLg),
+            ),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
@@ -46,25 +50,28 @@ class AppDrawer extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Center(
-                    child: Image.asset(
-                      'assets/images/logo/nlupc_logo.png',
-                      width: 75,
-                      height: 75,
-                      fit: BoxFit.cover,
+                    child: Icon(
+                      Icons.account_circle,
+                      size: ResponsiveUtils.spacing(context, 75),
+                      color: Colors.white,
                     ),
                   ),
-                  const SizedBox(height: AppConstants.spacingMd),
-                  // User Name
+                  SizedBox(
+                    height: ResponsiveUtils.spacing(
+                      context,
+                      AppConstants.spacingMd,
+                    ),
+                  ),
                   Text(
-                    user?.organization?.name ?? 'User',
+                    '${user?.firstName ?? 'User'} ${user?.lastName ?? ''}',
                     style: theme.textTheme.titleLarge?.copyWith(
                       color: isDark ? AppColors.darkTextInverse : Colors.white,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: ResponsiveUtils.spacing(context, 4)),
                   Text(
-                    user?.role?.name ?? 'User',
+                    user?.email ?? '',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color:
                           isDark
@@ -77,11 +84,13 @@ class AppDrawer extends ConsumerWidget {
             ),
           ),
 
-          // Menu Items
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.symmetric(
-                vertical: AppConstants.spacingMd,
+              padding: EdgeInsets.symmetric(
+                vertical: ResponsiveUtils.spacing(
+                  context,
+                  AppConstants.spacingMd,
+                ),
               ),
               children: [
                 _DrawerMenuItem(
@@ -90,37 +99,39 @@ class AppDrawer extends ConsumerWidget {
                   isSelected: isOnSwitchboard,
                   onTap: () {
                     Navigator.pop(context);
-                    context.goNamed('moduleSwitch');
+                    context.go('/module-switchboard');
                   },
                 ),
                 _DrawerMenuItem(
                   icon: Icons.settings_outlined,
-                  label: 'Settings',
-                  isSelected: isOnSettings,
+                  label: 'Mipangilio',
+                  isSelected: location == '/settings',
                   onTap: () {
                     Navigator.pop(context);
-                    context.goNamed('settings');
+                    context.go('/settings');
                   },
                 ),
               ],
             ),
           ),
 
-          // Logout Button (Fixed at bottom)
           Container(
-            margin: const EdgeInsets.all(AppConstants.spacingMd),
+            margin: EdgeInsets.all(
+              ResponsiveUtils.spacing(context, AppConstants.spacingMd),
+            ),
             child: ElevatedButton(
               onPressed: () async {
                 Navigator.pop(context);
-                await ref.read(authStateProvider.notifier).logout();
-                if (context.mounted) {
-                  context.goNamed('login');
-                }
+                context.read<AuthBloc>().add(const UserLoggedOut());
+                context.go('/login');
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.error,
                 foregroundColor: Colors.white,
-                minimumSize: const Size(double.infinity, 48),
+                minimumSize: Size(
+                  double.infinity,
+                  ResponsiveUtils.spacing(context, 48),
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppConstants.radiusMd),
                 ),
@@ -128,8 +139,16 @@ class AppDrawer extends ConsumerWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.logout_outlined),
-                  const SizedBox(width: AppConstants.spacingSm),
+                  Icon(
+                    Icons.logout_outlined,
+                    size: ResponsiveUtils.iconSize(context, 24),
+                  ),
+                  SizedBox(
+                    width: ResponsiveUtils.spacing(
+                      context,
+                      AppConstants.spacingSm,
+                    ),
+                  ),
                   Text(
                     'Logout',
                     style: theme.textTheme.titleMedium?.copyWith(
@@ -150,14 +169,12 @@ class AppDrawer extends ConsumerWidget {
 class _DrawerMenuItem extends StatelessWidget {
   final IconData icon;
   final String label;
-  final String? badge;
   final bool isSelected;
   final VoidCallback onTap;
 
   const _DrawerMenuItem({
     required this.icon,
     required this.label,
-    this.badge,
     this.isSelected = false,
     required this.onTap,
   });
@@ -168,9 +185,9 @@ class _DrawerMenuItem extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Container(
-      margin: const EdgeInsets.symmetric(
-        horizontal: AppConstants.spacingMd,
-        vertical: 2,
+      margin: EdgeInsets.symmetric(
+        horizontal: ResponsiveUtils.spacing(context, AppConstants.spacingMd),
+        vertical: ResponsiveUtils.spacing(context, 2),
       ),
       decoration: BoxDecoration(
         color:
@@ -204,32 +221,6 @@ class _DrawerMenuItem extends StatelessWidget {
                         : AppColors.textPrimary),
           ),
         ),
-        trailing:
-            badge != null
-                ? Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors:
-                          isDark
-                              ? [AppColors.successDark, AppColors.successDark]
-                              : [AppColors.success, AppColors.success],
-                    ),
-                    borderRadius: BorderRadius.circular(AppConstants.radiusSm),
-                  ),
-                  child: Text(
-                    badge!,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 11,
-                    ),
-                  ),
-                )
-                : null,
       ),
     );
   }

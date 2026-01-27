@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../constants/app_constants.dart';
 import '../theme/app_colors.dart';
+import '../utils/responsive_utils.dart';
 
 class StatusCard extends StatelessWidget {
   final String title;
@@ -44,14 +45,15 @@ class StatusCard extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Container(
-      margin: const EdgeInsets.only(bottom: AppConstants.spacingMd),
+      // margin: const EdgeInsets.only(bottom: AppConstants.spacingMd),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(AppConstants.radiusMd),
         border: Border.all(
-          color: isDark
-              ? AppColors.darkDivider.withValues(alpha: 0.5)
-              : AppColors.divider.withValues(alpha: 0.3),
+          color:
+              isDark
+                  ? AppColors.darkDivider.withValues(alpha: 0.5)
+                  : AppColors.divider.withValues(alpha: 0.3),
         ),
         boxShadow: [
           BoxShadow(
@@ -82,18 +84,20 @@ class StatusCard extends StatelessWidget {
                             title,
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w700,
-                              color: isDark
-                                  ? AppColors.darkTextPrimary
-                                  : AppColors.textPrimary,
+                              color:
+                                  isDark
+                                      ? AppColors.darkTextPrimary
+                                      : AppColors.textPrimary,
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             subtitle,
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: isDark
-                                  ? AppColors.darkTextSecondary
-                                  : AppColors.textSecondary,
+                              color:
+                                  isDark
+                                      ? AppColors.darkTextSecondary
+                                      : AppColors.textSecondary,
                             ),
                           ),
                         ],
@@ -109,45 +113,50 @@ class StatusCard extends StatelessWidget {
                     ],
                   ],
                 ),
-                const SizedBox(height: AppConstants.spacingMd),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.access_time_rounded,
-                      size: 16,
-                      color: isDark
-                          ? AppColors.darkTextSecondary
-                          : AppColors.textSecondary,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      updatedAt ?? '',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: isDark
-                            ? AppColors.darkTextSecondary
-                            : AppColors.textSecondary,
+                const SizedBox(height: AppConstants.spacingSm),
+                if (uploadedAt == null) ...[
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.access_time_rounded,
+                        size: ResponsiveUtils.iconSize(context, 16),
+                        color:
+                            isDark
+                                ? AppColors.darkTextSecondary
+                                : AppColors.textSecondary,
                       ),
-                    ),
-                  ],
-                ),
+                      const SizedBox(width: 6),
+                      Text(
+                        updatedAt ?? '',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color:
+                              isDark
+                                  ? AppColors.darkTextSecondary
+                                  : AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
                 if (uploadedAt != null) ...[
-                  const SizedBox(height: 4),
                   Row(
                     children: [
                       Icon(
                         Icons.cloud_upload_rounded,
-                        size: 16,
-                        color: isDark
-                            ? AppColors.darkTextSecondary
-                            : AppColors.textSecondary,
+                        size: ResponsiveUtils.iconSize(context, 16),
+                        color:
+                            isDark
+                                ? AppColors.darkTextSecondary
+                                : AppColors.textSecondary,
                       ),
                       const SizedBox(width: 6),
                       Text(
                         'Uploaded $uploadedAt',
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: isDark
-                              ? AppColors.darkTextSecondary
-                              : AppColors.textSecondary,
+                          color:
+                              isDark
+                                  ? AppColors.darkTextSecondary
+                                  : AppColors.textSecondary,
                         ),
                       ),
                     ],
@@ -164,11 +173,13 @@ class StatusCard extends StatelessWidget {
                           child: LinearProgressIndicator(
                             value: _progress,
                             minHeight: 8,
-                            backgroundColor: isDark
-                                ? AppColors.darkDivider
-                                : AppColors.divider.withValues(alpha: 0.4),
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(statusColor),
+                            backgroundColor:
+                                isDark
+                                    ? AppColors.darkDivider
+                                    : AppColors.divider.withValues(alpha: 0.4),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              statusColor,
+                            ),
                           ),
                         ),
                       if (showProgressBar) const SizedBox(height: 8),
@@ -178,9 +189,10 @@ class StatusCard extends StatelessWidget {
                           Text(
                             '$completedCount/$totalCount completed',
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: isDark
-                                  ? AppColors.darkTextSecondary
-                                  : AppColors.textSecondary,
+                              color:
+                                  isDark
+                                      ? AppColors.darkTextSecondary
+                                      : AppColors.textSecondary,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -226,10 +238,7 @@ class StatusChip extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            color.withValues(alpha: 0.2),
-            color.withValues(alpha: 0.15),
-          ],
+          colors: [color.withValues(alpha: 0.2), color.withValues(alpha: 0.15)],
         ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
@@ -237,13 +246,17 @@ class StatusChip extends StatelessWidget {
           width: 1.5,
         ),
       ),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+      child: Builder(
+        builder: (context) {
+          return Text(
+            label,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
               fontWeight: FontWeight.w700,
               color: color,
-              fontSize: 11,
+              fontSize: ResponsiveUtils.fontSize(context, 11),
             ),
+          );
+        },
       ),
     );
   }

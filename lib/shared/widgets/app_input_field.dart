@@ -58,7 +58,9 @@ class AppInputField extends StatelessWidget {
           prefixIcon != null
               ? Icon(
                 prefixIcon,
-                color: hintColor ?? theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                color:
+                    hintColor ??
+                    theme.colorScheme.onSurface.withValues(alpha: 0.6),
               )
               : null,
       suffixIcon:
@@ -67,7 +69,9 @@ class AppInputField extends StatelessWidget {
                 onTap: onSuffixTap,
                 child: Icon(
                   suffixIcon,
-                  color: hintColor ?? theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                  color:
+                      hintColor ??
+                      theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               )
               : null,
