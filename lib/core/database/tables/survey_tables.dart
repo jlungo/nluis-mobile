@@ -1,6 +1,5 @@
 import 'package:drift/drift.dart';
 
-/// Questionnaire types for categorization
 class QuestionnaireTypes extends Table {
   IntColumn get id => integer()();
   TextColumn get name => text()();
@@ -11,7 +10,6 @@ class QuestionnaireTypes extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-/// Questionnaires/surveys available in the system
 class Questionnaires extends Table {
   IntColumn get id => integer()();
   TextColumn get name => text()();
@@ -31,7 +29,6 @@ class Questionnaires extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-/// Forms within questionnaires
 class Forms extends Table {
   TextColumn get slug => text()();
   IntColumn get questionnaireId =>
@@ -55,7 +52,6 @@ class Forms extends Table {
   Set<Column> get primaryKey => {slug};
 }
 
-/// Form fields/questions
 class FormFields extends Table {
   IntColumn get id => integer()();
   TextColumn get formSlug => text().named('form_slug')();
@@ -70,23 +66,12 @@ class FormFields extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-/// Upload status enum values stored as integers
-/// 0 = pending, 1 = uploading, 2 = uploaded, 3 = failed
-class UploadStatusConverter {
-  static const int pending = 0;
-  static const int uploading = 1;
-  static const int uploaded = 2;
-  static const int failed = 3;
-}
-
-/// Survey responses submitted by users
 class SurveyResponses extends Table {
   TextColumn get id => text()();
-  TextColumn get surveyId =>
-      text().named('survey_id')(); // Group forms into one survey
+  TextColumn get surveyId => text().named('survey_id')();
   TextColumn get projectId => text().named('project_id')();
   TextColumn get moduleSlug =>
-      text().named('module_slug').withDefault(const Constant(''))(); // Module filter
+      text().named('module_slug').withDefault(const Constant(''))();
   IntColumn get questionnaireId => integer().named('questionnaire_id')();
   TextColumn get questionnaireSlug =>
       text().named('questionnaire_slug').nullable()();
@@ -99,7 +84,7 @@ class SurveyResponses extends Table {
   TextColumn get schemaSnapshotJson =>
       text().named('schema_snapshot_json').nullable()();
   IntColumn get uploadStatus =>
-      integer().named('upload_status').withDefault(const Constant(0))(); // 0=pending, 1=uploading, 2=uploaded, 3=failed
+      integer().named('upload_status').withDefault(const Constant(0))();
   RealColumn get uploadProgress =>
       real().named('upload_progress').withDefault(const Constant(0.0))();
 

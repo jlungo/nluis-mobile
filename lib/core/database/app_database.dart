@@ -4,19 +4,20 @@ import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
-// Table definitions
 import 'tables/auth_tables.dart';
 import 'tables/project_tables.dart';
 import 'tables/survey_tables.dart';
-import 'tables/zoning_tables.dart';
-import 'tables/subdivision_tables.dart';
-import 'tables/sync_tables.dart';
+import 'tables/parcel_tables.dart';
+import 'tables/basemap_tables.dart';
+import 'tables/upload_tables.dart';
 
-part 'database.g.dart';
+part 'app_database.g.dart';
 
 @DriftDatabase(
   tables: [
     Users,
+    AuthTokens,
+    AppSettings,
     Projects,
     ProjectPacks,
     QuestionnaireTypes,
@@ -24,14 +25,6 @@ part 'database.g.dart';
     Forms,
     FormFields,
     SurveyResponses,
-    BaseMaps,
-    ZoningFeatures,
-    SyncLogs,
-    ZoningFeatureHistory,
-    FeatureUploadQueue,
-    ManualZoneDrafts,
-    LandUses,
-    AppSettings,
     SubdivisionZones,
     SubdivisionApplications,
     Parties,
@@ -39,14 +32,21 @@ part 'database.g.dart';
     ParcelDrafts,
     Allocations,
     ParcelPhotos,
+    BaseMaps,
     MvtTilesets,
+    ZoningFeatures,
+    ZoningFeatureHistory,
+    FeatureUploadQueue,
+    ManualZoneDrafts,
+    LandUses,
+    SyncLogs,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 1;
 
   @override
   MigrationStrategy get migration {
@@ -55,14 +55,6 @@ class AppDatabase extends _$AppDatabase {
         await m.createAll();
       },
       onUpgrade: (Migrator m, int from, int to) async {
-        if (from < 2) {
-          await customStatement(
-            'ALTER TABLE survey_responses ADD COLUMN upload_status INTEGER NOT NULL DEFAULT 0',
-          );
-          await customStatement(
-            'ALTER TABLE survey_responses ADD COLUMN upload_progress REAL NOT NULL DEFAULT 0.0',
-          );
-        }
       },
     );
   }
@@ -71,7 +63,7 @@ class AppDatabase extends _$AppDatabase {
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final dbFolder = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dbFolder.path, 'nluis_app.db'));
+    final file = File(p.join(dbFolder.path, 'nluis_collect.db'));
     return NativeDatabase.createInBackground(file);
   });
 }

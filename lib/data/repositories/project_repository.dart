@@ -12,8 +12,8 @@ import '../../data/local/database.dart' as local_db;
 import '../../shared/models/project.dart';
 
 abstract class ProjectRepository {
-  Future<Either<Failure, List<Project>>> getAssignedProjects();
-  Future<Either<Failure, Project>> getProject(String id);
+  Future<Either<Failure, List<Project>>> getAssignedProjects(String moduleSlug);
+  Future<Either<Failure, Project>> getProject(String id, String moduleSlug);
 }
 
 class ApiResponse<T> {
@@ -39,14 +39,15 @@ class ProjectRepositoryImpl implements ProjectRepository {
   });
 
   @override
-  Future<Either<Failure, List<Project>>> getAssignedProjects() async {
+  Future<Either<Failure, List<Project>>> getAssignedProjects(
+    String moduleSlug,
+  ) async {
     final isOnline = await networkInfo.isConnected;
-
     if (isOnline) {
       try {
         final response = await dioClient.get(
           '/projects/',
-          queryParameters: {'is_app_user': true},
+          queryParameters: {'is_app_user': true, 'module_slug': moduleSlug},
         );
 
         if (response.statusCode == 200) {
@@ -56,12 +57,18 @@ class ProjectRepositoryImpl implements ProjectRepository {
           return Right(projects);
         }
         if (response.statusCode == 401) {
-          return const Left(AuthFailure('Haujathibitishwa. Tafadhali ingia tena.'));
+          return const Left(
+            AuthFailure('Haujathibitishwa. Tafadhali ingia tena.'),
+          );
         }
-        return const Left(ServerFailure('Imeshindikana kupakia miradi kutoka seva.'));
+        return const Left(
+          ServerFailure('Imeshindikana kupakia miradi kutoka seva.'),
+        );
       } on DioException catch (e) {
         if (e.response?.statusCode == 401) {
-          return const Left(AuthFailure('Haujathibitishwa. Tafadhali ingia tena.'));
+          return const Left(
+            AuthFailure('Haujathibitishwa. Tafadhali ingia tena.'),
+          );
         }
         final cachedProjects = await _loadProjectsFromCache();
         if (cachedProjects.isNotEmpty) {
@@ -103,25 +110,23 @@ class ProjectRepositoryImpl implements ProjectRepository {
   }
 
   @override
-  Future<Either<Failure, Project>> getProject(String id) async {
+  Future<Either<Failure, Project>> getProject(
+    String id,
+    String moduleSlug,
+  ) async {
     try {
       // Note: id here is a locality id from our flattened structure
       // We need to fetch all projects and find the matching locality
-      final projectsResult = await getAssignedProjects();
+      final projectsResult = await getAssignedProjects(moduleSlug);
 
-      return projectsResult.fold(
-        (failure) => Left(failure),
-        (projects) {
-          try {
-            final project = projects.firstWhere(
-              (p) => p.id == id,
-            );
-            return Right(project);
-          } catch (e) {
-            return const Left(ServerFailure('Mradi haukupatikana'));
-          }
-        },
-      );
+      return projectsResult.fold((failure) => Left(failure), (projects) {
+        try {
+          final project = projects.firstWhere((p) => p.id == id);
+          return Right(project);
+        } catch (e) {
+          return const Left(ServerFailure('Mradi haukupatikana'));
+        }
+      });
     } catch (e) {
       return Left(ServerFailure('Hitilafu: $e'));
     }
@@ -129,7 +134,8 @@ class ProjectRepositoryImpl implements ProjectRepository {
 
   List<ProjectModel> _parseProjects(dynamic responseData) {
     final List<dynamic> data =
-        responseData is Map<String, dynamic> && responseData.containsKey('results')
+        responseData is Map<String, dynamic> &&
+                responseData.containsKey('results')
             ? responseData['results'] as List<dynamic>
             : responseData as List<dynamic>;
 
@@ -166,12 +172,15 @@ class ProjectRepositoryImpl implements ProjectRepository {
           existingProject?.assignedOn ??
           now;
 
-      await database.into(database.projects).insertOnConflictUpdate(
+      await database
+          .into(database.projects)
+          .insertOnConflictUpdate(
             local_db.ProjectsCompanion(
               id: drift.Value(project.id),
               name: drift.Value(project.name),
               localityId: drift.Value(
-                int.tryParse(project.localityId) ?? (existingProject?.localityId ?? 0),
+                int.tryParse(project.localityId) ??
+                    (existingProject?.localityId ?? 0),
               ),
               status: drift.Value(project.status),
               assignedOn: drift.Value(assignedTimestamp),
@@ -197,9 +206,7 @@ class ProjectRepositoryImpl implements ProjectRepository {
     try {
       final List<dynamic> decoded = jsonDecode(cached) as List<dynamic>;
       return decoded
-          .map(
-            (item) => ProjectModel.fromJson(item as Map<String, dynamic>),
-          )
+          .map((item) => ProjectModel.fromJson(item as Map<String, dynamic>))
           .toList();
     } catch (_) {
       return [];

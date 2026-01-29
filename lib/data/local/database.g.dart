@@ -3618,6 +3618,18 @@ class $SurveyResponsesTable extends SurveyResponses
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _moduleSlugMeta = const VerificationMeta(
+    'moduleSlug',
+  );
+  @override
+  late final GeneratedColumn<String> moduleSlug = GeneratedColumn<String>(
+    'module_slug',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   static const VerificationMeta _questionnaireIdMeta = const VerificationMeta(
     'questionnaireId',
   );
@@ -3713,11 +3725,36 @@ class $SurveyResponsesTable extends SurveyResponses
         type: DriftSqlType.string,
         requiredDuringInsert: false,
       );
+  static const VerificationMeta _uploadStatusMeta = const VerificationMeta(
+    'uploadStatus',
+  );
+  @override
+  late final GeneratedColumn<int> uploadStatus = GeneratedColumn<int>(
+    'upload_status',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _uploadProgressMeta = const VerificationMeta(
+    'uploadProgress',
+  );
+  @override
+  late final GeneratedColumn<double> uploadProgress = GeneratedColumn<double>(
+    'upload_progress',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0.0),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
     surveyId,
     projectId,
+    moduleSlug,
     questionnaireId,
     questionnaireSlug,
     formSlug,
@@ -3726,6 +3763,8 @@ class $SurveyResponsesTable extends SurveyResponses
     updatedAt,
     dirty,
     schemaSnapshotJson,
+    uploadStatus,
+    uploadProgress,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -3759,6 +3798,12 @@ class $SurveyResponsesTable extends SurveyResponses
       );
     } else if (isInserting) {
       context.missing(_projectIdMeta);
+    }
+    if (data.containsKey('module_slug')) {
+      context.handle(
+        _moduleSlugMeta,
+        moduleSlug.isAcceptableOrUnknown(data['module_slug']!, _moduleSlugMeta),
+      );
     }
     if (data.containsKey('questionnaire_id')) {
       context.handle(
@@ -3826,6 +3871,24 @@ class $SurveyResponsesTable extends SurveyResponses
         ),
       );
     }
+    if (data.containsKey('upload_status')) {
+      context.handle(
+        _uploadStatusMeta,
+        uploadStatus.isAcceptableOrUnknown(
+          data['upload_status']!,
+          _uploadStatusMeta,
+        ),
+      );
+    }
+    if (data.containsKey('upload_progress')) {
+      context.handle(
+        _uploadProgressMeta,
+        uploadProgress.isAcceptableOrUnknown(
+          data['upload_progress']!,
+          _uploadProgressMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -3849,6 +3912,11 @@ class $SurveyResponsesTable extends SurveyResponses
           attachedDatabase.typeMapping.read(
             DriftSqlType.string,
             data['${effectivePrefix}project_id'],
+          )!,
+      moduleSlug:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}module_slug'],
           )!,
       questionnaireId:
           attachedDatabase.typeMapping.read(
@@ -3887,6 +3955,16 @@ class $SurveyResponsesTable extends SurveyResponses
         DriftSqlType.string,
         data['${effectivePrefix}schema_snapshot_json'],
       ),
+      uploadStatus:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}upload_status'],
+          )!,
+      uploadProgress:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.double,
+            data['${effectivePrefix}upload_progress'],
+          )!,
     );
   }
 
@@ -3900,6 +3978,7 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
   final String id;
   final String surveyId;
   final String projectId;
+  final String moduleSlug;
   final int questionnaireId;
   final String? questionnaireSlug;
   final String? formSlug;
@@ -3908,10 +3987,13 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
   final int updatedAt;
   final bool dirty;
   final String? schemaSnapshotJson;
+  final int uploadStatus;
+  final double uploadProgress;
   const SurveyResponse({
     required this.id,
     required this.surveyId,
     required this.projectId,
+    required this.moduleSlug,
     required this.questionnaireId,
     this.questionnaireSlug,
     this.formSlug,
@@ -3920,6 +4002,8 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
     required this.updatedAt,
     required this.dirty,
     this.schemaSnapshotJson,
+    required this.uploadStatus,
+    required this.uploadProgress,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -3927,6 +4011,7 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
     map['id'] = Variable<String>(id);
     map['survey_id'] = Variable<String>(surveyId);
     map['project_id'] = Variable<String>(projectId);
+    map['module_slug'] = Variable<String>(moduleSlug);
     map['questionnaire_id'] = Variable<int>(questionnaireId);
     if (!nullToAbsent || questionnaireSlug != null) {
       map['questionnaire_slug'] = Variable<String>(questionnaireSlug);
@@ -3941,6 +4026,8 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
     if (!nullToAbsent || schemaSnapshotJson != null) {
       map['schema_snapshot_json'] = Variable<String>(schemaSnapshotJson);
     }
+    map['upload_status'] = Variable<int>(uploadStatus);
+    map['upload_progress'] = Variable<double>(uploadProgress);
     return map;
   }
 
@@ -3949,6 +4036,7 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
       id: Value(id),
       surveyId: Value(surveyId),
       projectId: Value(projectId),
+      moduleSlug: Value(moduleSlug),
       questionnaireId: Value(questionnaireId),
       questionnaireSlug:
           questionnaireSlug == null && nullToAbsent
@@ -3966,6 +4054,8 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
           schemaSnapshotJson == null && nullToAbsent
               ? const Value.absent()
               : Value(schemaSnapshotJson),
+      uploadStatus: Value(uploadStatus),
+      uploadProgress: Value(uploadProgress),
     );
   }
 
@@ -3978,6 +4068,7 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
       id: serializer.fromJson<String>(json['id']),
       surveyId: serializer.fromJson<String>(json['surveyId']),
       projectId: serializer.fromJson<String>(json['projectId']),
+      moduleSlug: serializer.fromJson<String>(json['moduleSlug']),
       questionnaireId: serializer.fromJson<int>(json['questionnaireId']),
       questionnaireSlug: serializer.fromJson<String?>(
         json['questionnaireSlug'],
@@ -3990,6 +4081,8 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
       schemaSnapshotJson: serializer.fromJson<String?>(
         json['schemaSnapshotJson'],
       ),
+      uploadStatus: serializer.fromJson<int>(json['uploadStatus']),
+      uploadProgress: serializer.fromJson<double>(json['uploadProgress']),
     );
   }
   @override
@@ -3999,6 +4092,7 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
       'id': serializer.toJson<String>(id),
       'surveyId': serializer.toJson<String>(surveyId),
       'projectId': serializer.toJson<String>(projectId),
+      'moduleSlug': serializer.toJson<String>(moduleSlug),
       'questionnaireId': serializer.toJson<int>(questionnaireId),
       'questionnaireSlug': serializer.toJson<String?>(questionnaireSlug),
       'formSlug': serializer.toJson<String?>(formSlug),
@@ -4007,6 +4101,8 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
       'updatedAt': serializer.toJson<int>(updatedAt),
       'dirty': serializer.toJson<bool>(dirty),
       'schemaSnapshotJson': serializer.toJson<String?>(schemaSnapshotJson),
+      'uploadStatus': serializer.toJson<int>(uploadStatus),
+      'uploadProgress': serializer.toJson<double>(uploadProgress),
     };
   }
 
@@ -4014,6 +4110,7 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
     String? id,
     String? surveyId,
     String? projectId,
+    String? moduleSlug,
     int? questionnaireId,
     Value<String?> questionnaireSlug = const Value.absent(),
     Value<String?> formSlug = const Value.absent(),
@@ -4022,10 +4119,13 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
     int? updatedAt,
     bool? dirty,
     Value<String?> schemaSnapshotJson = const Value.absent(),
+    int? uploadStatus,
+    double? uploadProgress,
   }) => SurveyResponse(
     id: id ?? this.id,
     surveyId: surveyId ?? this.surveyId,
     projectId: projectId ?? this.projectId,
+    moduleSlug: moduleSlug ?? this.moduleSlug,
     questionnaireId: questionnaireId ?? this.questionnaireId,
     questionnaireSlug:
         questionnaireSlug.present
@@ -4040,12 +4140,16 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
         schemaSnapshotJson.present
             ? schemaSnapshotJson.value
             : this.schemaSnapshotJson,
+    uploadStatus: uploadStatus ?? this.uploadStatus,
+    uploadProgress: uploadProgress ?? this.uploadProgress,
   );
   SurveyResponse copyWithCompanion(SurveyResponsesCompanion data) {
     return SurveyResponse(
       id: data.id.present ? data.id.value : this.id,
       surveyId: data.surveyId.present ? data.surveyId.value : this.surveyId,
       projectId: data.projectId.present ? data.projectId.value : this.projectId,
+      moduleSlug:
+          data.moduleSlug.present ? data.moduleSlug.value : this.moduleSlug,
       questionnaireId:
           data.questionnaireId.present
               ? data.questionnaireId.value
@@ -4064,6 +4168,14 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
           data.schemaSnapshotJson.present
               ? data.schemaSnapshotJson.value
               : this.schemaSnapshotJson,
+      uploadStatus:
+          data.uploadStatus.present
+              ? data.uploadStatus.value
+              : this.uploadStatus,
+      uploadProgress:
+          data.uploadProgress.present
+              ? data.uploadProgress.value
+              : this.uploadProgress,
     );
   }
 
@@ -4073,6 +4185,7 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
           ..write('id: $id, ')
           ..write('surveyId: $surveyId, ')
           ..write('projectId: $projectId, ')
+          ..write('moduleSlug: $moduleSlug, ')
           ..write('questionnaireId: $questionnaireId, ')
           ..write('questionnaireSlug: $questionnaireSlug, ')
           ..write('formSlug: $formSlug, ')
@@ -4080,7 +4193,9 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
           ..write('isDraft: $isDraft, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('dirty: $dirty, ')
-          ..write('schemaSnapshotJson: $schemaSnapshotJson')
+          ..write('schemaSnapshotJson: $schemaSnapshotJson, ')
+          ..write('uploadStatus: $uploadStatus, ')
+          ..write('uploadProgress: $uploadProgress')
           ..write(')'))
         .toString();
   }
@@ -4090,6 +4205,7 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
     id,
     surveyId,
     projectId,
+    moduleSlug,
     questionnaireId,
     questionnaireSlug,
     formSlug,
@@ -4098,6 +4214,8 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
     updatedAt,
     dirty,
     schemaSnapshotJson,
+    uploadStatus,
+    uploadProgress,
   );
   @override
   bool operator ==(Object other) =>
@@ -4106,6 +4224,7 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
           other.id == this.id &&
           other.surveyId == this.surveyId &&
           other.projectId == this.projectId &&
+          other.moduleSlug == this.moduleSlug &&
           other.questionnaireId == this.questionnaireId &&
           other.questionnaireSlug == this.questionnaireSlug &&
           other.formSlug == this.formSlug &&
@@ -4113,13 +4232,16 @@ class SurveyResponse extends DataClass implements Insertable<SurveyResponse> {
           other.isDraft == this.isDraft &&
           other.updatedAt == this.updatedAt &&
           other.dirty == this.dirty &&
-          other.schemaSnapshotJson == this.schemaSnapshotJson);
+          other.schemaSnapshotJson == this.schemaSnapshotJson &&
+          other.uploadStatus == this.uploadStatus &&
+          other.uploadProgress == this.uploadProgress);
 }
 
 class SurveyResponsesCompanion extends UpdateCompanion<SurveyResponse> {
   final Value<String> id;
   final Value<String> surveyId;
   final Value<String> projectId;
+  final Value<String> moduleSlug;
   final Value<int> questionnaireId;
   final Value<String?> questionnaireSlug;
   final Value<String?> formSlug;
@@ -4128,11 +4250,14 @@ class SurveyResponsesCompanion extends UpdateCompanion<SurveyResponse> {
   final Value<int> updatedAt;
   final Value<bool> dirty;
   final Value<String?> schemaSnapshotJson;
+  final Value<int> uploadStatus;
+  final Value<double> uploadProgress;
   final Value<int> rowid;
   const SurveyResponsesCompanion({
     this.id = const Value.absent(),
     this.surveyId = const Value.absent(),
     this.projectId = const Value.absent(),
+    this.moduleSlug = const Value.absent(),
     this.questionnaireId = const Value.absent(),
     this.questionnaireSlug = const Value.absent(),
     this.formSlug = const Value.absent(),
@@ -4141,12 +4266,15 @@ class SurveyResponsesCompanion extends UpdateCompanion<SurveyResponse> {
     this.updatedAt = const Value.absent(),
     this.dirty = const Value.absent(),
     this.schemaSnapshotJson = const Value.absent(),
+    this.uploadStatus = const Value.absent(),
+    this.uploadProgress = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   SurveyResponsesCompanion.insert({
     required String id,
     required String surveyId,
     required String projectId,
+    this.moduleSlug = const Value.absent(),
     required int questionnaireId,
     this.questionnaireSlug = const Value.absent(),
     this.formSlug = const Value.absent(),
@@ -4155,6 +4283,8 @@ class SurveyResponsesCompanion extends UpdateCompanion<SurveyResponse> {
     required int updatedAt,
     this.dirty = const Value.absent(),
     this.schemaSnapshotJson = const Value.absent(),
+    this.uploadStatus = const Value.absent(),
+    this.uploadProgress = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        surveyId = Value(surveyId),
@@ -4166,6 +4296,7 @@ class SurveyResponsesCompanion extends UpdateCompanion<SurveyResponse> {
     Expression<String>? id,
     Expression<String>? surveyId,
     Expression<String>? projectId,
+    Expression<String>? moduleSlug,
     Expression<int>? questionnaireId,
     Expression<String>? questionnaireSlug,
     Expression<String>? formSlug,
@@ -4174,12 +4305,15 @@ class SurveyResponsesCompanion extends UpdateCompanion<SurveyResponse> {
     Expression<int>? updatedAt,
     Expression<bool>? dirty,
     Expression<String>? schemaSnapshotJson,
+    Expression<int>? uploadStatus,
+    Expression<double>? uploadProgress,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (surveyId != null) 'survey_id': surveyId,
       if (projectId != null) 'project_id': projectId,
+      if (moduleSlug != null) 'module_slug': moduleSlug,
       if (questionnaireId != null) 'questionnaire_id': questionnaireId,
       if (questionnaireSlug != null) 'questionnaire_slug': questionnaireSlug,
       if (formSlug != null) 'form_slug': formSlug,
@@ -4189,6 +4323,8 @@ class SurveyResponsesCompanion extends UpdateCompanion<SurveyResponse> {
       if (dirty != null) 'dirty': dirty,
       if (schemaSnapshotJson != null)
         'schema_snapshot_json': schemaSnapshotJson,
+      if (uploadStatus != null) 'upload_status': uploadStatus,
+      if (uploadProgress != null) 'upload_progress': uploadProgress,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -4197,6 +4333,7 @@ class SurveyResponsesCompanion extends UpdateCompanion<SurveyResponse> {
     Value<String>? id,
     Value<String>? surveyId,
     Value<String>? projectId,
+    Value<String>? moduleSlug,
     Value<int>? questionnaireId,
     Value<String?>? questionnaireSlug,
     Value<String?>? formSlug,
@@ -4205,12 +4342,15 @@ class SurveyResponsesCompanion extends UpdateCompanion<SurveyResponse> {
     Value<int>? updatedAt,
     Value<bool>? dirty,
     Value<String?>? schemaSnapshotJson,
+    Value<int>? uploadStatus,
+    Value<double>? uploadProgress,
     Value<int>? rowid,
   }) {
     return SurveyResponsesCompanion(
       id: id ?? this.id,
       surveyId: surveyId ?? this.surveyId,
       projectId: projectId ?? this.projectId,
+      moduleSlug: moduleSlug ?? this.moduleSlug,
       questionnaireId: questionnaireId ?? this.questionnaireId,
       questionnaireSlug: questionnaireSlug ?? this.questionnaireSlug,
       formSlug: formSlug ?? this.formSlug,
@@ -4219,6 +4359,8 @@ class SurveyResponsesCompanion extends UpdateCompanion<SurveyResponse> {
       updatedAt: updatedAt ?? this.updatedAt,
       dirty: dirty ?? this.dirty,
       schemaSnapshotJson: schemaSnapshotJson ?? this.schemaSnapshotJson,
+      uploadStatus: uploadStatus ?? this.uploadStatus,
+      uploadProgress: uploadProgress ?? this.uploadProgress,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -4234,6 +4376,9 @@ class SurveyResponsesCompanion extends UpdateCompanion<SurveyResponse> {
     }
     if (projectId.present) {
       map['project_id'] = Variable<String>(projectId.value);
+    }
+    if (moduleSlug.present) {
+      map['module_slug'] = Variable<String>(moduleSlug.value);
     }
     if (questionnaireId.present) {
       map['questionnaire_id'] = Variable<int>(questionnaireId.value);
@@ -4259,6 +4404,12 @@ class SurveyResponsesCompanion extends UpdateCompanion<SurveyResponse> {
     if (schemaSnapshotJson.present) {
       map['schema_snapshot_json'] = Variable<String>(schemaSnapshotJson.value);
     }
+    if (uploadStatus.present) {
+      map['upload_status'] = Variable<int>(uploadStatus.value);
+    }
+    if (uploadProgress.present) {
+      map['upload_progress'] = Variable<double>(uploadProgress.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -4271,6 +4422,7 @@ class SurveyResponsesCompanion extends UpdateCompanion<SurveyResponse> {
           ..write('id: $id, ')
           ..write('surveyId: $surveyId, ')
           ..write('projectId: $projectId, ')
+          ..write('moduleSlug: $moduleSlug, ')
           ..write('questionnaireId: $questionnaireId, ')
           ..write('questionnaireSlug: $questionnaireSlug, ')
           ..write('formSlug: $formSlug, ')
@@ -4279,6 +4431,8 @@ class SurveyResponsesCompanion extends UpdateCompanion<SurveyResponse> {
           ..write('updatedAt: $updatedAt, ')
           ..write('dirty: $dirty, ')
           ..write('schemaSnapshotJson: $schemaSnapshotJson, ')
+          ..write('uploadStatus: $uploadStatus, ')
+          ..write('uploadProgress: $uploadProgress, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -17245,6 +17399,7 @@ typedef $$SurveyResponsesTableCreateCompanionBuilder =
       required String id,
       required String surveyId,
       required String projectId,
+      Value<String> moduleSlug,
       required int questionnaireId,
       Value<String?> questionnaireSlug,
       Value<String?> formSlug,
@@ -17253,6 +17408,8 @@ typedef $$SurveyResponsesTableCreateCompanionBuilder =
       required int updatedAt,
       Value<bool> dirty,
       Value<String?> schemaSnapshotJson,
+      Value<int> uploadStatus,
+      Value<double> uploadProgress,
       Value<int> rowid,
     });
 typedef $$SurveyResponsesTableUpdateCompanionBuilder =
@@ -17260,6 +17417,7 @@ typedef $$SurveyResponsesTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String> surveyId,
       Value<String> projectId,
+      Value<String> moduleSlug,
       Value<int> questionnaireId,
       Value<String?> questionnaireSlug,
       Value<String?> formSlug,
@@ -17268,6 +17426,8 @@ typedef $$SurveyResponsesTableUpdateCompanionBuilder =
       Value<int> updatedAt,
       Value<bool> dirty,
       Value<String?> schemaSnapshotJson,
+      Value<int> uploadStatus,
+      Value<double> uploadProgress,
       Value<int> rowid,
     });
 
@@ -17292,6 +17452,11 @@ class $$SurveyResponsesTableFilterComposer
 
   ColumnFilters<String> get projectId => $composableBuilder(
     column: $table.projectId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get moduleSlug => $composableBuilder(
+    column: $table.moduleSlug,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -17334,6 +17499,16 @@ class $$SurveyResponsesTableFilterComposer
     column: $table.schemaSnapshotJson,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnFilters<int> get uploadStatus => $composableBuilder(
+    column: $table.uploadStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get uploadProgress => $composableBuilder(
+    column: $table.uploadProgress,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$SurveyResponsesTableOrderingComposer
@@ -17357,6 +17532,11 @@ class $$SurveyResponsesTableOrderingComposer
 
   ColumnOrderings<String> get projectId => $composableBuilder(
     column: $table.projectId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get moduleSlug => $composableBuilder(
+    column: $table.moduleSlug,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -17399,6 +17579,16 @@ class $$SurveyResponsesTableOrderingComposer
     column: $table.schemaSnapshotJson,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get uploadStatus => $composableBuilder(
+    column: $table.uploadStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get uploadProgress => $composableBuilder(
+    column: $table.uploadProgress,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$SurveyResponsesTableAnnotationComposer
@@ -17418,6 +17608,11 @@ class $$SurveyResponsesTableAnnotationComposer
 
   GeneratedColumn<String> get projectId =>
       $composableBuilder(column: $table.projectId, builder: (column) => column);
+
+  GeneratedColumn<String> get moduleSlug => $composableBuilder(
+    column: $table.moduleSlug,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<int> get questionnaireId => $composableBuilder(
     column: $table.questionnaireId,
@@ -17448,6 +17643,16 @@ class $$SurveyResponsesTableAnnotationComposer
 
   GeneratedColumn<String> get schemaSnapshotJson => $composableBuilder(
     column: $table.schemaSnapshotJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get uploadStatus => $composableBuilder(
+    column: $table.uploadStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get uploadProgress => $composableBuilder(
+    column: $table.uploadProgress,
     builder: (column) => column,
   );
 }
@@ -17499,6 +17704,7 @@ class $$SurveyResponsesTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> surveyId = const Value.absent(),
                 Value<String> projectId = const Value.absent(),
+                Value<String> moduleSlug = const Value.absent(),
                 Value<int> questionnaireId = const Value.absent(),
                 Value<String?> questionnaireSlug = const Value.absent(),
                 Value<String?> formSlug = const Value.absent(),
@@ -17507,11 +17713,14 @@ class $$SurveyResponsesTableTableManager
                 Value<int> updatedAt = const Value.absent(),
                 Value<bool> dirty = const Value.absent(),
                 Value<String?> schemaSnapshotJson = const Value.absent(),
+                Value<int> uploadStatus = const Value.absent(),
+                Value<double> uploadProgress = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SurveyResponsesCompanion(
                 id: id,
                 surveyId: surveyId,
                 projectId: projectId,
+                moduleSlug: moduleSlug,
                 questionnaireId: questionnaireId,
                 questionnaireSlug: questionnaireSlug,
                 formSlug: formSlug,
@@ -17520,6 +17729,8 @@ class $$SurveyResponsesTableTableManager
                 updatedAt: updatedAt,
                 dirty: dirty,
                 schemaSnapshotJson: schemaSnapshotJson,
+                uploadStatus: uploadStatus,
+                uploadProgress: uploadProgress,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -17527,6 +17738,7 @@ class $$SurveyResponsesTableTableManager
                 required String id,
                 required String surveyId,
                 required String projectId,
+                Value<String> moduleSlug = const Value.absent(),
                 required int questionnaireId,
                 Value<String?> questionnaireSlug = const Value.absent(),
                 Value<String?> formSlug = const Value.absent(),
@@ -17535,11 +17747,14 @@ class $$SurveyResponsesTableTableManager
                 required int updatedAt,
                 Value<bool> dirty = const Value.absent(),
                 Value<String?> schemaSnapshotJson = const Value.absent(),
+                Value<int> uploadStatus = const Value.absent(),
+                Value<double> uploadProgress = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SurveyResponsesCompanion.insert(
                 id: id,
                 surveyId: surveyId,
                 projectId: projectId,
+                moduleSlug: moduleSlug,
                 questionnaireId: questionnaireId,
                 questionnaireSlug: questionnaireSlug,
                 formSlug: formSlug,
@@ -17548,6 +17763,8 @@ class $$SurveyResponsesTableTableManager
                 updatedAt: updatedAt,
                 dirty: dirty,
                 schemaSnapshotJson: schemaSnapshotJson,
+                uploadStatus: uploadStatus,
+                uploadProgress: uploadProgress,
                 rowid: rowid,
               ),
           withReferenceMapper:

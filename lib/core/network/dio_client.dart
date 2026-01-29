@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../env/env.dart';
 import '../utils/logger.dart';
@@ -8,24 +7,22 @@ import 'network_info.dart';
 
 class DioClient {
   late final Dio _dio;
-  final FlutterSecureStorage secureStorage;
-  final NetworkInfo networkInfo;
   final SharedPreferences sharedPreferences;
+  final NetworkInfo networkInfo;
   late final TokenManager tokenManager;
   final Future<void> Function()? onTokenRefreshFailedWhileOnline;
 
   DioClient({
-    required this.secureStorage,
-    required this.networkInfo,
     required this.sharedPreferences,
+    required this.networkInfo,
     this.onTokenRefreshFailedWhileOnline,
   }) {
     tokenManager = TokenManager(sharedPreferences);
     _dio = Dio(
       BaseOptions(
         baseUrl: Env.baseUrl,
-        connectTimeout: Duration(milliseconds: Env.connectionTimeout),
-        receiveTimeout: Duration(milliseconds: Env.receiveTimeout),
+        connectTimeout: const Duration(milliseconds: Env.connectionTimeout),
+        receiveTimeout: const Duration(milliseconds: Env.receiveTimeout),
         headers: const {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -132,18 +129,14 @@ class DioClient {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-          // Get current token
           final token = await tokenManager.getAccessToken();
 
-          // Check if we need authentication (skip for auth endpoints)
           final isAuthEndpoint = options.path.contains('/auth/');
 
           if (!isAuthEndpoint) {
-            // Check if token exists and is valid
             final isExpired = await tokenManager.isTokenExpired();
             final isExpiringSoon = await tokenManager.isTokenExpiringSoon();
 
-            // If no token or expired, try to refresh
             if (token == null || isExpired || isExpiringSoon) {
               AppLogger.info(
                 'Token missing/expired/expiring soon, attempting refresh...',
@@ -151,7 +144,6 @@ class DioClient {
               final refreshed = await _refreshToken();
 
               if (!refreshed) {
-                // Token refresh failed
                 final isOnline = await networkInfo.isConnected;
                 if (isOnline && onTokenRefreshFailedWhileOnline != null) {
                   AppLogger.warning(
@@ -163,7 +155,6 @@ class DioClient {
             }
           }
 
-          // Add auth token to requests if available
           final updatedToken = await tokenManager.getAccessToken();
           if (updatedToken != null && updatedToken.isNotEmpty) {
             options.headers['Authorization'] = 'Bearer $updatedToken';
@@ -186,16 +177,13 @@ class DioClient {
             error,
           );
 
-          // Handle 401 Unauthorized - redirect to login
           if (error.response?.statusCode == 401) {
             final isOnline = await networkInfo.isConnected;
 
             if (isOnline) {
-              // Try to refresh token once
               final refreshed = await _refreshToken();
 
               if (refreshed) {
-                // Token refreshed successfully, retry the original request
                 final options = error.requestOptions;
                 final token = await tokenManager.getAccessToken();
 
@@ -206,7 +194,6 @@ class DioClient {
                     final response = await _dio.fetch(options);
                     return handler.resolve(response);
                   } catch (e) {
-                    // Retry failed - trigger logout
                     AppLogger.warning(
                       'Request retry failed after token refresh. Logging out...',
                     );
@@ -218,13 +205,11 @@ class DioClient {
                 }
               }
 
-              // Token refresh failed or no token - trigger logout
               AppLogger.warning('Unauthorized (401). Redirecting to login...');
               if (onTokenRefreshFailedWhileOnline != null) {
                 onTokenRefreshFailedWhileOnline!();
               }
             } else {
-              // Offline - allow user to continue
               AppLogger.info(
                 'Unauthorized while offline. User can continue offline.',
               );
@@ -236,7 +221,6 @@ class DioClient {
       ),
     );
 
-    // Logging interceptor (debug only)
     _dio.interceptors.add(
       LogInterceptor(
         request: true,
@@ -266,7 +250,6 @@ class DioClient {
       if (response.statusCode == 200) {
         final newAccessToken = response.data['access'] as String;
 
-        // Update access token (expiration is read from JWT)
         await tokenManager.updateAccessToken(accessToken: newAccessToken);
 
         AppLogger.info('Token refreshed successfully');

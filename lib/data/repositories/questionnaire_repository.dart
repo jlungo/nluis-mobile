@@ -60,7 +60,7 @@ class QuestionnaireRepositoryImpl implements QuestionnaireRepository {
 
         if (response.statusCode == 200) {
           final List<dynamic> data = response.data['results'] ?? response.data;
-          final questionnaires =
+          var questionnaires =
               data
                   .map(
                     (json) => QuestionnaireModel.fromJson(
@@ -68,6 +68,19 @@ class QuestionnaireRepositoryImpl implements QuestionnaireRepository {
                     ),
                   )
                   .toList();
+
+          // Filter by module on client side (in case API doesn't filter properly)
+          if (module != null && module.isNotEmpty) {
+            final lowerModule = module.toLowerCase();
+            questionnaires = questionnaires
+                .where(
+                  (q) =>
+                      q.moduleSlug.toLowerCase().contains(lowerModule) ||
+                      q.moduleName.toLowerCase().contains(lowerModule),
+                )
+                .toList();
+          }
+
           return Right(questionnaires);
         }
         if (response.statusCode == 401) {

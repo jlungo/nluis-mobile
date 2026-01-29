@@ -1,9 +1,5 @@
-import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-
-part 'network_info.g.dart';
+import 'dart:io';
 
 abstract class NetworkInfo {
   Future<bool> get isConnected;
@@ -19,30 +15,18 @@ class NetworkInfoImpl implements NetworkInfo {
   @override
   Future<bool> get isConnected async {
     final result = await connectivity.checkConnectivity();
-    return !result.contains(ConnectivityResult.none);
+    return result.contains(ConnectivityResult.wifi) ||
+        result.contains(ConnectivityResult.mobile) ||
+        result.contains(ConnectivityResult.ethernet);
   }
 
   @override
   Future<bool> get hasInternetConnection async {
     try {
-      // First check if device has network connectivity
-      final connectivityResult = await connectivity.checkConnectivity();
-      if (connectivityResult.contains(ConnectivityResult.none)) {
-        return false;
-      }
-
-      // Then check actual internet connectivity by pinging Google DNS
       final result = await InternetAddress.lookup('google.com');
       return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
-    } catch (_) {
-      // If ping fails, try alternative method with socket connection
-      try {
-        final result = await Socket.connect('8.8.8.8', 53, timeout: const Duration(seconds: 3));
-        result.destroy();
-        return true;
-      } catch (_) {
-        return false;
-      }
+    } on SocketException catch (_) {
+      return false;
     }
   }
 
@@ -53,20 +37,3 @@ class NetworkInfoImpl implements NetworkInfo {
     });
   }
 }
-
-@riverpod
-NetworkInfo networkInfo(Ref ref) {
-  return NetworkInfoImpl(Connectivity());
-}
-
-@riverpod
-Stream<bool> connectivityStream(Ref ref) {
-  return ref.watch(networkInfoProvider).onConnectivityChanged;
-}
-
-final onlineStatusProvider = StreamProvider<bool>((ref) async* {
-  final network = ref.watch(networkInfoProvider);
-  final initial = await network.isConnected;
-  yield initial;
-  yield* network.onConnectivityChanged;
-});
