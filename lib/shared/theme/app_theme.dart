@@ -110,7 +110,7 @@ class AppTheme {
         onError: AppColors.darkTextInverse,
       ),
       scaffoldBackgroundColor: AppColors.darkBackground,
-      appBarTheme: AppBarTheme(
+      appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.darkSurface,
         foregroundColor: AppColors.darkTextPrimary,
         elevation: 0,
@@ -153,26 +153,26 @@ class AppTheme {
         fillColor: AppColors.darkSurfaceVariant,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppConstants.radiusMd),
-          borderSide: BorderSide(color: AppColors.darkDivider),
+          borderSide: const BorderSide(color: AppColors.darkDivider),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppConstants.radiusMd),
-          borderSide: BorderSide(color: AppColors.darkDivider),
+          borderSide: const BorderSide(color: AppColors.darkDivider),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppConstants.radiusMd),
-          borderSide: BorderSide(color: AppColors.darkPrimary, width: 2),
+          borderSide: const BorderSide(color: AppColors.darkPrimary, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppConstants.radiusMd),
-          borderSide: BorderSide(color: AppColors.errorDark),
+          borderSide: const BorderSide(color: AppColors.errorDark),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppConstants.spacingMd,
           vertical: AppConstants.spacingMd,
         ),
       ),
-      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: AppColors.darkSurface,
         selectedItemColor: AppColors.darkPrimary,
         unselectedItemColor: AppColors.darkTextSecondary,

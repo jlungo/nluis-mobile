@@ -28,6 +28,22 @@ class AppConstants {
   static const double radiusLg = 16.0;
   static const double radiusXl = 24.0;
 
+  // Responsive Breakpoints
+  static const double breakpointXs = 360;
+  static const double breakpointSm = 600;
+  static const double breakpointMd = 900;
+  static const double breakpointLg = 1200;
+  static const double breakpointXl = 1536;
+
+  // Font Sizes (base sizes for responsive scaling)
+  static const double fontSizeXs = 10.0;
+  static const double fontSizeSm = 12.0;
+  static const double fontSizeMd = 14.0;
+  static const double fontSizeLg = 16.0;
+  static const double fontSizeXl = 18.0;
+  static const double fontSize2xl = 24.0;
+  static const double fontSize3xl = 32.0;
+
   // Animation Durations
   static const Duration animationFast = Duration(milliseconds: 200);
   static const Duration animationNormal = Duration(milliseconds: 300);
@@ -41,6 +57,9 @@ class AppConstants {
   static const String keyActiveModule = 'active_module';
   static const String keyLocale = 'locale';
   static const String keyThemeMode = 'theme_mode';
+  static const String keyUserId = 'user_id';
+  static const String keyUserEmail = 'user_email';
+  static const String keyIsLoggedIn = 'is_logged_in';
 
   // Sync
   static const int syncBatchSize = 50;
@@ -70,7 +89,7 @@ class AppConstants {
   // Map Configuration
   static const double mapDefaultZoom = 15.0;
   static const double mapMinZoom = 8.0;
-  static const double mapMaxZoom = 20.0;
+  static const double mapMaxZoom = 22.0;
   static const double mapLocationZoom = 16.0;
   static const double mapBoundaryFitPadding = 50.0;
   static const int mapTileCacheDurationDays = 30;
@@ -88,8 +107,9 @@ class AppConstants {
 
   // Map UI
   static const double mapControlSize = 48.0;
-  static const double mapLocationIndicatorSize = 56.0;
-  static const double mapMarkerSize = 20.0;
+  static const double mapLocationIndicatorSize = 40.0;
+  static const double mapMarkerSize = 14.0;
+  static const double mapPointMarkerSize = 36.0;
   static const double mapMarkerBorderWidth = 2.0;
   static const double mapPolylineWidth = 3.0;
   static const double mapPolygonBorderWidth = 2.0;
@@ -100,14 +120,21 @@ class AppConstants {
 
 class ModuleType {
   static const int landUse = 1;
-  static const int landSubDivision = 3;
-  static const int monitoringAndEvaluation = 4;
-  static const int compliance = 6;
+  static const int adjudication = 2;
+  static const int monitoringAndEvaluation = 3;
+  static const int compliance = 4;
 
   static const Map<int, String> labels = {
     landUse: "Land Use",
-    landSubDivision: "Adjudication",
+    adjudication: "Adjudication",
     monitoringAndEvaluation: "Monitoring & Evaluation",
     compliance: "Compliance",
+  };
+
+  static const Map<int, String> slug = {
+    landUse: "land-uses",
+    adjudication: "ccro-management",
+    monitoringAndEvaluation: "monitoring-and-evaluation",
+    compliance: "compliance",
   };
 }
